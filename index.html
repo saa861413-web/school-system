@@ -163,7 +163,7 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        table { width: 100%; border-collapse: collapse; min-width: 750px; }
+        table { width: 100%; border-collapse: collapse; min-width: 850px; }
         th, td { border-bottom: 1px solid #eee; padding: 10px 8px; text-align: center; font-size: 0.85em; }
         th { background-color: #f8f9fa; color: #333; position: sticky; top: 0; }
         tr:hover { background-color: #f1f2f6; }
@@ -230,9 +230,9 @@
     <!-- 1. تبويب الرصد اليومي -->
     <div id="daily-tab" class="tab-content active">
         <div class="form-grid">
-            <div class="form-group" style="grid-column: span 2;">
+            <div class="form-group">
                 <label>السنة الدراسية:</label>
-                <select id="classSelect">
+                <select id="classSelect" onchange="updateRecitationTopicOptions()">
                     <option value="أولى">أولى</option>
                     <option value="تانيه">تانيه</option>
                     <option value="تالتة">تالتة</option>
@@ -241,10 +241,27 @@
                     <option value="أولي شرعي">أولي شرعي</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label>اليوم:</label>
+                <select id="daySelect" onchange="updateRecitationTopicOptions()">
+                    <option value="الأحد">الأحد</option>
+                    <option value="الاثنين">الاثنين</option>
+                    <option value="الثلاثاء">الثلاثاء</option>
+                    <option value="الأربعاء">الأربعاء</option>
+                    <option value="الخميس">الخميس</option>
+                </select>
+            </div>
             <div class="form-group" style="grid-column: span 2;">
                 <label>اسم الطالب:</label>
                 <input type="text" id="studentName" placeholder="اسم الطالب بالكامل">
             </div>
+            
+            <!-- خيار مقرر التلاوة الخاص بسنة أولى فقط -->
+            <div class="form-group" id="recitationTopicGroup" style="grid-column: span 2;">
+                <label style="color: var(--accent-color);">مقرر تلاوة سنة أولى:</label>
+                <select id="recitationTopic" style="border-color: var(--accent-color); font-weight: bold;"></select>
+            </div>
+
             <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10"></div>
             <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10"></div>
             <div class="form-group"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10"></div>
@@ -254,7 +271,7 @@
         </div>
 
         <div class="btn-group">
-            <button class="action-btn btn-save" onclick="addGrade()">حفظ درجات الطالب</button>
+            <button class="action-btn btn-save" onclick="addGrade()">حفظ درجات الطالب (من 60)</button>
             <button id="btn-export-daily" class="action-btn btn-export hidden" onclick="exportDailyToExcel()">تصدير إكسل (اليومي)</button>
         </div>
 
@@ -266,7 +283,7 @@
             <table id="gradesTable">
                 <thead>
                     <tr>
-                        <th>التاريخ</th><th>السنة</th><th>المعلم</th><th>اسم الطالب</th>
+                        <th>التاريخ</th><th>اليوم</th><th>السنة</th><th>المعلم</th><th>اسم الطالب</th><th>مقرر التلاوة</th>
                         <th>حضور</th><th>سلوك</th><th>ماضي</th><th>جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
                     </tr>
                 </thead>
@@ -403,6 +420,15 @@
     let dailyRecords = JSON.parse(localStorage.getItem('dailyRecords')) || [];
     let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 
+    // الخريطة الخاصة بمقررات تلاوة سنة أولى حسب الأيام
+    const recitationTopicsMap = {
+        "الأحد": "نص جزء عم الاول",
+        "الاثنين": "نص جزء عم الثاني",
+        "الثلاثاء": "نص جزء تبارك الاول",
+        "الأربعاء": "نص جزء تبارك الثاني",
+        "الخميس": "نص جزء عم الاول"
+    };
+
     /* ================= التشغيل الأولي وبدء المزامنة ================= */
     window.onload = function() {
         if (useFirebase) {
@@ -417,11 +443,28 @@
         document.getElementById('reportYear').value = new Date().getFullYear();
     };
 
+    /* ================= تحديث خيارات التلاوة لسنة أولى فقط ================= */
+    function updateRecitationTopicOptions() {
+        const className = document.getElementById('classSelect').value;
+        const dayName = document.getElementById('daySelect').value;
+        const topicGroup = document.getElementById('recitationTopicGroup');
+        const topicSelect = document.getElementById('recitationTopic');
+
+        // تطبيق الخيار على سنة "أولى" فقط
+        if (className === 'أولى') {
+            topicGroup.classList.remove('hidden');
+            const topic = recitationTopicsMap[dayName] || "نص جزء عم الاول";
+            topicSelect.innerHTML = `<option value="${topic}">${topic}</option>`;
+        } else {
+            topicGroup.classList.add('hidden');
+            topicSelect.innerHTML = `<option value="">-</option>`;
+        }
+    }
+
     /* ================= دوال المزامنة السحابية Real-time ================= */
     function syncDataFromCloud() {
         if (!useFirebase) return;
 
-        // الاستماع للتغييرات في المعلمين
         db.collection("teachers").onSnapshot((snapshot) => {
             let cloudTeachers = [];
             snapshot.forEach(doc => cloudTeachers.push({ id: doc.id, ...doc.data() }));
@@ -432,7 +475,6 @@
             }
         });
 
-        // الاستماع للتغييرات في الدرجات
         db.collection("dailyRecords").onSnapshot((snapshot) => {
             let cloudRecords = [];
             snapshot.forEach(doc => cloudRecords.push({ id: doc.id, ...doc.data() }));
@@ -509,6 +551,7 @@
             exportMonthlyBtn.classList.remove('hidden');
         }
 
+        updateRecitationTopicOptions();
         renderDailyTable();
         if(currentTeacher.username === 'admin') renderTeachersTable();
     }
@@ -535,7 +578,11 @@
 
     async function addGrade() {
         const className = document.getElementById('classSelect').value;
+        const dayName = document.getElementById('daySelect').value;
         const studentName = document.getElementById('studentName').value.trim();
+        
+        // ربط المقرر بسنة أولى فقط
+        const recitationTopic = (className === 'أولى') ? document.getElementById('recitationTopic').value : '-';
 
         if (!studentName) {
             return showMessage('app-msg', 'يرجى كتابة اسم الطالب أولاً', 'error');
@@ -545,7 +592,9 @@
             id: Date.now().toString(),
             teacherName: currentTeacher.username,
             className,
+            dayName,
             studentName,
+            recitationTopic,
             attendance: clampGrade(document.getElementById('attendance').value),
             behavior: clampGrade(document.getElementById('behavior').value),
             oldRevision: clampGrade(document.getElementById('oldRevision').value),
@@ -598,7 +647,7 @@
         });
 
         if (filteredRecords.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="12">لا توجد سجلات مطابقة</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="14">لا توجد سجلات مطابقة</td></tr>';
             return;
         }
 
@@ -611,9 +660,11 @@
             tbody.innerHTML += `
                 <tr>
                     <td>${r.dateDisplay}</td>
+                    <td><strong>${r.dayName || '-'}</strong></td>
                     <td>${r.className}</td>
                     <td>${r.teacherName}</td>
                     <td>${r.studentName}</td>
+                    <td style="color:#2980b9; font-weight:bold;">${r.recitationTopic || '-'}</td>
                     <td>${r.attendance}</td>
                     <td>${r.behavior}</td>
                     <td>${r.oldRevision}</td>
@@ -790,9 +841,17 @@
 
         classes.forEach(c => {
             const classData = dailyRecords.filter(r => r.className === c).map(r => ({
-                "التاريخ": r.dateDisplay, "السنة": r.className, "المعلم": r.teacherName,
-                "اسم الطالب": r.studentName, "الحضور (10)": r.attendance, "السلوك (10)": r.behavior,
-                "الماضي (10)": r.oldRevision, "الجديد (10)": r.newLesson, "التلاوة (10)": r.recitation,
+                "التاريخ": r.dateDisplay,
+                "اليوم": r.dayName || '-',
+                "السنة": r.className,
+                "المعلم": r.teacherName,
+                "اسم الطالب": r.studentName,
+                "مقرر التلاوة": r.recitationTopic || '-',
+                "الحضور (10)": r.attendance,
+                "السلوك (10)": r.behavior,
+                "الماضي (10)": r.oldRevision,
+                "الجديد (10)": r.newLesson,
+                "التلاوة (10)": r.recitation,
                 "الواجب (10)": r.homework || 0,
                 "المجموع (60)": getDailyTotal(r)
             }));
