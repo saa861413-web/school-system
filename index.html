@@ -8,13 +8,16 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary-color: #007bff;
-            --success-color: #28a745;
-            --info-color: #17a2b8;
-            --danger-color: #dc3545;
-            --bg-color: #f4f6f9;
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --bg-color: #ecf0f1;
             --card-bg: #ffffff;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,18 +28,33 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: auto;
             background: var(--card-bg);
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         }
+
+        /* الإشعارات الناعمة (بديل الـ alert) */
+        .toast-msg {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .toast-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .toast-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* شاشة تسجيل الدخول */
         .login-card {
             max-width: 400px;
-            margin: 50px auto;
+            margin: 80px auto;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
@@ -44,34 +62,14 @@
             text-align: center;
         }
 
-        .login-card h2 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
         .user-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #e9ecef;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .btn-logout {
-            background-color: var(--danger-color);
+            background: var(--primary-color);
             color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        h2, h3 {
-            text-align: center;
-            color: #2c3e50;
+            padding: 12px 20px;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
 
@@ -79,7 +77,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
+            border-bottom: 2px solid #ddd;
             padding-bottom: 10px;
         }
 
@@ -87,26 +85,22 @@
             flex: 1;
             padding: 12px;
             border: none;
-            background-color: #e9ecef;
-            color: #495057;
+            background-color: #eee;
+            color: #444;
             font-weight: bold;
             border-radius: 6px;
             cursor: pointer;
             transition: 0.3s;
+            font-size: 15px;
         }
 
         .tab-btn.active {
-            background-color: var(--primary-color);
+            background-color: var(--accent-color);
             color: white;
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 
         .form-grid {
             display: grid;
@@ -115,138 +109,79 @@
             margin-bottom: 20px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            text-align: right;
-        }
+        .form-group { display: flex; flex-direction: column; text-align: right; }
+        label { margin-bottom: 6px; font-weight: 600; font-size: 0.9em; }
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
+        input:focus, select:focus { outline: none; border-color: var(--accent-color); }
 
-        label {
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        input, select {
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        
         button.action-btn {
             flex: 1;
-            min-width: 180px;
+            min-width: 150px;
             padding: 12px;
             border: none;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 0.95em;
             cursor: pointer;
             color: white;
             transition: 0.2s;
         }
 
         .btn-save { background-color: var(--success-color); }
-        .btn-save:hover { background-color: #218838; }
+        .btn-export { background-color: var(--secondary-color); }
+        .btn-danger { background-color: var(--danger-color); }
 
-        .btn-export-daily { background-color: var(--primary-color); }
-        .btn-export-daily:hover { background-color: #0069d9; }
+        .table-responsive { overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #eee; padding: 12px; text-align: center; }
+        th { background-color: #f8f9fa; color: #333; }
+        tr:hover { background-color: #f1f2f6; }
 
-        .btn-export-monthly { background-color: var(--info-color); }
-        .btn-export-monthly:hover { background-color: #138496; }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            background: white;
-        }
-
-        th, td {
-            border: 1px solid #dee2e6;
-            padding: 10px;
-            text-align: center;
-            font-size: 0.9em;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            color: #333;
-            font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-            background-color: #fdfdfd;
-        }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            color: white;
-        }
-        .badge-success { background-color: var(--success-color); }
-        .badge-warning { background-color: #ffc107; color: #333; }
+        .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; color: white; }
+        .badge-green { background-color: var(--success-color); }
+        .badge-yellow { background-color: #f1c40f; color: #333; }
         
         .hidden { display: none !important; }
-        .error-msg { color: var(--danger-color); font-size: 0.85em; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
 
-<!-- شاشة تسجيل دخول المعلمين -->
+<!-- شاشة تسجيل الدخول -->
 <div id="login-screen" class="login-card">
-    <h2>تسجيل دخول المعلم</h2>
+    <h2 style="margin-bottom: 20px; color: var(--primary-color);">تسجيل الدخول</h2>
+    <div id="login-msg" class="toast-msg"></div>
     <div class="form-group" style="margin-bottom: 15px;">
-        <label>اسم المستخدم:</label>
-        <input type="text" id="username" placeholder="مثال: teacher1">
+        <input type="text" id="username" placeholder="اسم المستخدم">
     </div>
     <div class="form-group" style="margin-bottom: 15px;">
-        <label>كلمة السر:</label>
-        <input type="password" id="password" placeholder="أدخل كلمة السر">
+        <input type="password" id="password" placeholder="كلمة المرور">
     </div>
-    <button class="action-btn btn-save" style="width: 100%; margin-top: 10px;" onclick="handleLogin()">دخول</button>
-    <div id="login-error" class="error-msg">اسم المستخدم أو كلمة السر غير صحيحة</div>
-    <p style="font-size: 0.8em; color: #6c757d; margin-top: 15px;">
-        حسابات للتجربة:<br>
-        أولى: <b>teacher1</b> / <b>123456</b><br>
-        تانية: <b>teacher2</b> / <b>123456</b><br>
-        مدير (كل الفصول): <b>admin</b> / <b>admin123</b>
-    </p>
+    <button class="action-btn btn-save" style="width: 100%;" onclick="handleLogin()">دخول</button>
 </div>
 
-<!-- واجهة التطبيق الرئيسية (تظهر بعد تسجيل الدخول) -->
+<!-- واجهة التطبيق الرئيسية -->
 <div id="app-screen" class="container hidden">
-    <!-- شريط معلومات المعلم المسجل -->
+    <!-- الشريط العلوي -->
     <div class="user-bar">
         <div>
-            أهلاً بك، <strong id="teacher-name-display"></strong> 
-            (<span id="teacher-class-display"></span>)
+            أهلاً بك: <strong id="teacher-name-display"></strong> 
+            | الصلاحية: <span id="teacher-class-display"></span>
         </div>
-        <button class="btn-logout" onclick="handleLogout()">تسجيل خروج</button>
+        <button class="action-btn btn-danger" style="flex: none; min-width: auto; padding: 8px 15px;" onclick="handleLogout()">تسجيل خروج</button>
     </div>
 
-    <h2>نظام رصد وتقييم درجات الطلاب</h2>
+    <!-- رسائل النظام -->
+    <div id="app-msg" class="toast-msg"></div>
 
-    <!-- أزرار التنقل بين الصفحة اليومية والتقارير -->
+    <!-- أزرار التنقل -->
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('daily-tab', event)">رصد اليوم</button>
+        <button class="tab-btn active" onclick="switchTab('daily-tab', event)">رصد الدرجات اليومي</button>
         <button class="tab-btn" onclick="switchTab('reports-tab', event)">التقارير التجميعية</button>
+        <button class="tab-btn hidden" id="admin-tab-btn" onclick="switchTab('admin-tab', event)">لوحة الإدارة (المعلمين)</button>
     </div>
 
-    <!-- تبويب رصد الدرجات اليومي -->
+    <!-- 1. تبويب الرصد اليومي -->
     <div id="daily-tab" class="tab-content active">
         <div class="form-grid">
             <div class="form-group">
@@ -257,58 +192,28 @@
                     <option value="تالتة">الصف الثالث</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>اسم الطالب:</label>
-                <input type="text" id="studentName" placeholder="أدخل اسم الطالب">
+                <input type="text" id="studentName" placeholder="اسم الطالب">
             </div>
-
-            <div class="form-group">
-                <label>الحضور (من 10):</label>
-                <input type="number" id="attendance" min="0" max="10" placeholder="10">
-            </div>
-
-            <div class="form-group">
-                <label>السلوك (من 10):</label>
-                <input type="number" id="behavior" min="0" max="10" placeholder="10">
-            </div>
-
-            <div class="form-group">
-                <label>الماضي / المراجعة (من 20):</label>
-                <input type="number" id="oldRevision" min="0" max="20" placeholder="20">
-            </div>
-
-            <div class="form-group">
-                <label>الجديد / الحفظ (من 20):</label>
-                <input type="number" id="newLesson" min="0" max="20" placeholder="20">
-            </div>
-
-            <div class="form-group">
-                <label>التلاوة (من 20):</label>
-                <input type="number" id="recitation" min="0" max="20" placeholder="20">
-            </div>
+            <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10"></div>
+            <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10"></div>
+            <div class="form-group"><label>الماضي (20):</label><input type="number" id="oldRevision" min="0" max="20"></div>
+            <div class="form-group"><label>الجديد (20):</label><input type="number" id="newLesson" min="0" max="20"></div>
+            <div class="form-group"><label>التلاوة (20):</label><input type="number" id="recitation" min="0" max="20"></div>
         </div>
 
         <div class="btn-group">
-            <button class="action-btn btn-save" onclick="addGrade()">حفظ الدرجة اليومية</button>
-            <button class="action-btn btn-export-daily" onclick="exportDailyToExcel()">تصدير إكسل اليومي (مقسم فصول)</button>
+            <button class="action-btn btn-save" onclick="addGrade()">حفظ درجات الطالب</button>
+            <button id="btn-export-daily" class="action-btn btn-export hidden" onclick="exportDailyToExcel()">تصدير إكسل (اليومي)</button>
         </div>
 
-        <h3>البيانات المرصودة مؤخراً</h3>
         <div class="table-responsive">
             <table id="gradesTable">
                 <thead>
                     <tr>
-                        <th>التاريخ</th>
-                        <th>الفصل</th>
-                        <th>المعلم</th>
-                        <th>اسم الطالب</th>
-                        <th>الحضور</th>
-                        <th>السلوك</th>
-                        <th>الماضي</th>
-                        <th>الجديد</th>
-                        <th>التلاوة</th>
-                        <th>المجموع (80)</th>
+                        <th>التاريخ</th><th>الفصل</th><th>المعلم</th><th>اسم الطالب</th>
+                        <th>الحضور</th><th>السلوك</th><th>الماضي</th><th>الجديد</th><th>التلاوة</th><th>المجموع (80)</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -316,27 +221,18 @@
         </div>
     </div>
 
-    <!-- تبويب التقارير الشهرية والتقييمات -->
+    <!-- 2. تبويب التقارير الشهرية -->
     <div id="reports-tab" class="tab-content">
         <div class="form-grid">
             <div class="form-group">
                 <label>تحديد الشهر:</label>
                 <select id="reportMonth">
-                    <option value="0">يناير</option>
-                    <option value="1">فبراير</option>
-                    <option value="2">مارس</option>
-                    <option value="3">أبريل</option>
-                    <option value="4">مايو</option>
-                    <option value="5">يونيو</option>
-                    <option value="6">يوليو</option>
-                    <option value="7">أغسطس</option>
-                    <option value="8">سبتمبر</option>
-                    <option value="9">أكتوبر</option>
-                    <option value="10">نوفمبر</option>
-                    <option value="11">ديسمبر</option>
+                    <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
+                    <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
+                    <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
+                    <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>السنة:</label>
                 <input type="number" id="reportYear" value="2026">
@@ -344,25 +240,48 @@
         </div>
 
         <div class="btn-group">
-            <button class="action-btn btn-export-monthly" onclick="renderMonthlyReport()">عرض التقرير الشهري</button>
-            <button class="action-btn btn-export-daily" onclick="exportMonthlyReportToExcel()">تصدير التقرير الشهري إلى إكسل</button>
+            <button class="action-btn btn-save" onclick="renderMonthlyReport()">عرض التقرير الشهري</button>
+            <button id="btn-export-monthly" class="action-btn btn-export hidden" onclick="exportMonthlyReportToExcel()">تصدير التقرير (إكسل)</button>
         </div>
 
-        <h3>ملخص التقييم الشهري للطلاب</h3>
         <div class="table-responsive">
             <table id="monthlyReportTable">
                 <thead>
                     <tr>
-                        <th>اسم الطالب</th>
-                        <th>أيام الحضور</th>
-                        <th>متوسط الحضور</th>
-                        <th>متوسط السلوك</th>
-                        <th>متوسط الماضي</th>
-                        <th>متوسط الجديد</th>
-                        <th>متوسط التلاوة</th>
-                        <th>المجموع الكلي</th>
-                        <th>النسبة المئوية</th>
+                        <th>اسم الطالب</th><th>أيام الحضور</th><th>متوسط الحضور</th>
+                        <th>متوسط السلوك</th><th>متوسط الماضي</th><th>متوسط الجديد</th>
+                        <th>متوسط التلاوة</th><th>المجموع الكلي</th><th>النسبة</th>
                     </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 3. تبويب إدارة المعلمين (للأدمن فقط) -->
+    <div id="admin-tab" class="tab-content">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+            <h3 style="margin-top: 0;">إضافة معلم جديد</h3>
+            <div class="form-grid">
+                <div class="form-group"><input type="text" id="newTeacherUser" placeholder="اسم المستخدم (للدخول)"></div>
+                <div class="form-group"><input type="text" id="newTeacherPass" placeholder="كلمة المرور"></div>
+                <div class="form-group"><input type="text" id="newTeacherName" placeholder="الاسم الكامل للمعلم"></div>
+                <div class="form-group">
+                    <select id="newTeacherClass">
+                        <option value="أولى">الصف الأول</option>
+                        <option value="تانية">الصف الثاني</option>
+                        <option value="تالتة">الصف الثالث</option>
+                        <option value="الكل">مدير (جميع الفصول)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="action-btn btn-save" style="width: 200px;" onclick="addTeacher()">+ إنشاء حساب المعلم</button>
+        </div>
+
+        <div class="table-responsive">
+            <table id="teachersTable">
+                <thead>
+                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>اسم المعلم</th><th>الفصل المخصص</th><th>إجراء</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -371,49 +290,57 @@
 </div>
 
 <script>
-    // قاعدة بيانات الحسابات المعرفة للمدرسين (يمكن تعديلها أو إضافتها)
-    const teachersData = [
-        { username: "teacher1", password: "123", name: "أ. أحمد (مدرس أولى)", assignedClass: "أولى" },
-        { username: "teacher2", password: "123", name: "أ. محمد (مدرس تانية)", assignedClass: "تانية" },
-        { username: "teacher3", password: "123", name: "أ. محمود (مدرس تالتة)", assignedClass: "تالتة" },
-        { username: "admin", password: "admin123", name: "مدير النظام", assignedClass: "all" }
+    /* ================= البيانات الافتراضية والتخزين ================= */
+    
+    // إذا لم يكن هناك بيانات معلمين، ننشئ حساب الأدمن الافتراضي
+    let defaultTeachers = [
+        { id: 1, username: "admin", password: "admin123", name: "مدير النظام", assignedClass: "الكل" }
     ];
-
-    // المتغيرات العامة
-    let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
+    
+    let teachersData = JSON.parse(localStorage.getItem('teachersData')) || defaultTeachers;
     let dailyRecords = JSON.parse(localStorage.getItem('dailyRecords')) || [];
+    let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 
-    // عند تحميل الصفحة تحقق من جلسة الدخول
+    /* ================= التهيئة الأولية ================= */
     window.onload = function() {
         if (currentTeacher) {
             showAppScreen();
         } else {
             showLoginScreen();
         }
-        
         document.getElementById('reportMonth').value = new Date().getMonth();
         document.getElementById('reportYear').value = new Date().getFullYear();
     };
 
-    // تسجيل الدخول
+    /* ================= دوال الرسائل (بدون Alert) ================= */
+    function showMessage(elementId, msg, type) {
+        const el = document.getElementById(elementId);
+        el.innerText = msg;
+        el.className = `toast-msg toast-${type}`;
+        el.style.display = 'block';
+        setTimeout(() => {
+            el.style.display = 'none';
+        }, 3000);
+    }
+
+    /* ================= تسجيل الدخول والخروج ================= */
     function handleLogin() {
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value.trim();
-        const errorDiv = document.getElementById('login-error');
+        
+        if(!u || !p) return showMessage('login-msg', 'يرجى إدخال اسم المستخدم وكلمة المرور', 'error');
 
         const teacher = teachersData.find(t => t.username === u && t.password === p);
 
         if (teacher) {
             currentTeacher = teacher;
             localStorage.setItem('currentTeacher', JSON.stringify(teacher));
-            errorDiv.style.display = 'none';
             showAppScreen();
         } else {
-            errorDiv.style.display = 'block';
+            showMessage('login-msg', 'بيانات الدخول غير صحيحة', 'error');
         }
     }
 
-    // تسجيل الخروج
     function handleLogout() {
         currentTeacher = null;
         localStorage.removeItem('currentTeacher');
@@ -433,34 +360,43 @@
 
         document.getElementById('teacher-name-display').innerText = currentTeacher.name;
         document.getElementById('teacher-class-display').innerText = 
-            currentTeacher.assignedClass === 'all' ? 'جميع الفصول' : `فصل: ${currentTeacher.assignedClass}`;
+            currentTeacher.assignedClass === 'الكل' ? 'جميع الفصول (إدارة)' : `فصل: ${currentTeacher.assignedClass}`;
 
         const classSelect = document.getElementById('classSelect');
-        if (currentTeacher.assignedClass !== 'all') {
+        const adminBtn = document.getElementById('admin-tab-btn');
+        const exportDailyBtn = document.getElementById('btn-export-daily');
+        const exportMonthlyBtn = document.getElementById('btn-export-monthly');
+
+        // تطبيق الصلاحيات
+        if (currentTeacher.assignedClass !== 'الكل') {
             classSelect.value = currentTeacher.assignedClass;
-            classSelect.disabled = true; // تثبيت الفصل الخاص بالمدرس
+            classSelect.disabled = true; // إجبار المعلم على فصله فقط
+            adminBtn.classList.add('hidden'); // إخفاء لوحة الأدمن
+            exportDailyBtn.classList.add('hidden'); // إخفاء زر التصدير اليومي للمدرس
+            exportMonthlyBtn.classList.add('hidden'); // إخفاء زر التصدير الشهري للمدرس
         } else {
             classSelect.disabled = false;
+            adminBtn.classList.remove('hidden'); // إظهار لوحة الأدمن
+            exportDailyBtn.classList.remove('hidden'); // إظهار زر التصدير اليومي للأدمن
+            exportMonthlyBtn.classList.remove('hidden'); // إظهار زر التصدير الشهري للأدمن
         }
 
         renderDailyTable();
+        if(currentTeacher.assignedClass === 'الكل') renderTeachersTable();
     }
 
-    // التبديل بين الشاشات
     function switchTab(tabId, event) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
         event.target.classList.add('active');
         document.getElementById(tabId).classList.add('active');
     }
 
-    // حساب المجموع اليومي
+    /* ================= 1. نظام الرصد اليومي ================= */
     function getDailyTotal(record) {
         return record.attendance + record.behavior + record.oldRevision + record.newLesson + record.recitation;
     }
 
-    // إضافة سجل درجات جديد
     function addGrade() {
         const className = document.getElementById('classSelect').value;
         const studentName = document.getElementById('studentName').value.trim();
@@ -471,8 +407,7 @@
         const recitation = Number(document.getElementById('recitation').value) || 0;
 
         if (!studentName) {
-            alert('برجاء إدخال اسم الطالب');
-            return;
+            return showMessage('app-msg', 'يرجى كتابة اسم الطالب أولاً', 'error');
         }
 
         const record = {
@@ -480,11 +415,7 @@
             teacherName: currentTeacher.name,
             className,
             studentName,
-            attendance,
-            behavior,
-            oldRevision,
-            newLesson,
-            recitation,
+            attendance, behavior, oldRevision, newLesson, recitation,
             dateISO: new Date().toISOString().split('T')[0],
             dateDisplay: new Date().toLocaleDateString('ar-EG')
         };
@@ -493,17 +424,20 @@
         localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
 
         renderDailyTable();
-        clearInputs();
+        showMessage('app-msg', 'تم حفظ الدرجات بنجاح', 'success');
+        
+        // تفريغ الحقول ما عدا الفصل
+        ['studentName','attendance','behavior','oldRevision','newLesson','recitation'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
     }
 
-    // عرض السجلات في جدول الرصد اليومي
     function renderDailyTable() {
         const tbody = document.querySelector('#gradesTable tbody');
         tbody.innerHTML = '';
 
-        // تصفية السجلات حسب المعلم أو إذا كان مديراً يرعى الكل
         const filteredRecords = dailyRecords.filter(r => {
-            if (currentTeacher.assignedClass === 'all') return true;
+            if (currentTeacher.assignedClass === 'الكل') return true;
             return r.className === currentTeacher.assignedClass;
         });
 
@@ -511,9 +445,9 @@
             const total = getDailyTotal(r);
             tbody.innerHTML += `
                 <tr>
-                    <td>${r.dateDisplay || r.dateISO}</td>
+                    <td>${r.dateDisplay}</td>
                     <td>${r.className}</td>
-                    <td>${r.teacherName || 'غير محدد'}</td>
+                    <td>${r.teacherName}</td>
                     <td>${r.studentName}</td>
                     <td>${r.attendance}</td>
                     <td>${r.behavior}</td>
@@ -526,98 +460,7 @@
         });
     }
 
-    // تفريغ المدخلات بعد الحفظ
-    function clearInputs() {
-        document.getElementById('studentName').value = '';
-        document.getElementById('attendance').value = '';
-        document.getElementById('behavior').value = '';
-        document.getElementById('oldRevision').value = '';
-        document.getElementById('newLesson').value = '';
-        document.getElementById('recitation').value = '';
-    }
-
-    // تصدير إكسل اليومي (Sheet لكل فصل)
-    function exportDailyToExcel() {
-        if (dailyRecords.length === 0) {
-            alert('لا توجد بيانات لرصدها والتصدير');
-            return;
-        }
-
-        const wb = XLSX.utils.book_new();
-        
-        // تصفية الفصول المتاحة للمدرس الحالي
-        const recordsToExport = dailyRecords.filter(r => {
-            if (currentTeacher.assignedClass === 'all') return true;
-            return r.className === currentTeacher.assignedClass;
-        });
-
-        const classes = [...new Set(recordsToExport.map(r => r.className))];
-
-        classes.forEach(c => {
-            const classData = recordsToExport
-                .filter(r => r.className === c)
-                .map(r => ({
-                    "التاريخ": r.dateDisplay || r.dateISO,
-                    "الفصل": r.className,
-                    "المعلم": r.teacherName,
-                    "اسم الطالب": r.studentName,
-                    "الحضور (10)": r.attendance,
-                    "السلوك (10)": r.behavior,
-                    "الماضي (20)": r.oldRevision,
-                    "الجديد (20)": r.newLesson,
-                    "التلاوة (20)": r.recitation,
-                    "المجموع (80)": getDailyTotal(r)
-                }));
-
-            const ws = XLSX.utils.json_to_sheet(classData);
-            XLSX.utils.book_append_sheet(wb, ws, `فصل ${c}`);
-        });
-
-        const today = new Date().toISOString().slice(0, 10);
-        XLSX.writeFile(wb, `درجات_الطلاب_اليومي_${today}.xlsx`);
-    }
-
-    // حساب التقييم الشهري لطالب
-    function calculateMonthlyReport(studentName, monthIndex, year) {
-        const studentRecords = dailyRecords.filter(r => {
-            const rDate = new Date(r.dateISO);
-            return r.studentName === studentName &&
-                   rDate.getMonth() === Number(monthIndex) &&
-                   rDate.getFullYear() === Number(year);
-        });
-
-        if (studentRecords.length === 0) return null;
-
-        let totals = { attendance: 0, behavior: 0, oldRevision: 0, newLesson: 0, recitation: 0, overall: 0 };
-
-        studentRecords.forEach(r => {
-            totals.attendance += r.attendance;
-            totals.behavior += r.behavior;
-            totals.oldRevision += r.oldRevision;
-            totals.newLesson += r.newLesson;
-            totals.recitation += r.recitation;
-            totals.overall += getDailyTotal(r);
-        });
-
-        const count = studentRecords.length;
-        const maxScore = count * 80;
-        const percentage = ((totals.overall / maxScore) * 100).toFixed(1);
-
-        return {
-            studentName,
-            daysAttended: count,
-            avgAttendance: (totals.attendance / count).toFixed(1),
-            avgBehavior: (totals.behavior / count).toFixed(1),
-            avgOld: (totals.oldRevision / count).toFixed(1),
-            avgNew: (totals.newLesson / count).toFixed(1),
-            avgRecitation: (totals.recitation / count).toFixed(1),
-            totalScore: totals.overall,
-            maxScore,
-            percentage: `${percentage}%`
-        };
-    }
-
-    // عرض التقرير الشهري داخل الجدول
+    /* ================= 2. التقارير الشهرية ================= */
     function renderMonthlyReport() {
         const month = document.getElementById('reportMonth').value;
         const year = document.getElementById('reportYear').value;
@@ -625,80 +468,174 @@
         tbody.innerHTML = '';
 
         const relevantRecords = dailyRecords.filter(r => {
-            if (currentTeacher.assignedClass === 'all') return true;
-            return r.className === currentTeacher.assignedClass;
+            if (currentTeacher.assignedClass !== 'الكل' && r.className !== currentTeacher.assignedClass) return false;
+            const rDate = new Date(r.dateISO);
+            return rDate.getMonth() == month && rDate.getFullYear() == year;
         });
+
+        if(relevantRecords.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9">لا توجد بيانات لهذا الشهر</td></tr>';
+            return;
+        }
 
         const allStudents = [...new Set(relevantRecords.map(r => r.studentName))];
-        let hasData = false;
 
         allStudents.forEach(student => {
-            const report = calculateMonthlyReport(student, month, year);
-            if (report) {
-                hasData = true;
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${report.studentName}</td>
-                        <td>${report.daysAttended}</td>
-                        <td>${report.avgAttendance} / 10</td>
-                        <td>${report.avgBehavior} / 10</td>
-                        <td>${report.avgOld} / 20</td>
-                        <td>${report.avgNew} / 20</td>
-                        <td>${report.avgRecitation} / 20</td>
-                        <td><strong>${report.totalScore}</strong> / ${report.maxScore}</td>
-                        <td><span class="badge ${parseFloat(report.percentage) >= 75 ? 'badge-success' : 'badge-warning'}">${report.percentage}</span></td>
-                    </tr>
-                `;
-            }
-        });
+            const sRecords = relevantRecords.filter(r => r.studentName === student);
+            let totals = { attendance: 0, behavior: 0, oldRevision: 0, newLesson: 0, recitation: 0, overall: 0 };
+            
+            sRecords.forEach(r => {
+                totals.attendance += r.attendance; totals.behavior += r.behavior;
+                totals.oldRevision += r.oldRevision; totals.newLesson += r.newLesson;
+                totals.recitation += r.recitation; totals.overall += getDailyTotal(r);
+            });
 
-        if (!hasData) {
-            tbody.innerHTML = '<tr><td colspan="9">لا توجد بيانات مرصودة لهذا الشهر.</td></tr>';
+            const count = sRecords.length;
+            const maxScore = count * 80;
+            const percentage = ((totals.overall / maxScore) * 100).toFixed(1);
+            const badgeClass = parseFloat(percentage) >= 75 ? 'badge-green' : 'badge-yellow';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>${student}</td>
+                    <td>${count}</td>
+                    <td>${(totals.attendance/count).toFixed(1)}</td>
+                    <td>${(totals.behavior/count).toFixed(1)}</td>
+                    <td>${(totals.oldRevision/count).toFixed(1)}</td>
+                    <td>${(totals.newLesson/count).toFixed(1)}</td>
+                    <td>${(totals.recitation/count).toFixed(1)}</td>
+                    <td><strong>${totals.overall}</strong> / ${maxScore}</td>
+                    <td><span class="badge ${badgeClass}">${percentage}%</span></td>
+                </tr>
+            `;
+        });
+    }
+
+    /* ================= 3. إدارة المعلمين (الأدمن) ================= */
+    function addTeacher() {
+        const u = document.getElementById('newTeacherUser').value.trim();
+        const p = document.getElementById('newTeacherPass').value.trim();
+        const n = document.getElementById('newTeacherName').value.trim();
+        const c = document.getElementById('newTeacherClass').value;
+
+        if(!u || !p || !n) return showMessage('app-msg', 'يرجى تعبئة جميع بيانات المعلم', 'error');
+        if(teachersData.some(t => t.username === u)) return showMessage('app-msg', 'اسم المستخدم موجود مسبقاً', 'error');
+
+        teachersData.push({ id: Date.now(), username: u, password: p, name: n, assignedClass: c });
+        localStorage.setItem('teachersData', JSON.stringify(teachersData));
+        
+        renderTeachersTable();
+        showMessage('app-msg', 'تم إضافة المعلم بنجاح', 'success');
+        
+        document.getElementById('newTeacherUser').value = '';
+        document.getElementById('newTeacherPass').value = '';
+        document.getElementById('newTeacherName').value = '';
+    }
+
+    function renderTeachersTable() {
+        const tbody = document.querySelector('#teachersTable tbody');
+        tbody.innerHTML = '';
+        teachersData.forEach((t) => {
+            const deleteBtn = t.username === 'admin' ? 
+                '<span style="color:gray;">مدير أساسي</span>' : 
+                `<button class="action-btn btn-danger" style="padding:5px 10px; min-width:auto;" onclick="deleteTeacher(${t.id})">حذف</button>`;
+                
+            tbody.innerHTML += `
+                <tr>
+                    <td>${t.username}</td>
+                    <td>${t.password}</td>
+                    <td>${t.name}</td>
+                    <td>${t.assignedClass}</td>
+                    <td>${deleteBtn}</td>
+                </tr>
+            `;
+        });
+    }
+
+    function deleteTeacher(id) {
+        if(confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
+            teachersData = teachersData.filter(t => t.id !== id);
+            localStorage.setItem('teachersData', JSON.stringify(teachersData));
+            renderTeachersTable();
+            showMessage('app-msg', 'تم الحذف بنجاح', 'success');
         }
     }
 
-    // تصدير التقرير الشهري إلى ملف إكسل
+    /* ================= 4. تصدير البيانات لإكسل (مسموح للأدمن فقط) ================= */
+    function exportDailyToExcel() {
+        // حماية إضافية داخل الدالة لمنع أي استدعاء غير مصرح
+        if (currentTeacher.assignedClass !== 'الكل') {
+            return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
+        }
+
+        const recordsToExport = dailyRecords;
+
+        if (recordsToExport.length === 0) return showMessage('app-msg', 'لا توجد بيانات للتصدير', 'error');
+
+        const wb = XLSX.utils.book_new();
+        const classes = [...new Set(recordsToExport.map(r => r.className))];
+
+        classes.forEach(c => {
+            const classData = recordsToExport.filter(r => r.className === c).map(r => ({
+                "التاريخ": r.dateDisplay, "الفصل": r.className, "المعلم": r.teacherName,
+                "اسم الطالب": r.studentName, "الحضور (10)": r.attendance, "السلوك (10)": r.behavior,
+                "الماضي (20)": r.oldRevision, "الجديد (20)": r.newLesson, "التلاوة (20)": r.recitation,
+                "المجموع (80)": getDailyTotal(r)
+            }));
+            const ws = XLSX.utils.json_to_sheet(classData);
+            XLSX.utils.book_append_sheet(wb, ws, `فصل ${c}`);
+        });
+
+        XLSX.writeFile(wb, `درجات_يومي_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+
     function exportMonthlyReportToExcel() {
+        // حماية إضافية داخل الدالة لمنع أي استدعاء غير مصرح
+        if (currentTeacher.assignedClass !== 'الكل') {
+            return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
+        }
+
         const month = document.getElementById('reportMonth').value;
         const year = document.getElementById('reportYear').value;
+        const monthName = document.getElementById('reportMonth').options[month].text;
         
         const relevantRecords = dailyRecords.filter(r => {
-            if (currentTeacher.assignedClass === 'all') return true;
-            return r.className === currentTeacher.assignedClass;
+            const rDate = new Date(r.dateISO);
+            return rDate.getMonth() == month && rDate.getFullYear() == year;
         });
+
+        if (relevantRecords.length === 0) return showMessage('app-msg', 'لا توجد بيانات للتصدير في هذا الشهر', 'error');
 
         const allStudents = [...new Set(relevantRecords.map(r => r.studentName))];
         const monthlyData = [];
 
         allStudents.forEach(student => {
-            const report = calculateMonthlyReport(student, month, year);
-            if (report) {
-                monthlyData.push({
-                    "اسم الطالب": report.studentName,
-                    "أيام الحضور": report.daysAttended,
-                    "متوسط الحضور (10)": report.avgAttendance,
-                    "متوسط السلوك (10)": report.avgBehavior,
-                    "متوسط الماضي (20)": report.avgOld,
-                    "متوسط الجديد (20)": report.avgNew,
-                    "متوسط التلاوة (20)": report.avgRecitation,
-                    "المجموع الكلي": report.totalScore,
-                    "الدرجة العظمى": report.maxScore,
-                    "النسبة المئوية": report.percentage
-                });
-            }
+            const sRecords = relevantRecords.filter(r => r.studentName === student);
+            let totals = { attendance: 0, behavior: 0, oldRevision: 0, newLesson: 0, recitation: 0, overall: 0 };
+            sRecords.forEach(r => {
+                totals.attendance += r.attendance; totals.behavior += r.behavior;
+                totals.oldRevision += r.oldRevision; totals.newLesson += r.newLesson;
+                totals.recitation += r.recitation; totals.overall += getDailyTotal(r);
+            });
+            const count = sRecords.length;
+            monthlyData.push({
+                "اسم الطالب": student,
+                "أيام الحضور": count,
+                "متوسط الحضور (10)": (totals.attendance/count).toFixed(1),
+                "متوسط السلوك (10)": (totals.behavior/count).toFixed(1),
+                "متوسط الماضي (20)": (totals.oldRevision/count).toFixed(1),
+                "متوسط الجديد (20)": (totals.newLesson/count).toFixed(1),
+                "متوسط التلاوة (20)": (totals.recitation/count).toFixed(1),
+                "المجموع الكلي": totals.overall,
+                "الدرجة العظمى": count * 80,
+                "النسبة المئوية": ((totals.overall / (count * 80)) * 100).toFixed(1) + '%'
+            });
         });
-
-        if (monthlyData.length === 0) {
-            alert('لا توجد بيانات لتصديرها في الشهر المحدد');
-            return;
-        }
 
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(monthlyData);
         XLSX.utils.book_append_sheet(wb, ws, "التقرير الشهري");
-
-        const monthName = document.getElementById('reportMonth').options[month].text;
-        XLSX.writeFile(wb, `التقرير_الشهري_${monthName}_${year}.xlsx`);
+        XLSX.writeFile(wb, `تقرير_شهر_${monthName}_${year}.xlsx`);
     }
 </script>
 
