@@ -1042,7 +1042,7 @@
             XLSX.utils.book_append_sheet(wb, ws, c.replace(/[^a-zA-Z0-9أ-ي]/g, '_'));
         });
 
-        XLSX.writeFile(wb, `درجات_يومي_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        XLSX.writeFile(wb, `درجات_يومي.xlsx`);
     }
 
     function exportMonthlyReportToExcel() {
@@ -1090,7 +1090,7 @@
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(monthlyData);
         XLSX.utils.book_append_sheet(wb, ws, "التقرير الشهري");
-        XLSX.writeFile(wb, `تقرير_شهر_${monthName}_${year}.xlsx`);
+        XLSX.writeFile(wb, `تقرير_شهر_${monthName}.xlsx`);
     }
 </script>
 
