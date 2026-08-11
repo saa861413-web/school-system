@@ -212,7 +212,7 @@
     <div class="user-bar">
         <div class="user-info">
             أهلاً بك: <strong id="teacher-name-display"></strong> <br>
-            السنة: <span id="teacher-class-display"></span> | المركز: <span id="teacher-center-display"></span>
+            الصف والقسم: <span id="teacher-class-display"></span> | المركز: <span id="teacher-center-display"></span>
         </div>
         <button class="action-btn btn-danger" style="min-width: auto; padding: 6px 15px;" onclick="handleLogout()">تسجيل خروج</button>
     </div>
@@ -224,21 +224,27 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('daily-tab', event)">رصد الدرجات اليومي</button>
         <button class="tab-btn" onclick="switchTab('reports-tab', event)">التقارير التجميعية</button>
-        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22;" onclick="switchTab('admin-tab', event)">+ إدارة المعلمين والسحابة</button>
+        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22;" onclick="switchTab('admin-tab', event)">+ لوحة التحكم والإدارة</button>
     </div>
 
     <!-- 1. تبويب الرصد اليومي -->
     <div id="daily-tab" class="tab-content active">
         <div class="form-grid">
             <div class="form-group">
-                <label>السنة الدراسية:</label>
-                <select id="classSelect" onchange="updateRecitationTopicOptions()">
-                    <option value="أولى">أولى</option>
-                    <option value="تانيه">تانيه</option>
-                    <option value="تالتة">تالتة</option>
-                    <option value="رابعة">رابعة</option>
-                    <option value="خامسه">خامسه</option>
-                    <option value="أولي شرعي">أولي شرعي</option>
+                <label>الصف والقسم:</label>
+                <select id="classSelect" onchange="updateStudentListDropdown(); updateRecitationTopicOptions();">
+                    <option value="أولى - أولاد">أولى - أولاد</option>
+                    <option value="أولى - بنات">أولى - بنات</option>
+                    <option value="تانيه - أولاد">تانيه - أولاد</option>
+                    <option value="تانيه - بنات">تانيه - بنات</option>
+                    <option value="تالتة - أولاد">تالتة - أولاد</option>
+                    <option value="تالتة - بنات">تالتة - بنات</option>
+                    <option value="رابعة - أولاد">رابعة - أولاد</option>
+                    <option value="رابعة - بنات">رابعة - بنات</option>
+                    <option value="خامسه - أولاد">خامسه - أولاد</option>
+                    <option value="خامسه - بنات">خامسه - بنات</option>
+                    <option value="أولي شرعي - أولاد">أولي شرعي - أولاد</option>
+                    <option value="أولي شرعي - بنات">أولي شرعي - بنات</option>
                 </select>
             </div>
             <div class="form-group">
@@ -253,7 +259,9 @@
             </div>
             <div class="form-group" style="grid-column: span 2;">
                 <label>اسم الطالب:</label>
-                <input type="text" id="studentName" placeholder="اسم الطالب بالكامل">
+                <select id="studentNameSelect" style="font-weight: bold; color: var(--primary-color);">
+                    <!-- يتم تعبئتها ديناميكياً حسب الصف المختار -->
+                </select>
             </div>
             
             <!-- خيار مقرر التلاوة الخاص بسنة أولى فقط -->
@@ -283,7 +291,7 @@
             <table id="gradesTable">
                 <thead>
                     <tr>
-                        <th>التاريخ</th><th>اليوم</th><th>السنة</th><th>المعلم</th><th>اسم الطالب</th><th>مقرر التلاوة</th>
+                        <th>التاريخ</th><th>اليوم</th><th>الصف والقسم</th><th>المعلم</th><th>اسم الطالب</th><th>مقرر التلاوة</th>
                         <th>حضور</th><th>سلوك</th><th>ماضي</th><th>جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
                     </tr>
                 </thead>
@@ -330,29 +338,36 @@
         </div>
     </div>
 
-    <!-- 3. تبويب إدارة المعلمين والنسخ الاحتياطي -->
+    <!-- 3. تبويب لوحة التحكم والإدارة (للأدمن فقط) -->
     <div id="admin-tab" class="tab-content">
+        <!-- قسم إضافة معلم -->
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
-            <h3 style="margin-top: 0; font-size: 1.1em;">إضافة معلم جديد</h3>
+            <h3 style="margin-top: 0; font-size: 1.1em; color: var(--primary-color);">إضافة معلم جديد</h3>
             <div class="form-grid">
                 <div class="form-group">
                     <label>اسم المستخدم:</label>
-                    <input type="text" id="newTeacherUser" placeholder="اسم المستخدم للولوج">
+                    <input type="text" id="newTeacherUser" placeholder="اسم المستخدم">
                 </div>
                 <div class="form-group">
                     <label>كلمة المرور:</label>
                     <input type="text" id="newTeacherPass" placeholder="كلمة المرور">
                 </div>
                 <div class="form-group">
-                    <label>السنة:</label>
+                    <label>الصف والقسم:</label>
                     <select id="newTeacherClass">
-                        <option value="أولى">أولى</option>
-                        <option value="تانيه">تانيه</option>
-                        <option value="تالتة">تالتة</option>
-                        <option value="رابعة">رابعة</option>
-                        <option value="خامسه">خامسه</option>
-                        <option value="أولي شرعي">أولي شرعي</option>
-                        <option value="الكل">مدير (جميع السنوات)</option>
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
+                        <option value="تانيه - أولاد">تانيه - أولاد</option>
+                        <option value="تانيه - بنات">تانيه - بنات</option>
+                        <option value="تالتة - أولاد">تالتة - أولاد</option>
+                        <option value="تالتة - بنات">تالتة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسه - أولاد">خامسه - أولاد</option>
+                        <option value="خامسه - بنات">خامسه - بنات</option>
+                        <option value="أولي شرعي - أولاد">أولي شرعي - أولاد</option>
+                        <option value="أولي شرعي - بنات">أولي شرعي - بنات</option>
+                        <option value="الكل">مدير (جميع الصلاحيات)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -367,8 +382,38 @@
             <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم</button>
         </div>
 
+        <!-- قسم إضافة طالب -->
         <div style="background: #eef7fc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bce1f3;">
-            <h3 style="margin-top: 0; color: #2980b9; font-size: 1.1em;">النسخ الاحتياطي (ملف خارجي)</h3>
+            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">إضافة طالب جديد للقائمة</h3>
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>اسم الطالب:</label>
+                    <input type="text" id="newStudentName" placeholder="اسم الطالب بالكامل">
+                </div>
+                <div class="form-group">
+                    <label>الصف والقسم:</label>
+                    <select id="newStudentClass">
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
+                        <option value="تانيه - أولاد">تانيه - أولاد</option>
+                        <option value="تانيه - بنات">تانيه - بنات</option>
+                        <option value="تالتة - أولاد">تالتة - أولاد</option>
+                        <option value="تالتة - بنات">تالتة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسه - أولاد">خامسه - أولاد</option>
+                        <option value="خامسه - بنات">خامسه - بنات</option>
+                        <option value="أولي شرعي - أولاد">أولي شرعي - أولاد</option>
+                        <option value="أولي شرعي - بنات">أولي شرعي - بنات</option>
+                    </select>
+                </div>
+            </div>
+            <button class="action-btn btn-save" onclick="addStudent()">+ إضافة الطالب</button>
+        </div>
+
+        <!-- قسم النسخ الاحتياطي -->
+        <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffe0b2;">
+            <h3 style="margin-top: 0; color: #d35400; font-size: 1.1em;">النسخ الاحتياطي (ملف خارجي)</h3>
             <div class="btn-group">
                 <button class="action-btn btn-export" onclick="backupData()">تحميل نسخة احتياطية (JSON)</button>
                 <input type="file" id="restoreFile" accept=".json" style="display:none;" onchange="restoreData(event)">
@@ -376,10 +421,21 @@
             </div>
         </div>
 
-        <div class="table-responsive">
+        <h3 style="color: var(--primary-color);">إدارة المعلمين المسجلين</h3>
+        <div class="table-responsive" style="margin-bottom: 20px;">
             <table id="teachersTable">
                 <thead>
-                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>السنة</th><th>المركز</th><th>إجراء</th></tr>
+                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف والقسم</th><th>المركز</th><th>إجراء</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <h3 style="color: var(--primary-color);">إدارة الطلاب المسجلين</h3>
+        <div class="table-responsive">
+            <table id="studentsTable">
+                <thead>
+                    <tr><th>اسم الطالب</th><th>الصف والقسم</th><th>إجراء</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -411,16 +467,173 @@
         console.warn("حدث خطأ أثناء الاتصال بـ Firebase، يعمل النظام على الذاكرة المحلية.", e);
     }
 
-    /* ================= البيانات والمتغيرات ================= */
+    /* ================= البيانات الافتراضية للطلاب (حسب القائمة المرسلة) ================= */
+    let defaultStudents = [
+        // الصف الأول - بنات
+        { id: "s1", name: "نجلاء عيد محمود عبدالسميع", className: "أولى - بنات" },
+        { id: "s2", name: "تسنيم محمد أحمد ياسين", className: "أولى - بنات" },
+        { id: "s3", name: "فريدة سيد أحمد سيد", className: "أولى - بنات" },
+        { id: "s4", name: "ريناد محمد عبدالله", className: "أولى - بنات" },
+        { id: "s5", name: "سلمى محمد عبدالله", className: "أولى - بنات" },
+        { id: "s6", name: "ريتاج حسين حمايد محمد", className: "أولى - بنات" },
+        { id: "s7", name: "فاطمه محمد بيدق", className: "أولى - بنات" },
+        { id: "s8", name: "منار عماد محمد", className: "أولى - بنات" },
+        { id: "s9", name: "هاجر عبدالله عطية", className: "أولى - بنات" },
+        { id: "s10", name: "اسراء عبدالله عطية", className: "أولى - بنات" },
+        { id: "s11", name: "مريم ايهاب", className: "أولى - بنات" },
+        { id: "s12", name: "ديما احمد مصطفى", className: "أولى - بنات" },
+        { id: "s13", name: "حنين احمد", className: "أولى - بنات" },
+        { id: "s14", name: "فاطمه عبدالعزيز", className: "أولى - بنات" },
+        { id: "s15", name: "ايمان ابراهيم", className: "أولى - بنات" },
+        { id: "s16", name: "ناهد رمضان", className: "أولى - بنات" },
+
+        // الصف الأول - أولاد
+        { id: "s17", name: "احمد علي", className: "أولى - أولاد" },
+        { id: "s18", name: "يوسف أحمد", className: "أولى - أولاد" },
+        { id: "s19", name: "مؤمن ربيع", className: "أولى - أولاد" },
+        { id: "s20", name: "انس اسامه علي", className: "أولى - أولاد" },
+        { id: "s21", name: "محمد رضا عبدالرحمن", className: "أولى - أولاد" },
+        { id: "s22", name: "معاذ احمد محمد", className: "أولى - أولاد" },
+        { id: "s23", name: "احمد السيد احمد", className: "أولى - أولاد" },
+        { id: "s24", name: "محمود عزت", className: "أولى - أولاد" },
+        { id: "s25", name: "وائل خالد محمد", className: "أولى - أولاد" },
+        { id: "s26", name: "محمد احمد محي", className: "أولى - أولاد" },
+        { id: "s27", name: "مصطفى السيد علي", className: "أولى - أولاد" },
+        { id: "s28", name: "حمزه أكرم عبدالسلام", className: "أولى - أولاد" },
+        { id: "s29", name: "مروان السيد احمد", className: "أولى - أولاد" },
+        { id: "s30", name: "محمد السيد احمد", className: "أولى - أولاد" },
+        { id: "s31", name: "عمر اسامه مصطفى", className: "أولى - أولاد" },
+        { id: "s32", name: "احمد محمود عبدالناصر", className: "أولى - أولاد" },
+        { id: "s33", name: "مالك احمد مدحت", className: "أولى - أولاد" },
+        { id: "s34", name: "عمر عبدالرحمن محي", className: "أولى - أولاد" },
+        { id: "s35", name: "معاذ احمد حسين", className: "أولى - أولاد" },
+        { id: "s36", name: "ادم احمد محي", className: "أولى - أولاد" },
+        { id: "s37", name: "محمد حسين حمايد", className: "أولى - أولاد" },
+        { id: "s38", name: "مالك اسامه علي", className: "أولى - أولاد" },
+
+        // الصف الثاني - أولاد
+        { id: "s39", name: "مالك مروان خيري", className: "تانيه - أولاد" },
+        { id: "s40", name: "محمد عزت", className: "تانيه - أولاد" },
+        { id: "s41", name: "ادم اسلام احمد", className: "تانيه - أولاد" },
+        { id: "s42", name: "عمار ياسر جمال", className: "تانيه - أولاد" },
+        { id: "s43", name: "احمد طه", className: "تانيه - أولاد" },
+        { id: "s44", name: "علي ابراهيم", className: "تانيه - أولاد" },
+        { id: "s45", name: "محمود مصطفى محمود", className: "تانيه - أولاد" },
+        { id: "s46", name: "اياد ايمن عبدالتواب", className: "تانيه - أولاد" },
+        { id: "s47", name: "عمار سمير احمد", className: "تانيه - أولاد" },
+        { id: "s48", name: "احمد محمد احمد", className: "تانيه - أولاد" },
+        { id: "s49", name: "انس اكرم", className: "تانيه - أولاد" },
+        { id: "s50", name: "ياسين محمد احمد", className: "تانيه - أولاد" },
+        { id: "s51", name: "احمد سيد احمد", className: "تانيه - أولاد" },
+        { id: "s52", name: "ياسين ايهاب", className: "تانيه - أولاد" },
+        { id: "s53", name: "مالك عبدالله الشامي", className: "تانيه - أولاد" },
+
+        // الصف الثاني - بنات
+        { id: "s54", name: "زينة حسين", className: "تانيه - بنات" },
+        { id: "s55", name: "حور اشرف زينهم", className: "تانيه - بنات" },
+        { id: "s56", name: "مكه محمد عادل", className: "تانيه - بنات" },
+        { id: "s57", name: "ماريا مصطفى محمود", className: "تانيه - بنات" },
+        { id: "s58", name: "فاطمه احمد محمود", className: "تانيه - بنات" },
+        { id: "s59", name: "ام كلثوم علي علي", className: "تانيه - بنات" },
+        { id: "s60", name: "ساندي احمد بيومي", className: "تانيه - بنات" },
+        { id: "s61", name: "امل ابراهيم محمد", className: "تانيه - بنات" },
+        { id: "s62", name: "اسماء جمال عبدالله", className: "تانيه - بنات" },
+        { id: "s63", name: "رؤى صيام بهي الدين", className: "تانيه - بنات" },
+        { id: "s64", name: "لينا محمود فايز", className: "تانيه - بنات" },
+        { id: "s65", name: "هبه حسني طه", className: "تانيه - بنات" },
+        { id: "s66", name: "مكه محمد علي", className: "تانيه - بنات" },
+        { id: "s67", name: "هنا احمد مصطفى", className: "تانيه - بنات" },
+        { id: "s68", name: "فريده خالد", className: "تانيه - بنات" },
+
+        // الصف الثالث - أولاد
+        { id: "s69", name: "ياسين محمد محسن", className: "تالتة - أولاد" },
+        { id: "s70", name: "عمرو سيد جلال", className: "تالتة - أولاد" },
+        { id: "s71", name: "يوسف شريف", className: "تالتة - أولاد" },
+        { id: "s72", name: "ادم محمد شعبان", className: "تالتة - أولاد" },
+        { id: "s73", name: "علي طارق", className: "تالتة - أولاد" },
+        { id: "s74", name: "عطية محمد رمضان", className: "تالتة - أولاد" },
+        { id: "s75", name: "ياسين عيد احمد", className: "تالتة - أولاد" },
+        { id: "s76", name: "يحى عيد احمد", className: "تالتة - أولاد" },
+        { id: "s77", name: "ياسين احمد ابراهيم", className: "تالتة - أولاد" },
+
+        // الصف الثالث - بنات
+        { id: "s78", name: "يسر احمد ابراهيم", className: "تالتة - بنات" },
+        { id: "s79", name: "ايمان محمدين", className: "تالتة - بنات" },
+        { id: "s80", name: "ياسمين رضا", className: "تالتة - بنات" },
+        { id: "s81", name: "ردينا عادل", className: "تالتة - بنات" },
+        { id: "s82", name: "ملك احمد علي", className: "تالتة - بنات" },
+        { id: "s83", name: "احسان محمد علي", className: "تالتة - بنات" },
+        { id: "s84", name: "لبنى محمود ياسين", className: "تالتة - بنات" },
+        { id: "s85", name: "رودينا ايهاب", className: "تالتة - بنات" },
+        { id: "s86", name: "حنين تيسير", className: "تالتة - بنات" },
+        { id: "s87", name: "خديجه خالد", className: "تالتة - بنات" },
+        { id: "s88", name: "خلود عيد احمد", className: "تالتة - بنات" },
+        { id: "s89", name: "منة السيد", className: "تالتة - بنات" },
+        { id: "s90", name: "سهيله السيد احمد", className: "تالتة - بنات" },
+        { id: "s91", name: "مريم محمد عادل", className: "تالتة - بنات" },
+        { id: "s92", name: "اسيا عبدالعزيز", className: "تالتة - بنات" },
+        { id: "s93", name: "دينا طلعت", className: "تالتة - بنات" },
+        { id: "s94", name: "حبيبه حماده", className: "تالتة - بنات" },
+        { id: "s95", name: "هاجر احمد علي", className: "تالتة - بنات" },
+        { id: "s96", name: "شهد حماده", className: "تالتة - بنات" },
+        { id: "s97", name: "لمياء احمد محمود", className: "تالتة - بنات" },
+        { id: "s98", name: "شهد حسن رسمي", className: "تالتة - بنات" },
+        { id: "s99", name: "ريتال احمد مدحت", className: "تالتة - بنات" },
+        { id: "s100", name: "سمر السيد", className: "تالتة - بنات" },
+
+        // الصف الرابع - بنات
+        { id: "s101", name: "فرح عصام", className: "رابعة - بنات" },
+        { id: "s102", name: "يارا سامح", className: "رابعة - بنات" },
+        { id: "s103", name: "الاء محمود", className: "رابعة - بنات" },
+        { id: "s104", name: "ساره عادل", className: "رابعة - بنات" },
+        { id: "s105", name: "حور شريف", className: "رابعة - بنات" },
+        { id: "s106", name: "مودة ابراهيم", className: "رابعة - بنات" },
+        { id: "s107", name: "مريم صبحي", className: "رابعة - بنات" },
+
+        // الصف الرابع - أولاد
+        { id: "s108", name: "محمد عادل", className: "رابعة - أولاد" },
+        { id: "s109", name: "انس محمود", className: "رابعة - أولاد" },
+        { id: "s110", name: "يسري محمد علام", className: "رابعة - أولاد" },
+
+        // الصف الخامس - أولاد
+        { id: "s111", name: "مصطفى محمد البنان", className: "خامسه - أولاد" },
+        { id: "s112", name: "يحيى عبدالله", className: "خامسه - أولاد" },
+        { id: "s113", name: "سيف شريف", className: "خامسه - أولاد" },
+        { id: "s114", name: "ادم صيام", className: "خامسه - أولاد" },
+        { id: "s115", name: "ادم سعيد سعيد", className: "خامسه - أولاد" },
+        { id: "s116", name: "حمزه محمد محسن", className: "خامسه - أولاد" },
+        { id: "s117", name: "كريم احمد", className: "خامسه - أولاد" },
+
+        // الصف الخامس - بنات
+        { id: "s118", name: "سما شريف سيد", className: "خامسه - بنات" },
+        { id: "s119", name: "ساره حسن", className: "خامسه - بنات" },
+
+        // الصف الاول الشرعي - بنات
+        { id: "s120", name: "ملك صلاح", className: "أولي شرعي - بنات" },
+        { id: "s121", name: "بسمله محمد ابراهيم", className: "أولي شرعي - بنات" },
+        { id: "s122", name: "جودي سمير", className: "أولي شرعي - بنات" },
+        { id: "s123", name: "زينه محمد رمضان", className: "أولي شرعي - بنات" },
+        { id: "s124", name: "كريمان محمود", className: "أولي شرعي - بنات" },
+        { id: "s125", name: "ليلى محمد", className: "أولي شرعي - بنات" },
+        { id: "s126", name: "دعاء مختار", className: "أولي شرعي - بنات" },
+        { id: "s127", name: "جنى سمير", className: "أولي شرعي - بنات" },
+        { id: "s128", name: "اسماء قطب", className: "أولي شرعي - بنات" },
+
+        // الصف الاول الشرعي - أولاد
+        { id: "s129", name: "عبدالرحمن محمد محسن", className: "أولي شرعي - أولاد" },
+        { id: "s130", name: "يوسف رضا", className: "أولي شرعي - أولاد" }
+    ];
+
     let defaultTeachers = [
         { id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" }
     ];
     
     let teachersData = JSON.parse(localStorage.getItem('teachersData')) || defaultTeachers;
+    let studentsData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
     let dailyRecords = JSON.parse(localStorage.getItem('dailyRecords')) || [];
     let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 
-    // الخريطة الخاصة بمقررات تلاوة سنة أولى حسب الأيام
+    // مقررات تلاوة سنة أولى حسب الأيام
     const recitationTopicsMap = {
         "الأحد": "نص جزء عم الاول",
         "الاثنين": "نص جزء عم الثاني",
@@ -443,6 +656,24 @@
         document.getElementById('reportYear').value = new Date().getFullYear();
     };
 
+    /* ================= تحديث قائمة الطلاب في القائمة المنسدلة ================= */
+    function updateStudentListDropdown() {
+        const className = document.getElementById('classSelect').value;
+        const studentSelect = document.getElementById('studentNameSelect');
+        studentSelect.innerHTML = '';
+
+        const filteredStudents = studentsData.filter(s => s.className === className);
+
+        if (filteredStudents.length === 0) {
+            studentSelect.innerHTML = '<option value="">لا توجد أسماء طلاب مسجلة لهذا القسم</option>';
+            return;
+        }
+
+        filteredStudents.forEach(s => {
+            studentSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
+        });
+    }
+
     /* ================= تحديث خيارات التلاوة لسنة أولى فقط ================= */
     function updateRecitationTopicOptions() {
         const className = document.getElementById('classSelect').value;
@@ -450,8 +681,7 @@
         const topicGroup = document.getElementById('recitationTopicGroup');
         const topicSelect = document.getElementById('recitationTopic');
 
-        // تطبيق الخيار على سنة "أولى" فقط
-        if (className === 'أولى') {
+        if (className.includes('أولى')) {
             topicGroup.classList.remove('hidden');
             const topic = recitationTopicsMap[dayName] || "نص جزء عم الاول";
             topicSelect.innerHTML = `<option value="${topic}">${topic}</option>`;
@@ -474,6 +704,22 @@
                 if (currentTeacher && currentTeacher.username === 'admin') {
                     renderTeachersTable();
                 }
+            }
+        });
+
+        db.collection("students").onSnapshot((snapshot) => {
+            let cloudStudents = [];
+            snapshot.forEach(doc => cloudStudents.push({ id: doc.id, ...doc.data() }));
+            if (cloudStudents.length > 0) {
+                studentsData = cloudStudents;
+                localStorage.setItem('studentsData', JSON.stringify(studentsData));
+            } else if (studentsData.length > 0) {
+                // رفع البيانات الافتراضية للسحابة لأول مرة
+                studentsData.forEach(s => db.collection("students").doc(s.id).set(s));
+            }
+            updateStudentListDropdown();
+            if (currentTeacher && currentTeacher.username === 'admin') {
+                renderStudentsTable();
             }
         });
 
@@ -532,7 +778,7 @@
 
         document.getElementById('teacher-name-display').innerText = currentTeacher.username;
         document.getElementById('teacher-class-display').innerText = 
-            currentTeacher.assignedClass === 'الكل' ? 'جميع السنوات (إدارة)' : currentTeacher.assignedClass;
+            currentTeacher.assignedClass === 'الكل' ? 'جميع الأقسام (إدارة)' : currentTeacher.assignedClass;
         document.getElementById('teacher-center-display').innerText = currentTeacher.center || '-';
 
         const classSelect = document.getElementById('classSelect');
@@ -540,21 +786,22 @@
         const exportDailyBtn = document.getElementById('btn-export-daily');
         const exportMonthlyBtn = document.getElementById('btn-export-monthly');
 
-        // تقييد ظهور تبويب الإدارة وصلاحيات التصدير للأدمن فقط
         if (currentTeacher.username !== 'admin') {
             adminBtn.classList.add('hidden');
             exportDailyBtn.classList.add('hidden');
             exportMonthlyBtn.classList.add('hidden');
             classSelect.value = currentTeacher.assignedClass;
-            classSelect.disabled = true;
+            classSelect.disabled = true; // المعلم مقيد بصفه وقسمه فقط
         } else {
             adminBtn.classList.remove('hidden');
             exportDailyBtn.classList.remove('hidden');
             exportMonthlyBtn.classList.remove('hidden');
             classSelect.disabled = false;
             renderTeachersTable();
+            renderStudentsTable();
         }
 
+        updateStudentListDropdown();
         updateRecitationTopicOptions();
         renderDailyTable();
     }
@@ -566,7 +813,7 @@
         document.getElementById(tabId).classList.add('active');
     }
 
-    /* ================= 1. نظام الرصد اليومي والتحقق ================= */
+    /* ================= الرصد اليومي والتحقق ================= */
     function clampGrade(val) {
         let n = Number(val) || 0;
         if (n < 0) return 0;
@@ -582,13 +829,11 @@
     async function addGrade() {
         const className = document.getElementById('classSelect').value;
         const dayName = document.getElementById('daySelect').value;
-        const studentName = document.getElementById('studentName').value.trim();
-        
-        // ربط المقرر بسنة أولى فقط
-        const recitationTopic = (className === 'أولى') ? document.getElementById('recitationTopic').value : '-';
+        const studentName = document.getElementById('studentNameSelect').value;
+        const recitationTopic = className.includes('أولى') ? document.getElementById('recitationTopic').value : '-';
 
         if (!studentName) {
-            return showMessage('app-msg', 'يرجى كتابة اسم الطالب أولاً', 'error');
+            return showMessage('app-msg', 'يرجى اختيار اسم الطالب', 'error');
         }
 
         const record = {
@@ -618,7 +863,7 @@
 
         showMessage('app-msg', 'تم حفظ الدرجات بنجاح والمزامنة سحابياً', 'success');
         
-        ['studentName','attendance','behavior','oldRevision','newLesson','recitation', 'homework'].forEach(id => {
+        ['attendance','behavior','oldRevision','newLesson','recitation', 'homework'].forEach(id => {
             document.getElementById(id).value = '';
         });
     }
@@ -681,7 +926,7 @@
         });
     }
 
-    /* ================= 2. التقارير الشهرية ================= */
+    /* ================= التقارير الشهرية ================= */
     function renderMonthlyReport() {
         const month = document.getElementById('reportMonth').value;
         const year = document.getElementById('reportYear').value;
@@ -734,18 +979,69 @@
         });
     }
 
-    /* ================= 3. إدارة المعلمين والنسخ الاحتياطي ================= */
-    async function addTeacher() {
-        if (currentTeacher.username !== 'admin') {
-            return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
+    /* ================= إدارة الطلاب والمعلمين (الأدمن فقط) ================= */
+    async function addStudent() {
+        if (currentTeacher.username !== 'admin') return showMessage('app-msg', 'للكونترول والإدارة فقط', 'error');
+
+        const name = document.getElementById('newStudentName').value.trim();
+        const className = document.getElementById('newStudentClass').value;
+
+        if (!name) return showMessage('app-msg', 'يرجى كتابة اسم الطالب', 'error');
+
+        const newStudent = { id: 's_' + Date.now(), name, className };
+
+        if (useFirebase) {
+            await db.collection("students").doc(newStudent.id).set(newStudent);
+        } else {
+            studentsData.push(newStudent);
+            localStorage.setItem('studentsData', JSON.stringify(studentsData));
+            renderStudentsTable();
+            updateStudentListDropdown();
         }
+
+        showMessage('app-msg', 'تم إضافة الطالب بنجاح', 'success');
+        document.getElementById('newStudentName').value = '';
+    }
+
+    async function deleteStudent(id) {
+        if (currentTeacher.username !== 'admin') return;
+        if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
+            if (useFirebase) {
+                await db.collection("students").doc(id.toString()).delete();
+            } else {
+                studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
+                localStorage.setItem('studentsData', JSON.stringify(studentsData));
+                renderStudentsTable();
+                updateStudentListDropdown();
+            }
+            showMessage('app-msg', 'تم حذف الطالب بنجاح', 'success');
+        }
+    }
+
+    function renderStudentsTable() {
+        const tbody = document.querySelector('#studentsTable tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        studentsData.forEach(s => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${s.name}</td>
+                    <td>${s.className}</td>
+                    <td><button class="action-btn btn-danger" style="padding:4px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    async function addTeacher() {
+        if (currentTeacher.username !== 'admin') return;
 
         const u = document.getElementById('newTeacherUser').value.trim();
         const p = document.getElementById('newTeacherPass').value.trim();
         const c = document.getElementById('newTeacherClass').value;
         const cn = document.getElementById('newTeacherCenter').value;
 
-        if(!u || !p) return showMessage('app-msg', 'يرجى كتابة اسم المستخدم وكلمة المرور للمعلم', 'error');
+        if(!u || !p) return showMessage('app-msg', 'يرجى كتابة اسم المستخدم وكلمة المرور', 'error');
         if(teachersData.some(t => t.username === u)) return showMessage('app-msg', 'اسم المستخدم موجود مسبقاً', 'error');
 
         const newTeacher = { id: Date.now().toString(), username: u, password: p, assignedClass: c, center: cn };
@@ -758,8 +1054,7 @@
             renderTeachersTable();
         }
         
-        showMessage('app-msg', 'تم إضافة المعلم ومزامنته سحابياً مع باقي الأجهزة بنجاح', 'success');
-        
+        showMessage('app-msg', 'تم إضافة المعلم بنجاح', 'success');
         document.getElementById('newTeacherUser').value = '';
         document.getElementById('newTeacherPass').value = '';
     }
@@ -802,11 +1097,11 @@
     /* --- النسخ الاحتياطي واستعادة البيانات --- */
     function backupData() {
         if (currentTeacher.username !== 'admin') return;
-        const backupObj = { teachersData, dailyRecords };
+        const backupObj = { teachersData, studentsData, dailyRecords };
         const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `backup_grades_${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `backup_school_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
     }
 
@@ -818,33 +1113,35 @@
         reader.onload = async function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                if (data.teachersData && data.dailyRecords) {
+                if (data.teachersData && data.studentsData && data.dailyRecords) {
                     if (useFirebase) {
                         for (let t of data.teachersData) await db.collection("teachers").doc(t.id.toString()).set(t);
+                        for (let s of data.studentsData) await db.collection("students").doc(s.id.toString()).set(s);
                         for (let r of data.dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
                     } else {
                         teachersData = data.teachersData;
+                        studentsData = data.studentsData;
                         dailyRecords = data.dailyRecords;
                         localStorage.setItem('teachersData', JSON.stringify(teachersData));
+                        localStorage.setItem('studentsData', JSON.stringify(studentsData));
                         localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
                         renderDailyTable();
                         renderTeachersTable();
+                        renderStudentsTable();
+                        updateStudentListDropdown();
                     }
-                    showMessage('app-msg', 'تمت استعادة البيانات ومزامنتها بنجاح!', 'success');
+                    showMessage('app-msg', 'تمت استعادة البيانات بنجاح!', 'success');
                 }
             } catch (err) {
-                showMessage('app-msg', 'حدث خطأ أثناء قراءة الملف', 'error');
+                showMessage('app-msg', 'خطأ في قراءة ملف النسخة الاحتياطية', 'error');
             }
         };
         reader.readAsText(file);
     }
 
-    /* ================= 4. تصدير البيانات لإكسل ================= */
+    /* ================= تصدير البيانات لإكسل ================= */
     function exportDailyToExcel() {
-        if (currentTeacher.username !== 'admin') {
-            return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
-        }
-
+        if (currentTeacher.username !== 'admin') return;
         if (dailyRecords.length === 0) return showMessage('app-msg', 'لا توجد بيانات للتصدير', 'error');
 
         const wb = XLSX.utils.book_new();
@@ -854,7 +1151,7 @@
             const classData = dailyRecords.filter(r => r.className === c).map(r => ({
                 "التاريخ": r.dateDisplay,
                 "اليوم": r.dayName || '-',
-                "السنة": r.className,
+                "الصف والقسم": r.className,
                 "المعلم": r.teacherName,
                 "اسم الطالب": r.studentName,
                 "مقرر التلاوة": r.recitationTopic || '-',
@@ -867,16 +1164,14 @@
                 "المجموع (60)": getDailyTotal(r)
             }));
             const ws = XLSX.utils.json_to_sheet(classData);
-            XLSX.utils.book_append_sheet(wb, ws, `سنة ${c}`);
+            XLSX.utils.book_append_sheet(wb, ws, c.replace(/[^a-zA-Z0-9أ-ي]/g, '_'));
         });
 
         XLSX.writeFile(wb, `درجات_يومي_${new Date().toISOString().slice(0, 10)}.xlsx`);
     }
 
     function exportMonthlyReportToExcel() {
-        if (currentTeacher.username !== 'admin') {
-            return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
-        }
+        if (currentTeacher.username !== 'admin') return;
 
         const month = document.getElementById('reportMonth').value;
         const year = document.getElementById('reportYear').value;
