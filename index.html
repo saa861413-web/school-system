@@ -198,7 +198,7 @@
     <h2 style="margin-bottom: 15px; color: var(--primary-color);">تسجيل الدخول</h2>
     <div id="login-msg" class="toast-msg"></div>
     <div class="form-group" style="margin-bottom: 12px;">
-        <input type="text" id="username" placeholder="اسم المستخدم">
+        <input type="text" id="username" placeholder="اسم المستخدم (مثال: admin)">
     </div>
     <div class="form-group" style="margin-bottom: 15px;">
         <input type="password" id="password" placeholder="كلمة المرور">
@@ -627,9 +627,9 @@
         { id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" }
     ];
     
-    let teachersData = JSON.parse(localStorage.getItem('teachersData')) || defaultTeachers;
-    let studentsData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
-    let dailyRecords = JSON.parse(localStorage.getItem('dailyRecords')) || [];
+    let teachersData = [];
+    let studentsData = [];
+    let dailyRecords = [];
     let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 
     // مقررات تلاوة الصف الأول حسب الأيام
@@ -641,11 +641,74 @@
         "الخميس": "نص جزء عم الاول"
     };
 
+    // دالة ترحيل البيانات القديمة وتحديث أسماء السنوات بدون مسح أي بيانات أو معلمين أو طلاب
+    function migrateOldData() {
+        let tData = JSON.parse(localStorage.getItem('teachersData')) || defaultTeachers;
+        let sData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
+        let rData = JSON.parse(localStorage.getItem('dailyRecords')) || [];
+
+        // التأكد من وجود حساب الأدمن الأساسي دائماً وعدم حذفه
+        if (!tData.some(t => t.username === 'admin')) {
+            tData.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
+        }
+
+        // خريطة لتحديث الأسماء القديمة (مثل أولى، ثانية) إلى الأسماء الرسمية الجديدة دون حذف أي شيء
+        const nameMapping = {
+            "أولى": "الصف الأول - أولاد",
+            "اولى": "الصف الأول - أولاد",
+            "أولي": "الصف الأول - أولاد",
+            "اولي": "الصف الأول - أولاد",
+            "ثانية": "الصف الثاني - أولاد",
+            "ثالثة": "الصف الثالث - أولاد",
+            "رابعة": "الصف الرابع - أولاد",
+            "خامسة": "الصف الخامس - أولاد"
+        };
+
+        // تحديث صف المعلمين (مثل يسري ليطابق الصف الجديد وتظهر أسمائه فوراً)
+        tData = tData.map(t => {
+            if (nameMapping[t.assignedClass]) {
+                t.assignedClass = nameMapping[t.assignedClass];
+            }
+            return t;
+        });
+
+        // تحديث صف الطلاب القديم إلى الصيغة الجديدة
+        sData = sData.map(s => {
+            if (nameMapping[s.className]) {
+                s.className = nameMapping[s.className];
+            }
+            return s;
+        });
+
+        // تحديث السجلات اليومية القديمة لتتوافق مع الأسماء الجديدة
+        rData = rData.map(r => {
+            if (nameMapping[r.className]) {
+                r.className = nameMapping[r.className];
+            }
+            return r;
+        });
+
+        localStorage.setItem('teachersData', JSON.stringify(tData));
+        localStorage.setItem('studentsData', JSON.stringify(sData));
+        localStorage.setItem('dailyRecords', JSON.stringify(rData));
+
+        teachersData = tData;
+        studentsData = sData;
+        dailyRecords = rData;
+    }
+
     window.onload = function() {
+        migrateOldData();
         if (useFirebase) {
             syncDataFromCloud();
         }
         if (currentTeacher) {
+            // تحديث بيانات المعلم الحالي من القائمة المحدثة
+            const updatedTeacher = teachersData.find(t => t.username === currentTeacher.username);
+            if (updatedTeacher) {
+                currentTeacher = updatedTeacher;
+                localStorage.setItem('currentTeacher', JSON.stringify(currentTeacher));
+            }
             showAppScreen();
         } else {
             showLoginScreen();
@@ -694,6 +757,10 @@
             let cloudTeachers = [];
             snapshot.forEach(doc => cloudTeachers.push({ id: doc.id, ...doc.data() }));
             if (cloudTeachers.length > 0) {
+                // الحفاظ على الأدمن والتأكد من عدم مسحه
+                if (!cloudTeachers.some(t => t.username === 'admin')) {
+                    cloudTeachers.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
+                }
                 teachersData = cloudTeachers;
                 localStorage.setItem('teachersData', JSON.stringify(teachersData));
                 if (currentTeacher && currentTeacher.username === 'admin') {
@@ -708,8 +775,6 @@
             if (cloudStudents.length > 0) {
                 studentsData = cloudStudents;
                 localStorage.setItem('studentsData', JSON.stringify(studentsData));
-            } else if (studentsData.length > 0) {
-                studentsData.forEach(s => db.collection("students").doc(s.id).set(s));
             }
             updateStudentListDropdown();
             if (currentTeacher && currentTeacher.username === 'admin') {
@@ -1071,6 +1136,10 @@
 
     async function deleteTeacher(id) {
         if (currentTeacher.username !== 'admin') return;
+        const teacherToDelete = teachersData.find(t => t.id.toString() === id.toString());
+        if (teacherToDelete && teacherToDelete.username === 'admin') {
+            return showMessage('app-msg', 'لا يمكن حذف حساب المدير الأساسي', 'error');
+        }
         if(confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
             if (useFirebase) {
                 await db.collection("teachers").doc(id.toString()).delete();
