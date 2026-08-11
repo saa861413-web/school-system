@@ -212,7 +212,7 @@
     <div class="user-bar">
         <div class="user-info">
             أهلاً بك: <strong id="teacher-name-display"></strong> <br>
-            الصف والقسم: <span id="teacher-class-display"></span> | المركز: <span id="teacher-center-display"></span>
+            الصف: <span id="teacher-class-display"></span> | المركز: <span id="teacher-center-display"></span>
         </div>
         <button class="action-btn btn-danger" style="min-width: auto; padding: 6px 15px;" onclick="handleLogout()">تسجيل خروج</button>
     </div>
@@ -231,20 +231,13 @@
     <div id="daily-tab" class="tab-content active">
         <div class="form-grid">
             <div class="form-group">
-                <label>الصف والقسم:</label>
+                <label>الصف:</label>
                 <select id="classSelect" onchange="updateStudentListDropdown(); updateRecitationTopicOptions();">
-                    <option value="الصف الأول - أولاد">الصف الأول - أولاد</option>
-                    <option value="الصف الأول - بنات">الصف الأول - بنات</option>
-                    <option value="الصف الثاني - أولاد">الصف الثاني - أولاد</option>
-                    <option value="الصف الثاني - بنات">الصف الثاني - بنات</option>
-                    <option value="الصف الثالث - أولاد">الصف الثالث - أولاد</option>
-                    <option value="الصف الثالث - بنات">الصف الثالث - بنات</option>
-                    <option value="الصف الرابع - أولاد">الصف الرابع - أولاد</option>
-                    <option value="الصف الرابع - بنات">الصف الرابع - بنات</option>
-                    <option value="الصف الخامس - أولاد">الصف الخامس - أولاد</option>
-                    <option value="الصف الخامس - بنات">الصف الخامس - بنات</option>
-                    <option value="الصف الأول الشرعي - أولاد">الصف الأول الشرعي - أولاد</option>
-                    <option value="الصف الأول الشرعي - بنات">الصف الأول الشرعي - بنات</option>
+                    <option value="أولى">أولى</option>
+                    <option value="ثانية">ثانية</option>
+                    <option value="ثالثة">ثالثة</option>
+                    <option value="رابعة">رابعة</option>
+                    <option value="خامسة">خامسة</option>
                 </select>
             </div>
             <div class="form-group">
@@ -291,7 +284,7 @@
             <table id="gradesTable">
                 <thead>
                     <tr>
-                        <th>التاريخ</th><th>اليوم</th><th>الصف والقسم</th><th>المعلم</th><th>اسم الطالب</th><th>مقرر التلاوة</th>
+                        <th>التاريخ</th><th>اليوم</th><th>الصف</th><th>المعلم</th><th>اسم الطالب</th><th>مقرر التلاوة</th>
                         <th>حضور</th><th>سلوك</th><th>ماضي</th><th>جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
                     </tr>
                 </thead>
@@ -353,20 +346,13 @@
                     <input type="text" id="newTeacherPass" placeholder="كلمة المرور">
                 </div>
                 <div class="form-group">
-                    <label>الصف والقسم:</label>
+                    <label>الصف:</label>
                     <select id="newTeacherClass">
-                        <option value="الصف الأول - أولاد">الصف الأول - أولاد</option>
-                        <option value="الصف الأول - بنات">الصف الأول - بنات</option>
-                        <option value="الصف الثاني - أولاد">الصف الثاني - أولاد</option>
-                        <option value="الصف الثاني - بنات">الصف الثاني - بنات</option>
-                        <option value="الصف الثالث - أولاد">الصف الثالث - أولاد</option>
-                        <option value="الصف الثالث - بنات">الصف الثالث - بنات</option>
-                        <option value="الصف الرابع - أولاد">الصف الرابع - أولاد</option>
-                        <option value="الصف الرابع - بنات">الصف الرابع - بنات</option>
-                        <option value="الصف الخامس - أولاد">الصف الخامس - أولاد</option>
-                        <option value="الصف الخامس - بنات">الصف الخامس - بنات</option>
-                        <option value="الصف الأول الشرعي - أولاد">الصف الأول الشرعي - أولاد</option>
-                        <option value="الصف الأول الشرعي - بنات">الصف الأول الشرعي - بنات</option>
+                        <option value="أولى">أولى</option>
+                        <option value="ثانية">ثانية</option>
+                        <option value="ثالثة">ثالثة</option>
+                        <option value="رابعة">رابعة</option>
+                        <option value="خامسة">خامسة</option>
                         <option value="الكل">مدير (جميع الصلاحيات)</option>
                     </select>
                 </div>
@@ -391,20 +377,13 @@
                     <input type="text" id="newStudentName" placeholder="اسم الطالب بالكامل">
                 </div>
                 <div class="form-group">
-                    <label>الصف والقسم:</label>
+                    <label>الصف:</label>
                     <select id="newStudentClass">
-                        <option value="الصف الأول - أولاد">الصف الأول - أولاد</option>
-                        <option value="الصف الأول - بنات">الصف الأول - بنات</option>
-                        <option value="الصف الثاني - أولاد">الصف الثاني - أولاد</option>
-                        <option value="الصف الثاني - بنات">الصف الثاني - بنات</option>
-                        <option value="الصف الثالث - أولاد">الصف الثالث - أولاد</option>
-                        <option value="الصف الثالث - بنات">الصف الثالث - بنات</option>
-                        <option value="الصف الرابع - أولاد">الصف الرابع - أولاد</option>
-                        <option value="الصف الرابع - بنات">الصف الرابع - بنات</option>
-                        <option value="الصف الخامس - أولاد">الصف الخامس - أولاد</option>
-                        <option value="الصف الخامس - بنات">الصف الخامس - بنات</option>
-                        <option value="الصف الأول الشرعي - أولاد">الصف الأول الشرعي - أولاد</option>
-                        <option value="الصف الأول الشرعي - بنات">الصف الأول الشرعي - بنات</option>
+                        <option value="أولى">أولى</option>
+                        <option value="ثانية">ثانية</option>
+                        <option value="ثالثة">ثالثة</option>
+                        <option value="رابعة">رابعة</option>
+                        <option value="خامسة">خامسة</option>
                     </select>
                 </div>
             </div>
@@ -425,7 +404,7 @@
         <div class="table-responsive" style="margin-bottom: 20px;">
             <table id="teachersTable">
                 <thead>
-                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف والقسم</th><th>المركز</th><th>إجراء</th></tr>
+                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف</th><th>المركز</th><th>إجراء</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -435,7 +414,7 @@
         <div class="table-responsive">
             <table id="studentsTable">
                 <thead>
-                    <tr><th>اسم الطالب</th><th>الصف والقسم</th><th>إجراء</th></tr>
+                    <tr><th>اسم الطالب</th><th>الصف</th><th>إجراء</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -466,161 +445,136 @@
         console.warn("الموقع يعمل على الذاكرة المحلية", e);
     }
 
-    /* ================= البيانات الافتراضية للطلاب بالأسماء الجديدة ================= */
+    /* ================= البيانات الافتراضية للطلاب بالأسماء الجديدة الموحدة ================= */
     let defaultStudents = [
-        // الصف الأول - بنات
-        { id: "s1", name: "نجلاء عيد محمود عبدالسميع", className: "الصف الأول - بنات" },
-        { id: "s2", name: "تسنيم محمد أحمد ياسين", className: "الصف الأول - بنات" },
-        { id: "s3", name: "فريدة سيد أحمد سيد", className: "الصف الأول - بنات" },
-        { id: "s4", name: "ريناد محمد عبدالله", className: "الصف الأول - بنات" },
-        { id: "s5", name: "سلمى محمد عبدالله", className: "الصف الأول - بنات" },
-        { id: "s6", name: "ريتاج حسين حمايد محمد", className: "الصف الأول - بنات" },
-        { id: "s7", name: "فاطمه محمد بيدق", className: "الصف الأول - بنات" },
-        { id: "s8", name: "منار عماد محمد", className: "الصف الأول - بنات" },
-        { id: "s9", name: "هاجر عبدالله عطية", className: "الصف الأول - بنات" },
-        { id: "s10", name: "اسراء عبدالله عطية", className: "الصف الأول - بنات" },
-        { id: "s11", name: "مريم ايهاب", className: "الصف الأول - بنات" },
-        { id: "s12", name: "ديما احمد مصطفى", className: "الصف الأول - بنات" },
-        { id: "s13", name: "حنين احمد", className: "الصف الأول - بنات" },
-        { id: "s14", name: "فاطمه عبدالعزيز", className: "الصف الأول - بنات" },
-        { id: "s15", name: "ايمان ابراهيم", className: "الصف الأول - بنات" },
-        { id: "s16", name: "ناهد رمضان", className: "الصف الأول - بنات" },
+        // أولى
+        { id: "s1", name: "نجلاء عيد محمود عبدالسميع", className: "أولى" },
+        { id: "s2", name: "تسنيم محمد أحمد ياسين", className: "أولى" },
+        { id: "s3", name: "فريدة سيد أحمد سيد", className: "أولى" },
+        { id: "s4", name: "ريناد محمد عبدالله", className: "أولى" },
+        { id: "s5", name: "سلمى محمد عبدالله", className: "أولى" },
+        { id: "s6", name: "ريتاج حسين حمايد محمد", className: "أولى" },
+        { id: "s7", name: "فاطمه محمد بيدق", className: "أولى" },
+        { id: "s8", name: "منار عماد محمد", className: "أولى" },
+        { id: "s9", name: "هاجر عبدالله عطية", className: "أولى" },
+        { id: "s10", name: "اسراء عبدالله عطية", className: "أولى" },
+        { id: "s11", name: "مريم ايهاب", className: "أولى" },
+        { id: "s12", name: "ديما احمد مصطفى", className: "أولى" },
+        { id: "s13", name: "حنين احمد", className: "أولى" },
+        { id: "s14", name: "فاطمه عبدالعزيز", className: "أولى" },
+        { id: "s15", name: "ايمان ابراهيم", className: "أولى" },
+        { id: "s16", name: "ناهد رمضان", className: "أولى" },
+        { id: "s17", name: "احمد علي", className: "أولى" },
+        { id: "s18", name: "يوسف أحمد", className: "أولى" },
+        { id: "s19", name: "مؤمن ربيع", className: "أولى" },
+        { id: "s20", name: "انس اسامه علي", className: "أولى" },
+        { id: "s21", name: "محمد رضا عبدالرحمن", className: "أولى" },
+        { id: "s22", name: "معاذ احمد محمد", className: "أولى" },
+        { id: "s23", name: "احمد السيد احمد", className: "أولى" },
+        { id: "s24", name: "محمود عزت", className: "أولى" },
+        { id: "s25", name: "وائل خالد محمد", className: "أولى" },
+        { id: "s26", name: "محمد احمد محي", className: "أولى" },
+        { id: "s27", name: "مصطفى السيد علي", className: "أولى" },
+        { id: "s28", name: "حمزه أكرم عبدالسلام", className: "أولى" },
+        { id: "s29", name: "مروان السيد احمد", className: "أولى" },
+        { id: "s30", name: "محمد السيد احمد", className: "أولى" },
+        { id: "s31", name: "عمر اسامه مصطفى", className: "أولى" },
+        { id: "s32", name: "احمد محمود عبدالناصر", className: "أولى" },
+        { id: "s33", name: "مالك احمد مدحت", className: "أولى" },
+        { id: "s34", name: "عمر عبدالرحمن محي", className: "أولى" },
+        { id: "s35", name: "معاذ احمد حسين", className: "أولى" },
+        { id: "s36", name: "ادم احمد محي", className: "أولى" },
+        { id: "s37", name: "محمد حسين حمايد", className: "أولى" },
+        { id: "s38", name: "مالك اسامه علي", className: "أولى" },
 
-        // الصف الأول - أولاد
-        { id: "s17", name: "احمد علي", className: "الصف الأول - أولاد" },
-        { id: "s18", name: "يوسف أحمد", className: "الصف الأول - أولاد" },
-        { id: "s19", name: "مؤمن ربيع", className: "الصف الأول - أولاد" },
-        { id: "s20", name: "انس اسامه علي", className: "الصف الأول - أولاد" },
-        { id: "s21", name: "محمد رضا عبدالرحمن", className: "الصف الأول - أولاد" },
-        { id: "s22", name: "معاذ احمد محمد", className: "الصف الأول - أولاد" },
-        { id: "s23", name: "احمد السيد احمد", className: "الصف الأول - أولاد" },
-        { id: "s24", name: "محمود عزت", className: "الصف الأول - أولاد" },
-        { id: "s25", name: "وائل خالد محمد", className: "الصف الأول - أولاد" },
-        { id: "s26", name: "محمد احمد محي", className: "الصف الأول - أولاد" },
-        { id: "s27", name: "مصطفى السيد علي", className: "الصف الأول - أولاد" },
-        { id: "s28", name: "حمزه أكرم عبدالسلام", className: "الصف الأول - أولاد" },
-        { id: "s29", name: "مروان السيد احمد", className: "الصف الأول - أولاد" },
-        { id: "s30", name: "محمد السيد احمد", className: "الصف الأول - أولاد" },
-        { id: "s31", name: "عمر اسامه مصطفى", className: "الصف الأول - أولاد" },
-        { id: "s32", name: "احمد محمود عبدالناصر", className: "الصف الأول - أولاد" },
-        { id: "s33", name: "مالك احمد مدحت", className: "الصف الأول - أولاد" },
-        { id: "s34", name: "عمر عبدالرحمن محي", className: "الصف الأول - أولاد" },
-        { id: "s35", name: "معاذ احمد حسين", className: "الصف الأول - أولاد" },
-        { id: "s36", name: "ادم احمد محي", className: "الصف الأول - أولاد" },
-        { id: "s37", name: "محمد حسين حمايد", className: "الصف الأول - أولاد" },
-        { id: "s38", name: "مالك اسامه علي", className: "الصف الأول - أولاد" },
+        // ثانية
+        { id: "s39", name: "مالك مروان خيري", className: "ثانية" },
+        { id: "s40", name: "محمد عزت", className: "ثانية" },
+        { id: "s41", name: "ادم اسلام احمد", className: "ثانية" },
+        { id: "s42", name: "عمار ياسر جمال", className: "ثانية" },
+        { id: "s43", name: "احمد طه", className: "ثانية" },
+        { id: "s44", name: "علي ابراهيم", className: "ثانية" },
+        { id: "s45", name: "محمود مصطفى محمود", className: "ثانية" },
+        { id: "s46", name: "اياد ايمن عبدالتواب", className: "ثانية" },
+        { id: "s47", name: "عمار سمير احمد", className: "ثانية" },
+        { id: "s48", name: "احمد محمد احمد", className: "ثانية" },
+        { id: "s49", name: "انس اكرم", className: "ثانية" },
+        { id: "s50", name: "ياسين محمد احمد", className: "ثانية" },
+        { id: "s51", name: "احمد سيد احمد", className: "ثانية" },
+        { id: "s52", name: "ياسين ايهاب", className: "ثانية" },
+        { id: "s53", name: "مالك عبدالله الشامي", className: "ثانية" },
+        { id: "s54", name: "زينة حسين", className: "ثانية" },
+        { id: "s55", name: "حور اشرف زينهم", className: "ثانية" },
+        { id: "s56", name: "مكه محمد عادل", className: "ثانية" },
+        { id: "s57", name: "ماريا مصطفى محمود", className: "ثانية" },
+        { id: "s58", name: "فاطمه احمد محمود", className: "ثانية" },
+        { id: "s59", name: "ام كلثوم علي علي", className: "ثانية" },
+        { id: "s60", name: "ساندي احمد بيومي", className: "ثانية" },
+        { id: "s61", name: "امل ابراهيم محمد", className: "ثانية" },
+        { id: "s62", name: "اسماء جمال عبدالله", className: "ثانية" },
+        { id: "s63", name: "رؤى صيام بهي الدين", className: "ثانية" },
+        { id: "s64", name: "لينا محمود فايز", className: "ثانية" },
+        { id: "s65", name: "هبه حسني طه", className: "ثانية" },
+        { id: "s66", name: "مكه محمد علي", className: "ثانية" },
+        { id: "s67", name: "هنا احمد مصطفى", className: "ثانية" },
+        { id: "s68", name: "فريده خالد", className: "ثانية" },
 
-        // الصف الثاني - أولاد
-        { id: "s39", name: "مالك مروان خيري", className: "الصف الثاني - أولاد" },
-        { id: "s40", name: "محمد عزت", className: "الصف الثاني - أولاد" },
-        { id: "s41", name: "ادم اسلام احمد", className: "الصف الثاني - أولاد" },
-        { id: "s42", name: "عمار ياسر جمال", className: "الصف الثاني - أولاد" },
-        { id: "s43", name: "احمد طه", className: "الصف الثاني - أولاد" },
-        { id: "s44", name: "علي ابراهيم", className: "الصف الثاني - أولاد" },
-        { id: "s45", name: "محمود مصطفى محمود", className: "الصف الثاني - أولاد" },
-        { id: "s46", name: "اياد ايمن عبدالتواب", className: "الصف الثاني - أولاد" },
-        { id: "s47", name: "عمار سمير احمد", className: "الصف الثاني - أولاد" },
-        { id: "s48", name: "احمد محمد احمد", className: "الصف الثاني - أولاد" },
-        { id: "s49", name: "انس اكرم", className: "الصف الثاني - أولاد" },
-        { id: "s50", name: "ياسين محمد احمد", className: "الصف الثاني - أولاد" },
-        { id: "s51", name: "احمد سيد احمد", className: "الصف الثاني - أولاد" },
-        { id: "s52", name: "ياسين ايهاب", className: "الصف الثاني - أولاد" },
-        { id: "s53", name: "مالك عبدالله الشامي", className: "الصف الثاني - أولاد" },
+        // ثالثة
+        { id: "s69", name: "ياسين محمد محسن", className: "ثالثة" },
+        { id: "s70", name: "عمرو سيد جلال", className: "ثالثة" },
+        { id: "s71", name: "يوسف شريف", className: "ثالثة" },
+        { id: "s72", name: "ادم محمد شعبان", className: "ثالثة" },
+        { id: "s73", name: "علي طارق", className: "ثالثة" },
+        { id: "s74", name: "عطية محمد رمضان", className: "ثالثة" },
+        { id: "s75", name: "ياسين عيد احمد", className: "ثالثة" },
+        { id: "s76", name: "يحى عيد احمد", className: "ثالثة" },
+        { id: "s77", name: "ياسين احمد ابراهيم", className: "ثالثة" },
+        { id: "s78", name: "يسر احمد ابراهيم", className: "ثالثة" },
+        { id: "s79", name: "ايمان محمدين", className: "ثالثة" },
+        { id: "s80", name: "ياسمين رضا", className: "ثالثة" },
+        { id: "s81", name: "ردينا عادل", className: "ثالثة" },
+        { id: "s82", name: "ملك احمد علي", className: "ثالثة" },
+        { id: "s83", name: "احسان محمد علي", className: "ثالثة" },
+        { id: "s84", name: "لبنى محمود ياسين", className: "ثالثة" },
+        { id: "s85", name: "رودينا ايهاب", className: "ثالثة" },
+        { id: "s86", name: "حنين تيسير", className: "ثالثة" },
+        { id: "s87", name: "خديجه خالد", className: "ثالثة" },
+        { id: "s88", name: "خلود عيد احمد", className: "ثالثة" },
+        { id: "s89", name: "منة السيد", className: "ثالثة" },
+        { id: "s90", name: "سهيله السيد احمد", className: "ثالثة" },
+        { id: "s91", name: "مريم محمد عادل", className: "ثالثة" },
+        { id: "s92", name: "اسيا عبدالعزيز", className: "ثالثة" },
+        { id: "s93", name: "دينا طلعت", className: "ثالثة" },
+        { id: "s94", name: "حبيبه حماده", className: "ثالثة" },
+        { id: "s95", name: "هاجر احمد علي", className: "ثالثة" },
+        { id: "s96", name: "شهد حماده", className: "ثالثة" },
+        { id: "s97", name: "لمياء احمد محمود", className: "ثالثة" },
+        { id: "s98", name: "شهد حسن رسمي", className: "ثالثة" },
+        { id: "s99", name: "ريتال احمد مدحت", className: "ثالثة" },
+        { id: "s100", name: "سمر السيد", className: "ثالثة" },
 
-        // الصف الثاني - بنات
-        { id: "s54", name: "زينة حسين", className: "الصف الثاني - بنات" },
-        { id: "s55", name: "حور اشرف زينهم", className: "الصف الثاني - بنات" },
-        { id: "s56", name: "مكه محمد عادل", className: "الصف الثاني - بنات" },
-        { id: "s57", name: "ماريا مصطفى محمود", className: "الصف الثاني - بنات" },
-        { id: "s58", name: "فاطمه احمد محمود", className: "الصف الثاني - بنات" },
-        { id: "s59", name: "ام كلثوم علي علي", className: "الصف الثاني - بنات" },
-        { id: "s60", name: "ساندي احمد بيومي", className: "الصف الثاني - بنات" },
-        { id: "s61", name: "امل ابراهيم محمد", className: "الصف الثاني - بنات" },
-        { id: "s62", name: "اسماء جمال عبدالله", className: "الصف الثاني - بنات" },
-        { id: "s63", name: "رؤى صيام بهي الدين", className: "الصف الثاني - بنات" },
-        { id: "s64", name: "لينا محمود فايز", className: "الصف الثاني - بنات" },
-        { id: "s65", name: "هبه حسني طه", className: "الصف الثاني - بنات" },
-        { id: "s66", name: "مكه محمد علي", className: "الصف الثاني - بنات" },
-        { id: "s67", name: "هنا احمد مصطفى", className: "الصف الثاني - بنات" },
-        { id: "s68", name: "فريده خالد", className: "الصف الثاني - بنات" },
+        // رابعة
+        { id: "s101", name: "فرح عصام", className: "رابعة" },
+        { id: "s102", name: "يارا سامح", className: "رابعة" },
+        { id: "s103", name: "الاء محمود", className: "رابعة" },
+        { id: "s104", name: "ساره عادل", className: "رابعة" },
+        { id: "s105", name: "حور شريف", className: "رابعة" },
+        { id: "s106", name: "مودة ابراهيم", className: "رابعة" },
+        { id: "s107", name: "مريم صبحي", className: "رابعة" },
+        { id: "s108", name: "محمد عادل", className: "رابعة" },
+        { id: "s109", name: "انس محمود", className: "رابعة" },
+        { id: "s110", name: "يسري محمد علام", className: "رابعة" },
 
-        // الصف الثالث - أولاد
-        { id: "s69", name: "ياسين محمد محسن", className: "الصف الثالث - أولاد" },
-        { id: "s70", name: "عمرو سيد جلال", className: "الصف الثالث - أولاد" },
-        { id: "s71", name: "يوسف شريف", className: "الصف الثالث - أولاد" },
-        { id: "s72", name: "ادم محمد شعبان", className: "الصف الثالث - أولاد" },
-        { id: "s73", name: "علي طارق", className: "الصف الثالث - أولاد" },
-        { id: "s74", name: "عطية محمد رمضان", className: "الصف الثالث - أولاد" },
-        { id: "s75", name: "ياسين عيد احمد", className: "الصف الثالث - أولاد" },
-        { id: "s76", name: "يحى عيد احمد", className: "الصف الثالث - أولاد" },
-        { id: "s77", name: "ياسين احمد ابراهيم", className: "الصف الثالث - أولاد" },
-
-        // الصف الثالث - بنات
-        { id: "s78", name: "يسر احمد ابراهيم", className: "الصف الثالث - بنات" },
-        { id: "s79", name: "ايمان محمدين", className: "الصف الثالث - بنات" },
-        { id: "s80", name: "ياسمين رضا", className: "الصف الثالث - بنات" },
-        { id: "s81", name: "ردينا عادل", className: "الصف الثالث - بنات" },
-        { id: "s82", name: "ملك احمد علي", className: "الصف الثالث - بنات" },
-        { id: "s83", name: "احسان محمد علي", className: "الصف الثالث - بنات" },
-        { id: "s84", name: "لبنى محمود ياسين", className: "الصف الثالث - بنات" },
-        { id: "s85", name: "رودينا ايهاب", className: "الصف الثالث - بنات" },
-        { id: "s86", name: "حنين تيسير", className: "الصف الثالث - بنات" },
-        { id: "s87", name: "خديجه خالد", className: "الصف الثالث - بنات" },
-        { id: "s88", name: "خلود عيد احمد", className: "الصف الثالث - بنات" },
-        { id: "s89", name: "منة السيد", className: "الصف الثالث - بنات" },
-        { id: "s90", name: "سهيله السيد احمد", className: "الصف الثالث - بنات" },
-        { id: "s91", name: "مريم محمد عادل", className: "الصف الثالث - بنات" },
-        { id: "s92", name: "اسيا عبدالعزيز", className: "الصف الثالث - بنات" },
-        { id: "s93", name: "دينا طلعت", className: "الصف الثالث - بنات" },
-        { id: "s94", name: "حبيبه حماده", className: "الصف الثالث - بنات" },
-        { id: "s95", name: "هاجر احمد علي", className: "الصف الثالث - بنات" },
-        { id: "s96", name: "شهد حماده", className: "الصف الثالث - بنات" },
-        { id: "s97", name: "لمياء احمد محمود", className: "الصف الثالث - بنات" },
-        { id: "s98", name: "شهد حسن رسمي", className: "الصف الثالث - بنات" },
-        { id: "s99", name: "ريتال احمد مدحت", className: "الصف الثالث - بنات" },
-        { id: "s100", name: "سمر السيد", className: "الصف الثالث - بنات" },
-
-        // الصف الرابع - بنات
-        { id: "s101", name: "فرح عصام", className: "الصف الرابع - بنات" },
-        { id: "s102", name: "يارا سامح", className: "الصف الرابع - بنات" },
-        { id: "s103", name: "الاء محمود", className: "الصف الرابع - بنات" },
-        { id: "s104", name: "ساره عادل", className: "الصف الرابع - بنات" },
-        { id: "s105", name: "حور شريف", className: "الصف الرابع - بنات" },
-        { id: "s106", name: "مودة ابراهيم", className: "الصف الرابع - بنات" },
-        { id: "s107", name: "مريم صبحي", className: "الصف الرابع - بنات" },
-
-        // الصف الرابع - أولاد
-        { id: "s108", name: "محمد عادل", className: "الصف الرابع - أولاد" },
-        { id: "s109", name: "انس محمود", className: "الصف الرابع - أولاد" },
-        { id: "s110", name: "يسري محمد علام", className: "الصف الرابع - أولاد" },
-
-        // الصف الخامس - أولاد
-        { id: "s111", name: "مصطفى محمد البنان", className: "الصف الخامس - أولاد" },
-        { id: "s112", name: "يحيى عبدالله", className: "الصف الخامس - أولاد" },
-        { id: "s113", name: "سيف شريف", className: "الصف الخامس - أولاد" },
-        { id: "s114", name: "ادم صيام", className: "الصف الخامس - أولاد" },
-        { id: "s115", name: "ادم سعيد سعيد", className: "الصف الخامس - أولاد" },
-        { id: "s116", name: "حمزه محمد محسن", className: "الصف الخامس - أولاد" },
-        { id: "s117", name: "كريم احمد", className: "الصف الخامس - أولاد" },
-
-        // الصف الخامس - بنات
-        { id: "s118", name: "سما شريف سيد", className: "الصف الخامس - بنات" },
-        { id: "s119", name: "ساره حسن", className: "الصف الخامس - بنات" },
-
-        // الصف الأول الشرعي - بنات
-        { id: "s120", name: "ملك صلاح", className: "الصف الأول الشرعي - بنات" },
-        { id: "s121", name: "بسمله محمد ابراهيم", className: "الصف الأول الشرعي - بنات" },
-        { id: "s122", name: "جودي سمير", className: "الصف الأول الشرعي - بنات" },
-        { id: "s123", name: "زينه محمد رمضان", className: "الصف الأول الشرعي - بنات" },
-        { id: "s124", name: "كريمان محمود", className: "الصف الأول الشرعي - بنات" },
-        { id: "s125", name: "ليلى محمد", className: "الصف الأول الشرعي - بنات" },
-        { id: "s126", name: "دعاء مختار", className: "الصف الأول الشرعي - بنات" },
-        { id: "s127", name: "جنى سمير", className: "الصف الأول الشرعي - بنات" },
-        { id: "s128", name: "اسماء قطب", className: "الصف الأول الشرعي - بنات" },
-
-        // الصف الأول الشرعي - أولاد
-        { id: "s129", name: "عبدالرحمن محمد محسن", className: "الصف الأول الشرعي - أولاد" },
-        { id: "s130", name: "يوسف رضا", className: "الصف الأول الشرعي - أولاد" }
+        // خامسة
+        { id: "s111", name: "مصطفى محمد البنان", className: "خامسة" },
+        { id: "s112", name: "يحيى عبدالله", className: "خامسة" },
+        { id: "s113", name: "سيف شريف", className: "خامسة" },
+        { id: "s114", name: "ادم صيام", className: "خامسة" },
+        { id: "s115", name: "ادم سعيد سعيد", className: "خامسة" },
+        { id: "s116", name: "حمزه محمد محسن", className: "خامسة" },
+        { id: "s117", name: "كريم احمد", className: "خامسة" },
+        { id: "s118", name: "سما شريف سيد", className: "خامسة" },
+        { id: "s119", name: "ساره حسن", className: "خامسة" }
     ];
 
     let defaultTeachers = [
@@ -641,7 +595,35 @@
         "الخميس": "نص جزء عم الاول"
     };
 
-    // دالة ترحيل البيانات القديمة وتحديث أسماء السنوات بدون مسح أي بيانات أو معلمين أو طلاب
+    /* خريطة التصحيح الشاملة لتوحيد مسمى الصفوف ودمج البيانات القديمة تلقائياً */
+    const nameMapping = {
+        "الصف الأول - أولاد": "أولى",
+        "الصف الأول - بنات": "أولى",
+        "الصف الأول الشرعي - أولاد": "أولى",
+        "الصف الأول الشرعي - بنات": "أولى",
+        "اولي شارعي": "أولى",
+        "أولى شرعي": "أولى",
+        "أولي": "أولى",
+        "اولي": "أولى",
+        "الصف الأول": "أولى",
+        
+        "الصف الثاني - أولاد": "ثانية",
+        "الصف الثاني - بنات": "ثانية",
+        "الصف الثالث - أولاد": "ثالثة",
+        "الصف الثالث - بنات": "ثالثة",
+        "الصف الرابع - أولاد": "رابعة",
+        "الصف الرابع - بنات": "رابعة",
+        "الصف الخامس - أولاد": "خامسة",
+        "الصف الخامس - بنات": "خامسة"
+    };
+
+    function applyDataMapping(item) {
+        if (item.className && nameMapping[item.className]) item.className = nameMapping[item.className];
+        if (item.assignedClass && nameMapping[item.assignedClass]) item.assignedClass = nameMapping[item.assignedClass];
+        return item;
+    }
+
+    // دالة ترحيل البيانات القديمة وتوحيد مسمى الصفوف بدون مسح أي بيانات أو معلمين أو طلاب
     function migrateOldData() {
         let tData = JSON.parse(localStorage.getItem('teachersData')) || defaultTeachers;
         let sData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
@@ -652,49 +634,13 @@
             tData.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
         }
 
-        // خريطة لتحديث الأسماء القديمة (مثل أولى، ثانية) إلى الأسماء الرسمية الجديدة دون حذف أي شيء
-        const nameMapping = {
-            "أولى": "الصف الأول - أولاد",
-            "اولى": "الصف الأول - أولاد",
-            "أولي": "الصف الأول - أولاد",
-            "اولي": "الصف الأول - أولاد",
-            "ثانية": "الصف الثاني - أولاد",
-            "ثالثة": "الصف الثالث - أولاد",
-            "رابعة": "الصف الرابع - أولاد",
-            "خامسة": "الصف الخامس - أولاد"
-        };
+        teachersData = tData.map(applyDataMapping);
+        studentsData = sData.map(applyDataMapping);
+        dailyRecords = rData.map(applyDataMapping);
 
-        // تحديث صف المعلمين (مثل يسري ليطابق الصف الجديد وتظهر أسمائه فوراً)
-        tData = tData.map(t => {
-            if (nameMapping[t.assignedClass]) {
-                t.assignedClass = nameMapping[t.assignedClass];
-            }
-            return t;
-        });
-
-        // تحديث صف الطلاب القديم إلى الصيغة الجديدة
-        sData = sData.map(s => {
-            if (nameMapping[s.className]) {
-                s.className = nameMapping[s.className];
-            }
-            return s;
-        });
-
-        // تحديث السجلات اليومية القديمة لتتوافق مع الأسماء الجديدة
-        rData = rData.map(r => {
-            if (nameMapping[r.className]) {
-                r.className = nameMapping[r.className];
-            }
-            return r;
-        });
-
-        localStorage.setItem('teachersData', JSON.stringify(tData));
-        localStorage.setItem('studentsData', JSON.stringify(sData));
-        localStorage.setItem('dailyRecords', JSON.stringify(rData));
-
-        teachersData = tData;
-        studentsData = sData;
-        dailyRecords = rData;
+        localStorage.setItem('teachersData', JSON.stringify(teachersData));
+        localStorage.setItem('studentsData', JSON.stringify(studentsData));
+        localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
     }
 
     window.onload = function() {
@@ -703,7 +649,7 @@
             syncDataFromCloud();
         }
         if (currentTeacher) {
-            // تحديث بيانات المعلم الحالي من القائمة المحدثة
+            currentTeacher = applyDataMapping(currentTeacher);
             const updatedTeacher = teachersData.find(t => t.username === currentTeacher.username);
             if (updatedTeacher) {
                 currentTeacher = updatedTeacher;
@@ -740,7 +686,7 @@
         const topicGroup = document.getElementById('recitationTopicGroup');
         const topicSelect = document.getElementById('recitationTopic');
 
-        if (className.includes('الصف الأول') && !className.includes('الشرعي')) {
+        if (className === 'أولى') {
             topicGroup.classList.remove('hidden');
             const topic = recitationTopicsMap[dayName] || "نص جزء عم الاول";
             topicSelect.innerHTML = `<option value="${topic}">${topic}</option>`;
@@ -755,9 +701,8 @@
 
         db.collection("teachers").onSnapshot((snapshot) => {
             let cloudTeachers = [];
-            snapshot.forEach(doc => cloudTeachers.push({ id: doc.id, ...doc.data() }));
+            snapshot.forEach(doc => cloudTeachers.push(applyDataMapping({ id: doc.id, ...doc.data() })));
             if (cloudTeachers.length > 0) {
-                // الحفاظ على الأدمن والتأكد من عدم مسحه
                 if (!cloudTeachers.some(t => t.username === 'admin')) {
                     cloudTeachers.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
                 }
@@ -771,7 +716,7 @@
 
         db.collection("students").onSnapshot((snapshot) => {
             let cloudStudents = [];
-            snapshot.forEach(doc => cloudStudents.push({ id: doc.id, ...doc.data() }));
+            snapshot.forEach(doc => cloudStudents.push(applyDataMapping({ id: doc.id, ...doc.data() })));
             if (cloudStudents.length > 0) {
                 studentsData = cloudStudents;
                 localStorage.setItem('studentsData', JSON.stringify(studentsData));
@@ -784,7 +729,7 @@
 
         db.collection("dailyRecords").onSnapshot((snapshot) => {
             let cloudRecords = [];
-            snapshot.forEach(doc => cloudRecords.push({ id: doc.id, ...doc.data() }));
+            snapshot.forEach(doc => cloudRecords.push(applyDataMapping({ id: doc.id, ...doc.data() })));
             dailyRecords = cloudRecords;
             localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
             renderDailyTable();
@@ -886,7 +831,7 @@
         const className = document.getElementById('classSelect').value;
         const dayName = document.getElementById('daySelect').value;
         const studentName = document.getElementById('studentNameSelect').value;
-        const recitationTopic = (className.includes('الصف الأول') && !className.includes('الشرعي')) ? document.getElementById('recitationTopic').value : '-';
+        const recitationTopic = (className === 'أولى') ? document.getElementById('recitationTopic').value : '-';
 
         if (!studentName) {
             return showMessage('app-msg', 'يرجى اختيار اسم الطالب', 'error');
@@ -1176,9 +1121,9 @@
                         for (let s of data.studentsData) await db.collection("students").doc(s.id.toString()).set(s);
                         for (let r of data.dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
                     } else {
-                        teachersData = data.teachersData;
-                        studentsData = data.studentsData;
-                        dailyRecords = data.dailyRecords;
+                        teachersData = data.teachersData.map(applyDataMapping);
+                        studentsData = data.studentsData.map(applyDataMapping);
+                        dailyRecords = data.dailyRecords.map(applyDataMapping);
                         localStorage.setItem('teachersData', JSON.stringify(teachersData));
                         localStorage.setItem('studentsData', JSON.stringify(studentsData));
                         localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
@@ -1207,7 +1152,7 @@
             const classData = dailyRecords.filter(r => r.className === c).map(r => ({
                 "التاريخ": r.dateDisplay,
                 "اليوم": r.dayName || '-',
-                "الصف والقسم": r.className,
+                "الصف": r.className,
                 "المعلم": r.teacherName,
                 "اسم الطالب": r.studentName,
                 "مقرر التلاوة": r.recitationTopic || '-',
