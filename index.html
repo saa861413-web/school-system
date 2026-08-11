@@ -224,7 +224,7 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('daily-tab', event)">رصد الدرجات اليومي</button>
         <button class="tab-btn" onclick="switchTab('reports-tab', event)">التقارير التجميعية</button>
-        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22;" onclick="switchTab('admin-tab', event)">+ إدارة المعلمين والسحابة</button>
+        <button class="tab-btn" id="admin-tab-btn" style="background-color: #e67e22;" onclick="switchTab('admin-tab', event)">+ إدارة المعلمين والسحابة</button>
     </div>
 
     <!-- 1. تبويب الرصد اليومي -->
@@ -471,7 +471,7 @@
             if (cloudTeachers.length > 0) {
                 teachersData = cloudTeachers;
                 localStorage.setItem('teachersData', JSON.stringify(teachersData));
-                if (currentTeacher && currentTeacher.username === 'admin') renderTeachersTable();
+                renderTeachersTable();
             }
         });
 
@@ -538,22 +538,23 @@
         const exportDailyBtn = document.getElementById('btn-export-daily');
         const exportMonthlyBtn = document.getElementById('btn-export-monthly');
 
+        // إتاحة تبويب إدارة المعلمين للجميع دون قيود
+        adminBtn.classList.remove('hidden');
+
         if (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') {
             classSelect.value = currentTeacher.assignedClass;
             classSelect.disabled = true;
-            adminBtn.classList.add('hidden');
             exportDailyBtn.classList.add('hidden');
             exportMonthlyBtn.classList.add('hidden');
         } else {
             classSelect.disabled = false;
-            adminBtn.classList.remove('hidden');
             exportDailyBtn.classList.remove('hidden');
             exportMonthlyBtn.classList.remove('hidden');
         }
 
         updateRecitationTopicOptions();
         renderDailyTable();
-        if(currentTeacher.username === 'admin') renderTeachersTable();
+        renderTeachersTable();
     }
 
     function switchTab(tabId, event) {
@@ -759,6 +760,7 @@
 
     function renderTeachersTable() {
         const tbody = document.querySelector('#teachersTable tbody');
+        if (!tbody) return;
         tbody.innerHTML = '';
         teachersData.forEach((t) => {
             const deleteBtn = t.username === 'admin' ? 
@@ -817,7 +819,7 @@
                         localStorage.setItem('teachersData', JSON.stringify(teachersData));
                         localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
                         renderDailyTable();
-                        if (currentTeacher.username === 'admin') renderTeachersTable();
+                        renderTeachersTable();
                     }
                     showMessage('app-msg', 'تمت استعادة البيانات ومزامنتها بنجاح!', 'success');
                 }
