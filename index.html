@@ -233,6 +233,7 @@
             <div class="form-group">
                 <label>الصف:</label>
                 <select id="classSelect" onchange="updateStudentListDropdown(); toggleRecitationInput();">
+                    <option value="أولى">أولى</option>
                     <option value="أولى شرعي">أولى شرعي</option>
                     <option value="ثانية">ثانية</option>
                     <option value="ثالثة">ثالثة</option>
@@ -257,7 +258,7 @@
                 </select>
             </div>
             
-            <!-- المقررات جميعها أصبحت حقول نصية حرة (مثل الملاحظات) -->
+            <!-- مقرر التلاوة يظهر لأولى شرعي فقط -->
             <div class="form-group" id="recitationTopicGroup" style="grid-column: span 2;">
                 <label style="color: var(--accent-color);">مقرر التلاوة (لأولى شرعي فقط):</label>
                 <input type="text" id="recitationTopic" placeholder="اكتب المقرر أو الملاحظة هنا..." style="border-color: var(--accent-color); font-weight: bold;">
@@ -359,6 +360,7 @@
                 <div class="form-group">
                     <label>الصف:</label>
                     <select id="newTeacherClass">
+                        <option value="أولى">أولى</option>
                         <option value="أولى شرعي">أولى شرعي</option>
                         <option value="ثانية">ثانية</option>
                         <option value="ثالثة">ثالثة</option>
@@ -390,6 +392,7 @@
                 <div class="form-group">
                     <label>الصف:</label>
                     <select id="newStudentClass">
+                        <option value="أولى">أولى</option>
                         <option value="أولى شرعي">أولى شرعي</option>
                         <option value="ثانية">ثانية</option>
                         <option value="ثالثة">ثالثة</option>
@@ -467,18 +470,18 @@
     let dailyRecords = [];
     let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 
-    /* خريطة التصحيح الشاملة لتوحيد مسمى الصفوف ودمج البيانات القديمة تلقائياً */
+    /* خريطة التصحيح وفصل "أولى" عن "أولى شرعي" بدقة */
     const nameMapping = {
-        "الصف الأول - أولاد": "أولى شرعي",
-        "الصف الأول - بنات": "أولى شرعي",
+        "اولي شارعي": "أولى شرعي",
         "الصف الأول الشرعي - أولاد": "أولى شرعي",
         "الصف الأول الشرعي - بنات": "أولى شرعي",
-        "اولي شارعي": "أولى شرعي",
-        "أولى شرعي": "أولى شرعي",
-        "أولي": "أولى شرعي",
-        "اولي": "أولى شرعي",
-        "الصف الأول": "أولى شرعي",
-        "أولى": "أولى شرعي",
+        
+        "الصف الأول - أولاد": "أولى",
+        "الصف الأول - بنات": "أولى",
+        "الصف الأول": "أولى",
+        "اولي": "أولى",
+        "أولي": "أولى",
+        "أولى": "أولى",
         
         "الصف الثاني - أولاد": "ثانية",
         "الصف الثاني - بنات": "ثانية",
@@ -501,8 +504,13 @@
         let sData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
         let rData = JSON.parse(localStorage.getItem('dailyRecords')) || [];
 
+        // التأكد دائماً من وجود حساب الأدمن وعدم حذفه أو تغييره
         if (!tData.some(t => t.username === 'admin')) {
             tData.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
+        } else {
+            let adminUser = tData.find(t => t.username === 'admin');
+            adminUser.assignedClass = "الكل";
+            adminUser.center = "الكل";
         }
 
         teachersData = tData.map(applyDataMapping);
@@ -551,7 +559,7 @@
         });
     }
 
-    // عرض أو إخفاء حقل مقرر التلاوة بناءً على الصف
+    // عرض حقل مقرر التلاوة فقط لأولى شرعي
     function toggleRecitationInput() {
         const className = document.getElementById('classSelect').value;
         const topicGroup = document.getElementById('recitationTopicGroup');
@@ -560,7 +568,7 @@
             topicGroup.classList.remove('hidden');
         } else {
             topicGroup.classList.add('hidden');
-            document.getElementById('recitationTopic').value = ''; // تفريغ الحقل
+            document.getElementById('recitationTopic').value = '';
         }
     }
 
@@ -570,15 +578,13 @@
         db.collection("teachers").onSnapshot((snapshot) => {
             let cloudTeachers = [];
             snapshot.forEach(doc => cloudTeachers.push(applyDataMapping({ id: doc.id, ...doc.data() })));
-            if (cloudTeachers.length > 0) {
-                if (!cloudTeachers.some(t => t.username === 'admin')) {
-                    cloudTeachers.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
-                }
-                teachersData = cloudTeachers;
-                localStorage.setItem('teachersData', JSON.stringify(teachersData));
-                if (currentTeacher && currentTeacher.username === 'admin') {
-                    renderTeachersTable();
-                }
+            if (!cloudTeachers.some(t => t.username === 'admin')) {
+                cloudTeachers.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
+            }
+            teachersData = cloudTeachers;
+            localStorage.setItem('teachersData', JSON.stringify(teachersData));
+            if (currentTeacher && currentTeacher.username === 'admin') {
+                renderTeachersTable();
             }
         });
 
@@ -733,7 +739,6 @@
 
         showMessage('app-msg', 'تم حفظ الدرجات بنجاح', 'success');
         
-        // تفريغ الحقول بعد الحفظ
         ['attendance','behavior','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic'].forEach(id => {
             if (document.getElementById(id)) {
                 document.getElementById(id).value = '';
