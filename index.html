@@ -163,7 +163,7 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        table { width: 100%; border-collapse: collapse; min-width: 850px; }
+        table { width: 100%; border-collapse: collapse; min-width: 950px; }
         th, td { border-bottom: 1px solid #eee; padding: 10px 8px; text-align: center; font-size: 0.85em; }
         th { background-color: #f8f9fa; color: #333; position: sticky; top: 0; }
         tr:hover { background-color: #f1f2f6; }
@@ -232,8 +232,8 @@
         <div class="form-grid">
             <div class="form-group">
                 <label>الصف:</label>
-                <select id="classSelect" onchange="updateStudentListDropdown(); updateRecitationTopicOptions();">
-                    <option value="أولى">أولى</option>
+                <select id="classSelect" onchange="updateStudentListDropdown(); toggleRecitationInput();">
+                    <option value="أولى شرعي">أولى شرعي</option>
                     <option value="ثانية">ثانية</option>
                     <option value="ثالثة">ثالثة</option>
                     <option value="رابعة">رابعة</option>
@@ -242,7 +242,7 @@
             </div>
             <div class="form-group">
                 <label>اليوم:</label>
-                <select id="daySelect" onchange="updateRecitationTopicOptions()">
+                <select id="daySelect">
                     <option value="الأحد">الأحد</option>
                     <option value="الاثنين">الاثنين</option>
                     <option value="الثلاثاء">الثلاثاء</option>
@@ -253,16 +253,26 @@
             <div class="form-group" style="grid-column: span 2;">
                 <label>اسم الطالب:</label>
                 <select id="studentNameSelect" style="font-weight: bold; color: var(--primary-color);">
-                    <!-- يتم تعبئتها ديناميكياً من قاعدة البيانات والسحابة -->
+                    <!-- يتم تعبئتها ديناميكياً -->
                 </select>
             </div>
             
-            <!-- خيار مقرر التلاوة الخاص بالصف الأول فقط -->
+            <!-- المقررات جميعها أصبحت حقول نصية حرة (مثل الملاحظات) -->
             <div class="form-group" id="recitationTopicGroup" style="grid-column: span 2;">
-                <label style="color: var(--accent-color);">مقرر تلاوة الصف الأول:</label>
-                <select id="recitationTopic" style="border-color: var(--accent-color); font-weight: bold;"></select>
+                <label style="color: var(--accent-color);">مقرر التلاوة (لأولى شرعي فقط):</label>
+                <input type="text" id="recitationTopic" placeholder="اكتب المقرر أو الملاحظة هنا..." style="border-color: var(--accent-color); font-weight: bold;">
             </div>
 
+            <div class="form-group" style="grid-column: span 2;">
+                <label>مقرر الماضي (تسميع):</label>
+                <input type="text" id="oldTopicText" placeholder="اكتب المقرر أو الملاحظة هنا...">
+            </div>
+            <div class="form-group" style="grid-column: span 2;">
+                <label>مقرر الجديد (حفظ):</label>
+                <input type="text" id="newTopicText" placeholder="اكتب المقرر أو الملاحظة هنا...">
+            </div>
+
+            <!-- الدرجات العددية -->
             <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10"></div>
             <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10"></div>
             <div class="form-group"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10"></div>
@@ -272,7 +282,7 @@
         </div>
 
         <div class="btn-group">
-            <button class="action-btn btn-save" onclick="addGrade()">حفظ درجات الطالب (من 60)</button>
+            <button class="action-btn btn-save" onclick="addGrade()">حفظ بيانات الطالب (من 60)</button>
             <button id="btn-export-daily" class="action-btn btn-export hidden" onclick="exportDailyToExcel()">تصدير إكسل (اليومي)</button>
         </div>
 
@@ -284,7 +294,8 @@
             <table id="gradesTable">
                 <thead>
                     <tr>
-                        <th>التاريخ</th><th>اليوم</th><th>الصف</th><th>المعلم</th><th>اسم الطالب</th><th>مقرر التلاوة</th>
+                        <th>اليوم</th><th>الصف</th><th>المعلم</th><th>اسم الطالب</th>
+                        <th>مقرر التلاوة</th><th>مقرر الماضي</th><th>مقرر الجديد</th>
                         <th>حضور</th><th>سلوك</th><th>ماضي</th><th>جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
                     </tr>
                 </thead>
@@ -348,7 +359,7 @@
                 <div class="form-group">
                     <label>الصف:</label>
                     <select id="newTeacherClass">
-                        <option value="أولى">أولى</option>
+                        <option value="أولى شرعي">أولى شرعي</option>
                         <option value="ثانية">ثانية</option>
                         <option value="ثالثة">ثالثة</option>
                         <option value="رابعة">رابعة</option>
@@ -368,9 +379,9 @@
             <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم</button>
         </div>
 
-        <!-- قسم إضافة طالب (يسجل مباشرة في السحابة) -->
+        <!-- قسم إضافة طالب -->
         <div style="background: #eef7fc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bce1f3;">
-            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">إضافة طالب جديد للسحابة</h3>
+            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">إضافة طالب جديد</h3>
             <div class="form-grid">
                 <div class="form-group" style="grid-column: span 2;">
                     <label>اسم الطالب:</label>
@@ -379,7 +390,7 @@
                 <div class="form-group">
                     <label>الصف:</label>
                     <select id="newStudentClass">
-                        <option value="أولى">أولى</option>
+                        <option value="أولى شرعي">أولى شرعي</option>
                         <option value="ثانية">ثانية</option>
                         <option value="ثالثة">ثالثة</option>
                         <option value="رابعة">رابعة</option>
@@ -456,26 +467,18 @@
     let dailyRecords = [];
     let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 
-    // مقررات تلاوة الصف الأول حسب الأيام
-    const recitationTopicsMap = {
-        "الأحد": "نص جزء عم الاول",
-        "الاثنين": "نص جزء عم الثاني",
-        "الثلاثاء": "نص جزء تبارك الاول",
-        "الأربعاء": "نص جزء تبارك الثاني",
-        "الخميس": "نص جزء عم الاول"
-    };
-
     /* خريطة التصحيح الشاملة لتوحيد مسمى الصفوف ودمج البيانات القديمة تلقائياً */
     const nameMapping = {
-        "الصف الأول - أولاد": "أولى",
-        "الصف الأول - بنات": "أولى",
-        "الصف الأول الشرعي - أولاد": "أولى",
-        "الصف الأول الشرعي - بنات": "أولى",
-        "اولي شارعي": "أولى",
-        "أولى شرعي": "أولى",
-        "أولي": "أولى",
-        "اولي": "أولى",
-        "الصف الأول": "أولى",
+        "الصف الأول - أولاد": "أولى شرعي",
+        "الصف الأول - بنات": "أولى شرعي",
+        "الصف الأول الشرعي - أولاد": "أولى شرعي",
+        "الصف الأول الشرعي - بنات": "أولى شرعي",
+        "اولي شارعي": "أولى شرعي",
+        "أولى شرعي": "أولى شرعي",
+        "أولي": "أولى شرعي",
+        "اولي": "أولى شرعي",
+        "الصف الأول": "أولى شرعي",
+        "أولى": "أولى شرعي",
         
         "الصف الثاني - أولاد": "ثانية",
         "الصف الثاني - بنات": "ثانية",
@@ -548,19 +551,16 @@
         });
     }
 
-    function updateRecitationTopicOptions() {
+    // عرض أو إخفاء حقل مقرر التلاوة بناءً على الصف
+    function toggleRecitationInput() {
         const className = document.getElementById('classSelect').value;
-        const dayName = document.getElementById('daySelect').value;
         const topicGroup = document.getElementById('recitationTopicGroup');
-        const topicSelect = document.getElementById('recitationTopic');
 
-        if (className === 'أولى') {
+        if (className === 'أولى شرعي') {
             topicGroup.classList.remove('hidden');
-            const topic = recitationTopicsMap[dayName] || "نص جزء عم الاول";
-            topicSelect.innerHTML = `<option value="${topic}">${topic}</option>`;
         } else {
             topicGroup.classList.add('hidden');
-            topicSelect.innerHTML = `<option value="">-</option>`;
+            document.getElementById('recitationTopic').value = ''; // تفريغ الحقل
         }
     }
 
@@ -670,7 +670,7 @@
         }
 
         updateStudentListDropdown();
-        updateRecitationTopicOptions();
+        toggleRecitationInput();
         renderDailyTable();
     }
 
@@ -697,7 +697,9 @@
         const className = document.getElementById('classSelect').value;
         const dayName = document.getElementById('daySelect').value;
         const studentName = document.getElementById('studentNameSelect').value;
-        const recitationTopic = (className === 'أولى') ? document.getElementById('recitationTopic').value : '-';
+        const recitationTopic = (className === 'أولى شرعي') ? document.getElementById('recitationTopic').value.trim() : '-';
+        const oldTopicText = document.getElementById('oldTopicText').value.trim();
+        const newTopicText = document.getElementById('newTopicText').value.trim();
 
         if (!studentName) {
             return showMessage('app-msg', 'يرجى اختيار اسم الطالب', 'error');
@@ -710,14 +712,15 @@
             dayName,
             studentName,
             recitationTopic,
+            oldTopicText,
+            newTopicText,
             attendance: clampGrade(document.getElementById('attendance').value),
             behavior: clampGrade(document.getElementById('behavior').value),
             oldRevision: clampGrade(document.getElementById('oldRevision').value),
             newLesson: clampGrade(document.getElementById('newLesson').value),
             recitation: clampGrade(document.getElementById('recitation').value),
             homework: clampGrade(document.getElementById('homework').value),
-            dateISO: new Date().toISOString().split('T')[0],
-            dateDisplay: new Date().toLocaleDateString('ar-EG')
+            dateISO: new Date().toISOString().split('T')[0]
         };
 
         if (useFirebase) {
@@ -730,8 +733,11 @@
 
         showMessage('app-msg', 'تم حفظ الدرجات بنجاح', 'success');
         
-        ['attendance','behavior','oldRevision','newLesson','recitation', 'homework'].forEach(id => {
-            document.getElementById(id).value = '';
+        // تفريغ الحقول بعد الحفظ
+        ['attendance','behavior','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic'].forEach(id => {
+            if (document.getElementById(id)) {
+                document.getElementById(id).value = '';
+            }
         });
     }
 
@@ -762,7 +768,7 @@
         });
 
         if (filteredRecords.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="14">لا توجد سجلات مطابقة</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="15">لا توجد سجلات مطابقة</td></tr>';
             return;
         }
 
@@ -774,12 +780,13 @@
 
             tbody.innerHTML += `
                 <tr>
-                    <td>${r.dateDisplay}</td>
                     <td><strong>${r.dayName || '-'}</strong></td>
                     <td>${r.className}</td>
                     <td>${r.teacherName}</td>
                     <td>${r.studentName}</td>
                     <td style="color:#2980b9; font-weight:bold;">${r.recitationTopic || '-'}</td>
+                    <td style="color:#27ae60;">${r.oldTopicText || '-'}</td>
+                    <td style="color:#e67e22;">${r.newTopicText || '-'}</td>
                     <td>${r.attendance}</td>
                     <td>${r.behavior}</td>
                     <td>${r.oldRevision}</td>
@@ -1016,12 +1023,13 @@
 
         classes.forEach(c => {
             const classData = dailyRecords.filter(r => r.className === c).map(r => ({
-                "التاريخ": r.dateDisplay,
                 "اليوم": r.dayName || '-',
                 "الصف": r.className,
                 "المعلم": r.teacherName,
                 "اسم الطالب": r.studentName,
                 "مقرر التلاوة": r.recitationTopic || '-',
+                "مقرر الماضي": r.oldTopicText || '-',
+                "مقرر الجديد": r.newTopicText || '-',
                 "الحضور (10)": r.attendance,
                 "السلوك (10)": r.behavior,
                 "الماضي (10)": r.oldRevision,
