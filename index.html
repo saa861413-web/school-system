@@ -232,7 +232,7 @@
         <div class="form-grid">
             <div class="form-group">
                 <label>الصف:</label>
-                <select id="classSelect" onchange="updateStudentListDropdown(); toggleRecitationInput();">
+                <select id="classSelect" onchange="updateStudentListDropdown();">
                     <option value="أولى">أولى</option>
                     <option value="أولى شرعي">أولى شرعي</option>
                     <option value="ثانية">ثانية</option>
@@ -258,9 +258,9 @@
                 </select>
             </div>
             
-            <!-- مقرر التلاوة يظهر لأولى شرعي فقط -->
-            <div class="form-group" id="recitationTopicGroup" style="grid-column: span 2;">
-                <label style="color: var(--accent-color);">مقرر التلاوة (لأولى شرعي فقط):</label>
+            <!-- مقرر التلاوة متاح لجميع السنوات -->
+            <div class="form-group" style="grid-column: span 2;">
+                <label style="color: var(--accent-color);">مقرر التلاوة:</label>
                 <input type="text" id="recitationTopic" placeholder="اكتب المقرر أو الملاحظة هنا..." style="border-color: var(--accent-color); font-weight: bold;">
             </div>
 
@@ -504,7 +504,6 @@
         let sData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
         let rData = JSON.parse(localStorage.getItem('dailyRecords')) || [];
 
-        // التأكد دائماً من وجود حساب الأدمن وعدم حذفه أو تغييره
         if (!tData.some(t => t.username === 'admin')) {
             tData.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
         } else {
@@ -557,19 +556,6 @@
         filteredStudents.forEach(s => {
             studentSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
         });
-    }
-
-    // عرض حقل مقرر التلاوة فقط لأولى شرعي
-    function toggleRecitationInput() {
-        const className = document.getElementById('classSelect').value;
-        const topicGroup = document.getElementById('recitationTopicGroup');
-
-        if (className === 'أولى شرعي') {
-            topicGroup.classList.remove('hidden');
-        } else {
-            topicGroup.classList.add('hidden');
-            document.getElementById('recitationTopic').value = '';
-        }
     }
 
     function syncDataFromCloud() {
@@ -676,7 +662,6 @@
         }
 
         updateStudentListDropdown();
-        toggleRecitationInput();
         renderDailyTable();
     }
 
@@ -703,7 +688,7 @@
         const className = document.getElementById('classSelect').value;
         const dayName = document.getElementById('daySelect').value;
         const studentName = document.getElementById('studentNameSelect').value;
-        const recitationTopic = (className === 'أولى شرعي') ? document.getElementById('recitationTopic').value.trim() : '-';
+        const recitationTopic = document.getElementById('recitationTopic').value.trim() || '-';
         const oldTopicText = document.getElementById('oldTopicText').value.trim();
         const newTopicText = document.getElementById('newTopicText').value.trim();
 
