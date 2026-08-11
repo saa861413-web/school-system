@@ -224,7 +224,7 @@
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('daily-tab', event)">رصد الدرجات اليومي</button>
         <button class="tab-btn" onclick="switchTab('reports-tab', event)">التقارير التجميعية</button>
-        <button class="tab-btn" id="admin-tab-btn" style="background-color: #e67e22;" onclick="switchTab('admin-tab', event)">+ إدارة المعلمين والسحابة</button>
+        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22;" onclick="switchTab('admin-tab', event)">+ إدارة المعلمين والسحابة</button>
     </div>
 
     <!-- 1. تبويب الرصد اليومي -->
@@ -471,7 +471,9 @@
             if (cloudTeachers.length > 0) {
                 teachersData = cloudTeachers;
                 localStorage.setItem('teachersData', JSON.stringify(teachersData));
-                renderTeachersTable();
+                if (currentTeacher && currentTeacher.username === 'admin') {
+                    renderTeachersTable();
+                }
             }
         });
 
@@ -538,23 +540,23 @@
         const exportDailyBtn = document.getElementById('btn-export-daily');
         const exportMonthlyBtn = document.getElementById('btn-export-monthly');
 
-        // إتاحة تبويب إدارة المعلمين للجميع دون قيود
-        adminBtn.classList.remove('hidden');
-
-        if (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') {
-            classSelect.value = currentTeacher.assignedClass;
-            classSelect.disabled = true;
+        // تقييد ظهور تبويب الإدارة وصلاحيات التصدير للأدمن فقط
+        if (currentTeacher.username !== 'admin') {
+            adminBtn.classList.add('hidden');
             exportDailyBtn.classList.add('hidden');
             exportMonthlyBtn.classList.add('hidden');
+            classSelect.value = currentTeacher.assignedClass;
+            classSelect.disabled = true;
         } else {
-            classSelect.disabled = false;
+            adminBtn.classList.remove('hidden');
             exportDailyBtn.classList.remove('hidden');
             exportMonthlyBtn.classList.remove('hidden');
+            classSelect.disabled = false;
+            renderTeachersTable();
         }
 
         updateRecitationTopicOptions();
         renderDailyTable();
-        renderTeachersTable();
     }
 
     function switchTab(tabId, event) {
@@ -734,6 +736,10 @@
 
     /* ================= 3. إدارة المعلمين والنسخ الاحتياطي ================= */
     async function addTeacher() {
+        if (currentTeacher.username !== 'admin') {
+            return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
+        }
+
         const u = document.getElementById('newTeacherUser').value.trim();
         const p = document.getElementById('newTeacherPass').value.trim();
         const c = document.getElementById('newTeacherClass').value;
@@ -780,6 +786,7 @@
     }
 
     async function deleteTeacher(id) {
+        if (currentTeacher.username !== 'admin') return;
         if(confirm('هل أنت متأكد من حذف هذا المعلم؟')) {
             if (useFirebase) {
                 await db.collection("teachers").doc(id.toString()).delete();
@@ -794,6 +801,7 @@
 
     /* --- النسخ الاحتياطي واستعادة البيانات --- */
     function backupData() {
+        if (currentTeacher.username !== 'admin') return;
         const backupObj = { teachersData, dailyRecords };
         const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
@@ -803,6 +811,7 @@
     }
 
     function restoreData(event) {
+        if (currentTeacher.username !== 'admin') return;
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -832,7 +841,7 @@
 
     /* ================= 4. تصدير البيانات لإكسل ================= */
     function exportDailyToExcel() {
-        if (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') {
+        if (currentTeacher.username !== 'admin') {
             return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
         }
 
@@ -865,7 +874,7 @@
     }
 
     function exportMonthlyReportToExcel() {
-        if (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') {
+        if (currentTeacher.username !== 'admin') {
             return showMessage('app-msg', 'عذراً، هذه الصلاحية مخصصة للإدارة فقط.', 'error');
         }
 
