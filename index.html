@@ -130,36 +130,42 @@
         .form-group { display: flex; flex-direction: column; text-align: right; }
         label { margin-bottom: 4px; font-weight: 600; font-size: 0.85em; color: #444; }
         
-        input, select {
+        input, select, textarea {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             width: 100%;
+            font-family: inherit;
         }
-        input:focus, select:focus { outline: none; border-color: var(--accent-color); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-color); }
         input[readonly] { background-color: #f8f9fa; font-weight: bold; color: var(--primary-color); }
 
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
         
         button.action-btn {
             flex: 1;
-            min-width: 120px;
-            min-height: 44px;
-            padding: 10px;
+            min-width: 110px;
+            min-height: 40px;
+            padding: 8px 12px;
             border: none;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             color: white;
-            font-size: 0.9em;
+            font-size: 0.85em;
             transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
 
         .btn-save { background-color: var(--success-color); }
         .btn-export { background-color: var(--secondary-color); }
         .btn-danger { background-color: var(--danger-color); }
         .btn-warning { background-color: var(--warning-color); }
+        .btn-edit { background-color: #2980b9; }
 
         .table-responsive {
             overflow-x: auto;
@@ -198,6 +204,42 @@
             margin-bottom: 15px;
             border-bottom: 1px dashed #ccc;
             padding-bottom: 10px;
+        }
+
+        /* شبكة خانات الفصول */
+        .classes-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .class-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .class-box h4 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+            font-size: 1.1em;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 6px;
+        }
+        .teachers-tag-list {
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        .student-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 0.85em;
         }
 
         @media (max-width: 600px) {
@@ -252,7 +294,7 @@
         <button class="tab-btn hidden" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">التقرير الأسبوعي</button>
         <button class="tab-btn hidden" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">التقرير الشهري</button>
         <button class="tab-btn hidden" id="manager-tab-btn" style="background-color: var(--manager-color); color: white;" onclick="switchTab('manager-tab', event)">متابعة الصفوف</button>
-        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22; color: white;" onclick="switchTab('admin-tab', event)">+ الإدارة والتحكم</button>
+        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22; color: white;" onclick="switchTab('admin-tab', event)">+ إدارة الفصول والطلاب والمعلمين</button>
     </div>
 
     <!-- 1. تبويب الرصد اليومي -->
@@ -337,13 +379,13 @@
         </div>
     </div>
 
-    <!-- 2. التقرير الأسبوعي (خاص بالمدراء والأدمن فقط) -->
+    <!-- 2. التقرير الأسبوعي -->
     <div id="weekly-tab" class="tab-content">
         <div class="card-view">
             <h3 class="card-title">التقرير الأسبوعي الشامل</h3>
             <div class="form-grid">
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>اختر الأسبوع (تلقائي مع التحديث):</label>
+                    <label>اختر الأسبوع:</label>
                     <select id="weekSelect" onchange="renderWeeklyTable()" style="font-weight:bold; color:var(--primary-color);">
                     </select>
                 </div>
@@ -392,7 +434,7 @@
         </div>
     </div>
 
-    <!-- 3. تبويب التقارير الشهرية (خاص بالمدراء والأدمن فقط) -->
+    <!-- 3. تبويب التقارير الشهرية -->
     <div id="reports-tab" class="tab-content">
         <div class="card-view">
             <h3 class="card-title">التقرير الشهري الشامل</h3>
@@ -433,7 +475,7 @@
         </div>
     </div>
 
-    <!-- 4. تبويب متابعة الصفوف (خاص بالمديرين والأدمن فقط) -->
+    <!-- 4. تبويب متابعة الصفوف -->
     <div id="manager-tab" class="tab-content">
         <div class="tabs" id="manager-classes-tabs" style="border-bottom: 2px solid var(--manager-color); padding-bottom: 10px;">
             <button class="tab-btn manager-active" onclick="switchManagerClass('أولى - أولاد', event)">أولى - أولاد</button>
@@ -451,7 +493,6 @@
         
         <h3 style="color: var(--manager-color); text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">شاشة المراقبة المجمعة لـ: <span id="mgr-class-name" style="color:var(--danger-color);">أولى - أولاد</span></h3>
         
-        <!-- قسم اليومي للمدير -->
         <div class="card-view">
             <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
                 <h4 style="color: var(--primary-color); margin:0;">درجات اليوم المباشرة (<span id="mgr-today-date"></span>)</h4>
@@ -470,7 +511,6 @@
             </div>
         </div>
 
-        <!-- قسم الأسبوعي للمدير -->
         <div class="card-view">
             <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
                 <h4 style="color: var(--primary-color); margin:0;">التقرير الأسبوعي المجمع</h4>
@@ -489,7 +529,6 @@
             </div>
         </div>
 
-        <!-- قسم الشهري للمدير -->
         <div class="card-view">
             <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
                 <h4 style="color: var(--primary-color); margin:0;">التقرير الشهري الشامل</h4>
@@ -515,10 +554,50 @@
         </div>
     </div>
 
-    <!-- 5. تبويب لوحة التحكم والإدارة (للأدمن فقط) -->
+    <!-- 5. تبويب لوحة التحكم والإدارة المتقدمة -->
     <div id="admin-tab" class="tab-content">
+        
+        <!-- قسم إضافة الطلاب المجمعة / النسخ واللصق -->
+        <div style="background: #eef7fc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bce1f3;">
+            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">📥 إضافة الطلاب (نسخ ولصق قائمة أسماء)</h3>
+            <p style="font-size: 0.85em; color: #555; margin-bottom: 10px;">
+                يمكنك نسخ قائمة بالأسماء بالكامل من الإكسل أو الواتساب ولصقها هنا (كل اسم في سطر مستقل)، واختيار الصف لرفعهم جميعاً للسحابة كل اسم منفصل تلقائياً.
+            </p>
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>قائمة أسماء الطلاب (اسم في كل سطر):</label>
+                    <textarea id="bulkStudentNames" rows="5" placeholder="أدخل الأسماء هنا... مثال:&#10;أحمد محمد علي&#10;محمود حسن إبراهيم&#10;عمر خالد عبد الله"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>الصف الدراسي:</label>
+                    <select id="newStudentClass">
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
+                        <option value="أولى شرعي">أولى شرعي</option>
+                        <option value="ثانية - أولاد">ثانية - أولاد</option>
+                        <option value="ثانية - بنات">ثانية - بنات</option>
+                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                        <option value="ثالثة - بنات">ثالثة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسة - أولاد">خامسة - أولاد</option>
+                        <option value="خامسة - بنات">خامسة - بنات</option>
+                    </select>
+                </div>
+            </div>
+            <button class="action-btn btn-save" onclick="addBulkStudents()">+ رفع جميع الأسماء للسحابة</button>
+        </div>
+
+        <!-- قسم دليل وإشراف الفصول (خانه لكل فصل تفصل الطلاب والمعلمين) -->
+        <div style="background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <h3 style="margin-top: 0; font-size: 1.1em; color: var(--primary-color);">🏫 دليل الفصول المعين (معلمين ومساعدين وطلاب لكل فصل)</h3>
+            <div id="class-cards-container" class="classes-cards-grid">
+                <!-- يتم تعبئتها تلقائياً بتفاصيل كل فصل -->
+            </div>
+        </div>
+
         <!-- قسم إضافة معلم/معلمة -->
-        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
             <h3 style="margin-top: 0; font-size: 1.1em; color: var(--primary-color);">إضافة معلم / معلمة جديد</h3>
             <div class="form-grid">
                 <div class="form-group">
@@ -547,49 +626,21 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>المركز:</label>
+                    <label>الدور/المركز:</label>
                     <select id="newTeacherCenter">
-                        <option value="رئيسي">رئيسي</option>
-                        <option value="مساعد">مساعد</option>
-                        <option value="الكل">-</option>
+                        <option value="رئيسي">معلم رئيسي</option>
+                        <option value="مساعد">معلم مساعد</option>
+                        <option value="الكل">مدير نظام</option>
                     </select>
                 </div>
             </div>
             <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم / المعلمة</button>
         </div>
 
-        <!-- قسم إضافة طالب -->
-        <div style="background: #eef7fc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bce1f3;">
-            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">إضافة طالب / طالبة جديد</h3>
-            <div class="form-grid">
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>اسم الطالب/الطالبة:</label>
-                    <input type="text" id="newStudentName" placeholder="الاسم بالكامل">
-                </div>
-                <div class="form-group">
-                    <label>الصف:</label>
-                    <select id="newStudentClass">
-                        <option value="أولى - أولاد">أولى - أولاد</option>
-                        <option value="أولى - بنات">أولى - بنات</option>
-                        <option value="أولى شرعي">أولى شرعي</option>
-                        <option value="ثانية - أولاد">ثانية - أولاد</option>
-                        <option value="ثانية - بنات">ثانية - بنات</option>
-                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
-                        <option value="ثالثة - بنات">ثالثة - بنات</option>
-                        <option value="رابعة - أولاد">رابعة - أولاد</option>
-                        <option value="رابعة - بنات">رابعة - بنات</option>
-                        <option value="خامسة - أولاد">خامسة - أولاد</option>
-                        <option value="خامسة - بنات">خامسة - بنات</option>
-                    </select>
-                </div>
-            </div>
-            <button class="action-btn btn-save" onclick="addStudent()">+ إضافة للسحابة</button>
-        </div>
-
-        <!-- قسم النسخ الاحتياطي وإرساله للبريد -->
-        <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffe0b2;">
-            <h3 style="margin-top: 0; color: #d35400; font-size: 1.1em;">النسخ الاحتياطي الشامل وإرسال الإيميل (الطلاب، المعلمين، الدرجات)</h3>
-            <p style="font-size:0.85em; color:#666; margin-bottom:10px;">يتم حفظ نسخة كاملة تشمل كل درجات الطلاب منذ بداية التسجيل، والمعلمين، والطلاب مرتبة تماماً.</p>
+        <!-- قسم النسخ الاحتياطي -->
+        <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffe0b2;">
+            <h3 style="margin-top: 0; color: #d35400; font-size: 1.1em;">النسخ الاحتياطي الشامل (إيميل وحفظ ملف)</h3>
+            <p style="font-size:0.85em; color:#666; margin-bottom:10px;">نسخة شاملة لكل بيانات الدرجات، المعلمين، والطلاب مرتبة ومزامنة.</p>
             <div class="btn-group">
                 <button class="action-btn btn-export" onclick="backupDataAndEmail(false)">حفظ نسخة للكمبيوتر وإرسال للبريد</button>
                 <input type="file" id="restoreFile" accept=".json" style="display:none;" onchange="restoreData(event)">
@@ -597,21 +648,21 @@
             </div>
         </div>
 
-        <h3 style="color: var(--primary-color);">إدارة المعلمين والمعلمات المسجلين</h3>
+        <h3 style="color: var(--primary-color);">جدول المعلمين والمعلمات المسجلين</h3>
         <div class="table-responsive" style="margin-bottom: 20px;">
             <table id="teachersTable">
                 <thead>
-                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف المسند</th><th>المركز</th><th>إجراء</th></tr>
+                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف المسند</th><th>الدور/المركز</th><th>إجراءات والتعديل</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
 
-        <h3 style="color: var(--primary-color);">إدارة الطلاب والطلبات المسجلين</h3>
+        <h3 style="color: var(--primary-color);">جدول جميع الطلاب والطلبات المسجلين</h3>
         <div class="table-responsive">
             <table id="studentsTable">
                 <thead>
-                    <tr><th>الاسم</th><th>الصف</th><th>إجراء</th></tr>
+                    <tr><th>الاسم</th><th>الصف</th><th>إجراءات والتعديل</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -620,6 +671,15 @@
 </div>
 
 <script>
+    /* ================= قائمة الصفوف المعتمدة ================= */
+    const ALL_CLASSES = [
+        "أولى - أولاد", "أولى - بنات", "أولى شرعي",
+        "ثانية - أولاد", "ثانية - بنات",
+        "ثالثة - أولاد", "ثالثة - بنات",
+        "رابعة - أولاد", "رابعة - بنات",
+        "خامسة - أولاد", "خامسة - بنات"
+    ];
+
     /* ================= 1. تهيئة السحابة (Firebase Configuration) ================= */
     const firebaseConfig = {
         apiKey: "AIzaSyDMusCd7XWnzwgDYlaAJJxi6-LCfHniu64",
@@ -659,7 +719,6 @@
     let isShowingAllDays = false;
     let currentManagerClass = 'أولى - أولاد';
 
-    /* خريطة التصحيح وفصل البنين والبنات لجميع المراحل عدا "أولى شرعي" */
     const nameMapping = {
         "اولي شارعي": "أولى شرعي", "الصف الأول الشرعي - أولاد": "أولى شرعي", "الصف الأول الشرعي - بنات": "أولى شرعي",
         "الصف الأول - أولاد": "أولى - أولاد", "الصف الأول - بنات": "أولى - بنات",
@@ -719,14 +778,14 @@
         checkWeeklyAutoBackup();
     };
 
-    /* ================= دالة التصدير للإكسل العامة ================= */
+    /* ================= دالة التصدير للإكسل ================= */
     function exportToExcel(tableId, filename) {
         let table = document.getElementById(tableId);
         let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
         XLSX.writeFile(wb, filename + ".xlsx");
     }
 
-    /* ================= دوال التاريخ والأسبوع ================= */
+    /* ================= دوال التاريخ ================= */
     function initCurrentDate() {
         const tzoffset = (new Date()).getTimezoneOffset() * 60000;
         const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
@@ -809,8 +868,6 @@
         }
     }
 
-    /* ========================================================== */
-
     function updateStudentListDropdown() {
         const className = document.getElementById('classSelect').value;
         const studentSelect = document.getElementById('studentNameSelect');
@@ -840,7 +897,10 @@
             }
             teachersData = cloudTeachers;
             localStorage.setItem('teachersData', JSON.stringify(teachersData));
-            if (currentTeacher && currentTeacher.username === 'admin') renderTeachersTable();
+            if (currentTeacher && currentTeacher.username === 'admin') {
+                renderTeachersTable();
+                renderClassCards();
+            }
         });
 
         db.collection("students").onSnapshot((snapshot) => {
@@ -849,7 +909,10 @@
             studentsData = cloudStudents;
             localStorage.setItem('studentsData', JSON.stringify(studentsData));
             updateStudentListDropdown();
-            if (currentTeacher && currentTeacher.username === 'admin') renderStudentsTable();
+            if (currentTeacher && currentTeacher.username === 'admin') {
+                renderStudentsTable();
+                renderClassCards();
+            }
             renderManagerView();
         });
 
@@ -928,6 +991,7 @@
             weeklyClassSelect.disabled = false;
             renderTeachersTable();
             renderStudentsTable();
+            renderClassCards();
         } else {
             adminBtn.classList.add('hidden');
             managerBtn.classList.add('hidden');
@@ -955,6 +1019,10 @@
             renderWeeklyTable();
         } else if(tabId === 'manager-tab') {
             renderManagerView();
+        } else if(tabId === 'admin-tab') {
+            renderClassCards();
+            renderStudentsTable();
+            renderTeachersTable();
         }
     }
 
@@ -1107,7 +1175,7 @@
         });
     }
 
-    /* =================== التقرير الأسبوعي =================== */
+    /* =================== التقرير الأسبوعي والشهري =================== */
     function renderWeeklyTable() {
         const tbody = document.querySelector('#weeklyTable tbody');
         if(!tbody) return;
@@ -1137,7 +1205,6 @@
             let weekDays = { "الأحد": "-", "الاثنين": "-", "الثلاثاء": "-", "الأربعاء": "-", "الخميس": "-" };
             let studentTotal = 0;
             let attTotal = 0;
-            let daysCount = 0;
 
             sRecords.forEach(r => {
                 if(weekDays[r.dayName] !== undefined) {
@@ -1145,7 +1212,6 @@
                     weekDays[r.dayName] = totalDaily;
                     studentTotal += totalDaily;
                     attTotal += (r.attendance || 0);
-                    daysCount++;
                 }
             });
             
@@ -1229,7 +1295,6 @@
         });
     }
 
-    /* =================== دوال لوحة متابعة الصفوف (خاص بالمدير) =================== */
     function switchManagerClass(className, event) {
         document.querySelectorAll('#manager-classes-tabs .tab-btn').forEach(btn => btn.classList.remove('manager-active'));
         event.target.classList.add('manager-active');
@@ -1244,7 +1309,6 @@
         const today = document.getElementById('recordDate').value;
         document.getElementById('mgr-today-date').innerText = today;
         
-        // --- 1. الرصد اليومي للصف المحدد ---
         const tDaily = document.querySelector('#mgrDailyTable tbody');
         tDaily.innerHTML = '';
         let dailyClassRecs = dailyRecords.filter(r => r.className === currentManagerClass && r.dateISO === today)
@@ -1258,7 +1322,6 @@
             });
         }
 
-        // --- 2. التقرير الأسبوعي للصف المحدد ---
         const tWeekly = document.querySelector('#mgrWeeklyTable tbody');
         tWeekly.innerHTML = '';
         const selWeek = document.getElementById('mgrWeekSelect').value;
@@ -1271,11 +1334,11 @@
             classStds.forEach(student => {
                 let sRecs = weekRecords.filter(r => r.studentName === student);
                 let wd = {"الأحد":"-","الاثنين":"-","الثلاثاء":"-","الأربعاء":"-","الخميس":"-"};
-                let stTotal = 0; let attTotal = 0; let dCount = 0;
+                let stTotal = 0; let attTotal = 0;
                 
                 sRecs.forEach(r => { 
                     if(wd[r.dayName]!==undefined){ 
-                        let d=getDailyTotal(r); wd[r.dayName]=d; stTotal+=d; attTotal+=r.attendance; dCount++; 
+                        let d=getDailyTotal(r); wd[r.dayName]=d; stTotal+=d; attTotal+=r.attendance; 
                     }
                 });
                 
@@ -1287,7 +1350,6 @@
             });
         }
 
-        // --- 3. التقرير الشهري للصف المحدد ---
         const tMonthly = document.querySelector('#mgrMonthlyTable tbody');
         tMonthly.innerHTML = '';
         const selMonth = document.getElementById('mgrMonthSelect').value;
@@ -1324,32 +1386,182 @@
     }
 
 
-    /* ======== دوال الإدارة الأساسية والنسخ الاحتياطي وإرساله للبريد الإلكتروني ======== */
-    async function addStudent() {
+    /* ======== الإضافات الجديدة: إضافة الطلاب المجمعة + دليل الخانات الفصول + دوال التعديل ======== */
+    
+    // 1. إضافة الطلاب المجمعة (نسخ ولصق قائمة أسماء)
+    async function addBulkStudents() {
         if (currentTeacher.username !== 'admin') return;
-        const name = document.getElementById('newStudentName').value.trim();
+        const rawText = document.getElementById('bulkStudentNames').value;
         const className = document.getElementById('newStudentClass').value;
-        if (!name) return showMessage('app-msg', 'يرجى كتابة الاسم بالكامل', 'error');
 
-        const newStudent = { id: 's_' + Date.now(), name, className };
-        if (useFirebase) await db.collection("students").doc(newStudent.id).set(newStudent);
-        else {
-            studentsData.push(newStudent); localStorage.setItem('studentsData', JSON.stringify(studentsData));
-            renderStudentsTable(); updateStudentListDropdown(); renderManagerView();
+        const namesList = rawText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
+
+        if (namesList.length === 0) {
+            return showMessage('app-msg', 'يرجى كتابة أو لصق أسماء الطلاب أولاً', 'error');
         }
-        showMessage('app-msg', 'تم الإضافة بنجاح', 'success');
-        document.getElementById('newStudentName').value = '';
+
+        let addedCount = 0;
+        for (let name of namesList) {
+            const newStudent = {
+                id: 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+                name: name,
+                className: className
+            };
+
+            if (useFirebase) {
+                await db.collection("students").doc(newStudent.id).set(newStudent);
+            } else {
+                studentsData.push(newStudent);
+            }
+            addedCount++;
+        }
+
+        if (!useFirebase) {
+            localStorage.setItem('studentsData', JSON.stringify(studentsData));
+            renderStudentsTable();
+            updateStudentListDropdown();
+            renderClassCards();
+            renderManagerView();
+        }
+
+        showMessage('app-msg', `تمت إضافة وترفيع ${addedCount} طالب بنجاح إلى صف (${className}) بالسحابة!`, 'success');
+        document.getElementById('bulkStudentNames').value = '';
+    }
+
+    // 2. عرض دليل الفصول (خانه لكل فصل فيها الطلاب والمعلمين)
+    function renderClassCards() {
+        const container = document.getElementById('class-cards-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        ALL_CLASSES.forEach(cName => {
+            // المعلمين الرئيسي والمساعد المسندين لهذا الفصل
+            const classTeachers = teachersData.filter(t => t.assignedClass === cName || t.assignedClass === 'الكل');
+            const primaryTeachers = classTeachers.filter(t => t.center === 'رئيسي' || t.assignedClass === 'الكل').map(t => t.username);
+            const assistantTeachers = classTeachers.filter(t => t.center === 'مساعد').map(t => t.username);
+
+            // طلاب هذا الفصل
+            const classStudents = studentsData.filter(s => s.className === cName)
+                .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+
+            let studentsHtml = '';
+            if (classStudents.length === 0) {
+                studentsHtml = '<p style="color:#888; font-size:0.85em; margin: 5px 0;">لا يوجد طلاب مسجلين في هذا الفصل</p>';
+            } else {
+                studentsHtml = '<div style="max-height: 180px; overflow-y: auto; padding-left:5px;">';
+                classStudents.forEach(s => {
+                    studentsHtml += `
+                        <div class="student-item-row">
+                            <span>👤 ${s.name}</span>
+                            <div>
+                                <button class="action-btn btn-edit" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button>
+                                <button class="action-btn btn-danger" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                studentsHtml += '</div>';
+            }
+
+            container.innerHTML += `
+                <div class="class-box">
+                    <h4>🏫 ${cName} <span style="font-size:0.8em; color:#777;">(${classStudents.length} طالب)</span></h4>
+                    <div class="teachers-tag-list">
+                        <div><strong>المعلم الرئيسي:</strong> ${primaryTeachers.length > 0 ? primaryTeachers.join('، ') : 'غير محدد'}</div>
+                        <div><strong>المعلم المساعد:</strong> ${assistantTeachers.length > 0 ? assistantTeachers.join('، ') : 'غير محدد'}</div>
+                    </div>
+                    <hr style="border:0; border-top:1px dashed #eee; margin:8px 0;">
+                    ${studentsHtml}
+                </div>
+            `;
+        });
+    }
+
+    // 3. تعديل بيانات الطالب (الاسم أو السنة/الصف)
+    async function editStudent(id) {
+        if (currentTeacher.username !== 'admin') return;
+        const student = studentsData.find(s => s.id.toString() === id.toString());
+        if (!student) return;
+
+        const newName = prompt("تعديل اسم الطالب/الطالبة:", student.name);
+        if (newName === null) return;
+
+        let optionsList = ALL_CLASSES.join("\n");
+        const newClass = prompt(`تعديل الصف (اختر واكتب الصف كما هو تماماً):\n${optionsList}`, student.className);
+        if (newClass === null) return;
+
+        if (!newName.trim() || !newClass.trim()) {
+            return alert("خطأ: يرجى إدخال اسم الصف والاسم بشكل صحيح!");
+        }
+
+        const updatedStudent = { ...student, name: newName.trim(), className: newClass.trim() };
+
+        if (useFirebase) {
+            await db.collection("students").doc(id.toString()).set(updatedStudent);
+        } else {
+            const idx = studentsData.findIndex(s => s.id.toString() === id.toString());
+            if (idx > -1) studentsData[idx] = updatedStudent;
+            localStorage.setItem('studentsData', JSON.stringify(studentsData));
+            renderStudentsTable();
+            updateStudentListDropdown();
+            renderClassCards();
+            renderManagerView();
+        }
+        showMessage('app-msg', 'تم تعديل بيانات الطالب بنجاح', 'success');
+    }
+
+    // 4. تعديل بيانات المعلم
+    async function editTeacher(id) {
+        if (currentTeacher.username !== 'admin') return;
+        const teacher = teachersData.find(t => t.id.toString() === id.toString());
+        if (!teacher) return;
+
+        const newUsername = prompt("تعديل اسم المستخدم للمعلم:", teacher.username);
+        if (newUsername === null) return;
+
+        const newPassword = prompt("تعديل كلمة المرور:", teacher.password);
+        if (newPassword === null) return;
+
+        const newClass = prompt(`تعديل الصف المسند (اختر الصف أو اكتب 'الكل' للمدير):\n${ALL_CLASSES.join("\n")}`, teacher.assignedClass);
+        if (newClass === null) return;
+
+        const newCenter = prompt("تعديل الدور / المركز (اكتب: رئيسي أو مساعد أو الكل):", teacher.center || "رئيسي");
+        if (newCenter === null) return;
+
+        if (!newUsername.trim() || !newPassword.trim()) {
+            return alert("خطأ: يرجى ملء اسم المستخدم وكلمة المرور!");
+        }
+
+        const updatedTeacher = { 
+            ...teacher, 
+            username: newUsername.trim(), 
+            password: newPassword.trim(), 
+            assignedClass: newClass.trim(), 
+            center: newCenter.trim() 
+        };
+
+        if (useFirebase) {
+            await db.collection("teachers").doc(id.toString()).set(updatedTeacher);
+        } else {
+            const idx = teachersData.findIndex(t => t.id.toString() === id.toString());
+            if (idx > -1) teachersData[idx] = updatedTeacher;
+            localStorage.setItem('teachersData', JSON.stringify(teachersData));
+            renderTeachersTable();
+            renderClassCards();
+        }
+        showMessage('app-msg', 'تم تعديل بيانات المعلم بنجاح', 'success');
     }
 
     async function deleteStudent(id) {
         if (currentTeacher.username !== 'admin') return;
-        if (confirm('هل أنت متأكد من الحذف؟')) {
+        if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
             if (useFirebase) await db.collection("students").doc(id.toString()).delete();
             else {
                 studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
                 localStorage.setItem('studentsData', JSON.stringify(studentsData));
-                renderStudentsTable(); updateStudentListDropdown(); renderManagerView();
+                renderStudentsTable(); updateStudentListDropdown(); renderClassCards(); renderManagerView();
             }
+            showMessage('app-msg', 'تم الحذف بنجاح', 'success');
         }
     }
 
@@ -1360,8 +1572,14 @@
         const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
         
         sortedStudents.forEach(s => {
-            tbody.innerHTML += `<tr><td>${s.name}</td><td>${s.className}</td>
-            <td><button class="action-btn btn-danger" style="padding:4px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button></td></tr>`;
+            tbody.innerHTML += `<tr>
+                <td>${s.name}</td>
+                <td>${s.className}</td>
+                <td>
+                    <button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button>
+                    <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button>
+                </td>
+            </tr>`;
         });
     }
 
@@ -1377,7 +1595,12 @@
 
         const newTeacher = { id: Date.now().toString(), username: u, password: p, assignedClass: c, center: cn };
         if (useFirebase) await db.collection("teachers").doc(newTeacher.id).set(newTeacher);
-        else { teachersData.push(newTeacher); localStorage.setItem('teachersData', JSON.stringify(teachersData)); renderTeachersTable(); }
+        else { 
+            teachersData.push(newTeacher); 
+            localStorage.setItem('teachersData', JSON.stringify(teachersData)); 
+            renderTeachersTable(); 
+            renderClassCards();
+        }
         showMessage('app-msg', 'تم إضافة المعلم/المعلمة بنجاح', 'success');
         document.getElementById('newTeacherUser').value = ''; document.getElementById('newTeacherPass').value = '';
     }
@@ -1386,9 +1609,10 @@
         const tbody = document.querySelector('#teachersTable tbody');
         if (!tbody) return; tbody.innerHTML = '';
         teachersData.forEach((t) => {
-            const deleteBtn = t.username === 'admin' ? '<span style="color:gray;">مدير</span>' : 
-                `<button class="action-btn btn-danger" style="padding:4px 8px; min-width:auto;" onclick="deleteTeacher('${t.id}')">حذف</button>`;
-            tbody.innerHTML += `<tr><td>${t.username}</td><td>${t.password}</td><td>${t.assignedClass}</td><td>${t.center}</td><td>${deleteBtn}</td></tr>`;
+            const actions = t.username === 'admin' ? '<span style="color:gray;">مدير النظام الرئيسي</span>' : 
+                `<button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editTeacher('${t.id}')">تعديل</button>
+                 <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteTeacher('${t.id}')">حذف</button>`;
+            tbody.innerHTML += `<tr><td>${t.username}</td><td>${t.password}</td><td>${t.assignedClass}</td><td>${t.center}</td><td>${actions}</td></tr>`;
         });
     }
 
@@ -1398,7 +1622,13 @@
         if (teacherToDelete && teacherToDelete.username === 'admin') return showMessage('app-msg', 'لا يمكن حذف حساب المدير الرئيسي', 'error');
         if(confirm('هل أنت متأكد من الحذف؟')) {
             if (useFirebase) await db.collection("teachers").doc(id.toString()).delete();
-            else { teachersData = teachersData.filter(t => t.id.toString() !== id.toString()); localStorage.setItem('teachersData', JSON.stringify(teachersData)); renderTeachersTable(); }
+            else { 
+                teachersData = teachersData.filter(t => t.id.toString() !== id.toString()); 
+                localStorage.setItem('teachersData', JSON.stringify(teachersData)); 
+                renderTeachersTable(); 
+                renderClassCards();
+            }
+            showMessage('app-msg', 'تم حذف المعلم بنجاح', 'success');
         }
     }
 
@@ -1494,7 +1724,7 @@
                         localStorage.setItem('studentsData', JSON.stringify(studentsData)); 
                         localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
                         
-                        renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderManagerView();
+                        renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderManagerView(); renderClassCards();
                     }
                     showMessage('app-msg', 'تم استعادة كافة بيانات الدرجات والطلاب والمدرسين بنجاح!', 'success');
                 } else {
