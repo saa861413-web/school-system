@@ -291,6 +291,7 @@
     <!-- أزرار التنقل -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('daily-tab', event)">الرصد اليومي</button>
+        <button class="tab-btn hidden" id="attendance-tab-btn" style="background-color: #16a085; color: white;" onclick="switchTab('attendance-tab', event)">📋 حضور 20 يوم</button>
         <button class="tab-btn hidden" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">التقرير الأسبوعي</button>
         <button class="tab-btn hidden" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">التقرير الشهري</button>
         <button class="tab-btn hidden" id="manager-tab-btn" style="background-color: var(--manager-color); color: white;" onclick="switchTab('manager-tab', event)">متابعة الصفوف</button>
@@ -379,7 +380,51 @@
         </div>
     </div>
 
-    <!-- 2. التقرير الأسبوعي -->
+    <!-- 2. تبويب سجل الحضور الشامل لآخر 20 يوم (إضافة جديدة) -->
+    <div id="attendance-tab" class="tab-content">
+        <div class="card-view">
+            <h3 class="card-title">📅 قائمة وسجل الحضور والغياب (تلقائي لآخر 20 يوم)</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>تاريخ نهاية الـ 20 يوم (اليوم المرجعي):</label>
+                    <input type="date" id="attendanceEndDate" onchange="renderAttendanceTable()">
+                </div>
+                <div class="form-group">
+                    <label>الصف الدراسي:</label>
+                    <select id="attendanceClassSelect" onchange="renderAttendanceTable()">
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
+                        <option value="أولى شرعي">أولى شرعي</option>
+                        <option value="ثانية - أولاد">ثانية - أولاد</option>
+                        <option value="ثانية - بنات">ثانية - بنات</option>
+                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                        <option value="ثالثة - بنات">ثالثة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسة - أولاد">خامسة - أولاد</option>
+                        <option value="خامسة - بنات">خامسة - بنات</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="action-btn btn-save" onclick="renderAttendanceTable()">تحديث كشف الحضور</button>
+                <button class="action-btn btn-export" onclick="exportToExcel('attendanceTable', 'كشف_الحضور_20_يوم')">تصدير إكسل</button>
+                <button class="action-btn btn-warning" onclick="window.print()">طباعة الكشف</button>
+            </div>
+
+            <div class="table-responsive">
+                <table id="attendanceTable">
+                    <thead>
+                        <!-- يتم إنشاؤه ديناميكياً للـ 20 يوم -->
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. التقرير الأسبوعي -->
     <div id="weekly-tab" class="tab-content">
         <div class="card-view">
             <h3 class="card-title">التقرير الأسبوعي الشامل</h3>
@@ -434,14 +479,14 @@
         </div>
     </div>
 
-    <!-- 3. تبويب التقارير الشهرية -->
+    <!-- 4. تبويب التقارير الشهرية -->
     <div id="reports-tab" class="tab-content">
         <div class="card-view">
             <h3 class="card-title">التقرير الشهري الشامل</h3>
             <div class="form-grid">
                 <div class="form-group">
                     <label>الشهر:</label>
-                    <select id="reportMonth">
+                    <select id="reportMonth" onchange="renderMonthlyReport()">
                         <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
                         <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
                         <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
@@ -450,7 +495,23 @@
                 </div>
                 <div class="form-group">
                     <label>السنة:</label>
-                    <input type="number" id="reportYear" value="2026">
+                    <input type="number" id="reportYear" value="2026" onchange="renderMonthlyReport()">
+                </div>
+                <div class="form-group">
+                    <label>الصف:</label>
+                    <select id="monthlyClassSelect" onchange="renderMonthlyReport()">
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
+                        <option value="أولى شرعي">أولى شرعي</option>
+                        <option value="ثانية - أولاد">ثانية - أولاد</option>
+                        <option value="ثانية - بنات">ثانية - بنات</option>
+                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                        <option value="ثالثة - بنات">ثالثة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسة - أولاد">خامسة - أولاد</option>
+                        <option value="خامسة - بنات">خامسة - بنات</option>
+                    </select>
                 </div>
             </div>
 
@@ -475,7 +536,7 @@
         </div>
     </div>
 
-    <!-- 4. تبويب متابعة الصفوف -->
+    <!-- 5. تبويب متابعة الصفوف -->
     <div id="manager-tab" class="tab-content">
         <div class="tabs" id="manager-classes-tabs" style="border-bottom: 2px solid var(--manager-color); padding-bottom: 10px;">
             <button class="tab-btn manager-active" onclick="switchManagerClass('أولى - أولاد', event)">أولى - أولاد</button>
@@ -554,7 +615,7 @@
         </div>
     </div>
 
-    <!-- 5. تبويب لوحة التحكم والإدارة المتقدمة -->
+    <!-- 6. تبويب لوحة التحكم والإدارة المتقدمة -->
     <div id="admin-tab" class="tab-content">
         
         <!-- قسم إضافة الطلاب المجمعة / النسخ واللصق -->
@@ -588,7 +649,7 @@
             <button class="action-btn btn-save" onclick="addBulkStudents()">+ رفع جميع الأسماء للسحابة</button>
         </div>
 
-        <!-- قسم دليل وإشراف الفصول (خانه لكل فصل تفصل الطلاب والمعلمين) -->
+        <!-- قسم دليل وإشراف الفصول -->
         <div style="background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
             <h3 style="margin-top: 0; font-size: 1.1em; color: var(--primary-color);">🏫 دليل الفصول المعين (معلمين ومساعدين وطلاب لكل فصل)</h3>
             <div id="class-cards-container" class="classes-cards-grid">
@@ -790,6 +851,7 @@
         const tzoffset = (new Date()).getTimezoneOffset() * 60000;
         const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
         document.getElementById('recordDate').value = localISOTime;
+        document.getElementById('attendanceEndDate').value = localISOTime;
         
         if(!isShowingAllDays) {
             document.getElementById('filterDateDaily').value = localISOTime;
@@ -914,6 +976,8 @@
                 renderClassCards();
             }
             renderManagerView();
+            renderMonthlyReport();
+            renderAttendanceTable();
         });
 
         db.collection("dailyRecords").onSnapshot((snapshot) => {
@@ -925,7 +989,9 @@
             renderDailyTable();
             populateWeeks();
             renderWeeklyTable();
+            renderMonthlyReport();
             renderManagerView();
+            renderAttendanceTable();
         });
     }
 
@@ -973,14 +1039,21 @@
 
         const classSelect = document.getElementById('classSelect');
         const weeklyClassSelect = document.getElementById('weeklyClassSelect');
+        const monthlyClassSelect = document.getElementById('monthlyClassSelect');
+        const attendanceClassSelect = document.getElementById('attendanceClassSelect');
+        
         const adminBtn = document.getElementById('admin-tab-btn');
         const managerBtn = document.getElementById('manager-tab-btn');
         const weeklyBtn = document.getElementById('weekly-tab-btn');
         const reportsBtn = document.getElementById('reports-tab-btn');
+        const attendanceBtn = document.getElementById('attendance-tab-btn');
         
         initCurrentDate();
 
         const isManager = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
+
+        // إظهار تبويب قائمة الحضور للجميع
+        attendanceBtn.classList.remove('hidden');
 
         if (isManager) {
             adminBtn.classList.remove('hidden');
@@ -989,6 +1062,8 @@
             reportsBtn.classList.remove('hidden');
             classSelect.disabled = false;
             weeklyClassSelect.disabled = false;
+            monthlyClassSelect.disabled = false;
+            attendanceClassSelect.disabled = false;
             renderTeachersTable();
             renderStudentsTable();
             renderClassCards();
@@ -999,12 +1074,16 @@
             reportsBtn.classList.add('hidden');
             classSelect.value = currentTeacher.assignedClass; classSelect.disabled = true;
             weeklyClassSelect.value = currentTeacher.assignedClass; weeklyClassSelect.disabled = true;
+            monthlyClassSelect.value = currentTeacher.assignedClass; monthlyClassSelect.disabled = true;
+            attendanceClassSelect.value = currentTeacher.assignedClass; attendanceClassSelect.disabled = true;
         }
 
         updateStudentListDropdown();
         populateWeeks();
         renderDailyTable();
+        renderAttendanceTable();
         renderWeeklyTable();
+        renderMonthlyReport();
         renderManagerView();
     }
 
@@ -1014,9 +1093,13 @@
         event.target.classList.add('active');
         document.getElementById(tabId).classList.add('active');
         
-        if (tabId === 'weekly-tab') {
+        if (tabId === 'attendance-tab') {
+            renderAttendanceTable();
+        } else if (tabId === 'weekly-tab') {
             populateWeeks();
             renderWeeklyTable();
+        } else if (tabId === 'reports-tab') {
+            renderMonthlyReport();
         } else if(tabId === 'manager-tab') {
             renderManagerView();
         } else if(tabId === 'admin-tab') {
@@ -1095,7 +1178,9 @@
             
             populateWeeks();
             renderDailyTable();
+            renderAttendanceTable();
             renderWeeklyTable();
+            renderMonthlyReport();
             renderManagerView();
         }
 
@@ -1114,7 +1199,9 @@
                 dailyRecords = dailyRecords.filter(r => r.id.toString() !== id.toString());
                 localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
                 renderDailyTable();
+                renderAttendanceTable();
                 renderWeeklyTable();
+                renderMonthlyReport();
                 renderManagerView();
             }
             showMessage('app-msg', 'تم حذف السجل بنجاح', 'success');
@@ -1172,6 +1259,83 @@
                     <td>${deleteBtn}</td>
                 </tr>
             `;
+        });
+    }
+
+    /* =================== إضافة جديدة: جدول وقائمة الحضور لآخر 20 يوم =================== */
+    function renderAttendanceTable() {
+        let endDateVal = document.getElementById('attendanceEndDate').value;
+        if (!endDateVal) {
+            endDateVal = document.getElementById('recordDate').value || new Date().toISOString().slice(0, 10);
+            document.getElementById('attendanceEndDate').value = endDateVal;
+        }
+
+        const selectedClass = document.getElementById('attendanceClassSelect').value;
+        const dates = [];
+        let endDate = new Date(endDateVal);
+
+        // إنشاء مصفوفة الـ 20 يوم السابقة تنازلياً وتصاعدياً حسب التاريخ
+        for (let i = 19; i >= 0; i--) {
+            let d = new Date(endDate);
+            d.setDate(d.getDate() - i);
+            let tzoffset = d.getTimezoneOffset() * 60000;
+            let iso = new Date(d.getTime() - tzoffset).toISOString().slice(0, 10);
+            dates.push(iso);
+        }
+
+        const thead = document.querySelector('#attendanceTable thead');
+        const tbody = document.querySelector('#attendanceTable tbody');
+        if (!thead || !tbody) return;
+
+        // إعداد رؤوس الأعمدة للـ 20 يوم
+        let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
+        dates.forEach(dStr => {
+            let parts = dStr.split('-');
+            let shortDate = `${parts[2]}/${parts[1]}`;
+            headerHtml += `<th style="font-size:0.75em; padding:4px; min-width:38px;">${shortDate}</th>`;
+        });
+        headerHtml += '<th>أيام الحضور</th><th>نسبة الحضور</th></tr>';
+        thead.innerHTML = headerHtml;
+
+        tbody.innerHTML = '';
+
+        const classStudents = studentsData
+            .filter(s => s.className === selectedClass)
+            .map(s => s.name)
+            .sort((a, b) => a.localeCompare(b, 'ar'));
+
+        if (classStudents.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${dates.length + 3}">لا يوجد طلاب مسجلين في هذا الصف</td></tr>`;
+            return;
+        }
+
+        classStudents.forEach(student => {
+            let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
+            let attendedDaysCount = 0;
+            let recordedDaysCount = 0;
+
+            dates.forEach(dStr => {
+                let rec = dailyRecords.find(r => r.className === selectedClass && r.studentName === student && r.dateISO === dStr);
+                if (rec) {
+                    recordedDaysCount++;
+                    if (rec.attendance > 0) {
+                        attendedDaysCount++;
+                        rowHtml += `<td style="color:var(--success-color); font-weight:bold; background:#e8f8f5;">✓</td>`;
+                    } else {
+                        rowHtml += `<td style="color:var(--danger-color); font-weight:bold; background:#fadbd8;">✗</td>`;
+                    }
+                } else {
+                    rowHtml += `<td style="color:#ccc;">-</td>`;
+                }
+            });
+
+            let attPerc = recordedDaysCount > 0 ? ((attendedDaysCount / recordedDaysCount) * 100).toFixed(0) : 0;
+            let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-green' : (parseFloat(attPerc) >= 50 ? 'badge-yellow' : 'badge-yellow');
+
+            rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${recordedDaysCount || 20}</td>`;
+            rowHtml += `<td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
+
+            tbody.innerHTML += rowHtml;
         });
     }
 
@@ -1238,17 +1402,20 @@
     function renderMonthlyReport() {
         const month = document.getElementById('reportMonth').value;
         const year = document.getElementById('reportYear').value;
+        const selectedClass = document.getElementById('monthlyClassSelect').value;
         const tbody = document.querySelector('#monthlyReportTable tbody');
+        if(!tbody) return;
         tbody.innerHTML = '';
 
         const relevantRecords = dailyRecords.filter(r => {
+            if (r.className !== selectedClass) return false;
             if (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل' && r.className !== currentTeacher.assignedClass) return false;
             const rDate = new Date(r.dateISO);
             return rDate.getMonth() == month && rDate.getFullYear() == year;
         });
 
         if(relevantRecords.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="12">لا توجد بيانات لهذا الشهر</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="12">لا توجد بيانات لهذا الشهر في الصف المحدد</td></tr>';
             return;
         }
 
@@ -1385,8 +1552,7 @@
         }
     }
 
-
-    /* ======== الإضافات الجديدة: إضافة الطلاب المجمعة + دليل الخانات الفصول + دوال التعديل ======== */
+    /* ======== إضافة الطلاب المجمعة + دليل الخانات الفصول + دوال التعديل ======== */
     
     // 1. إضافة الطلاب المجمعة (نسخ ولصق قائمة أسماء)
     async function addBulkStudents() {
@@ -1422,25 +1588,24 @@
             updateStudentListDropdown();
             renderClassCards();
             renderManagerView();
+            renderAttendanceTable();
         }
 
         showMessage('app-msg', `تمت إضافة وترفيع ${addedCount} طالب بنجاح إلى صف (${className}) بالسحابة!`, 'success');
         document.getElementById('bulkStudentNames').value = '';
     }
 
-    // 2. عرض دليل الفصول (خانه لكل فصل فيها الطلاب والمعلمين)
+    // 2. عرض دليل الفصول
     function renderClassCards() {
         const container = document.getElementById('class-cards-container');
         if (!container) return;
         container.innerHTML = '';
 
         ALL_CLASSES.forEach(cName => {
-            // المعلمين الرئيسي والمساعد المسندين لهذا الفصل
             const classTeachers = teachersData.filter(t => t.assignedClass === cName || t.assignedClass === 'الكل');
             const primaryTeachers = classTeachers.filter(t => t.center === 'رئيسي' || t.assignedClass === 'الكل').map(t => t.username);
             const assistantTeachers = classTeachers.filter(t => t.center === 'مساعد').map(t => t.username);
 
-            // طلاب هذا الفصل
             const classStudents = studentsData.filter(s => s.className === cName)
                 .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
 
@@ -1477,7 +1642,7 @@
         });
     }
 
-    // 3. تعديل بيانات الطالب (الاسم أو السنة/الصف)
+    // 3. تعديل بيانات الطالب
     async function editStudent(id) {
         if (currentTeacher.username !== 'admin') return;
         const student = studentsData.find(s => s.id.toString() === id.toString());
@@ -1506,6 +1671,7 @@
             updateStudentListDropdown();
             renderClassCards();
             renderManagerView();
+            renderAttendanceTable();
         }
         showMessage('app-msg', 'تم تعديل بيانات الطالب بنجاح', 'success');
     }
@@ -1559,7 +1725,7 @@
             else {
                 studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
                 localStorage.setItem('studentsData', JSON.stringify(studentsData));
-                renderStudentsTable(); updateStudentListDropdown(); renderClassCards(); renderManagerView();
+                renderStudentsTable(); updateStudentListDropdown(); renderClassCards(); renderManagerView(); renderAttendanceTable();
             }
             showMessage('app-msg', 'تم الحذف بنجاح', 'success');
         }
@@ -1632,7 +1798,7 @@
         }
     }
 
-    /* ================= دوال النسخ الاحتياطي التلقائي للأسبوع وللبريد ================= */
+    /* ================= دوال النسخ الاحتياطي ================= */
     function backupDataAndEmail(isAuto = false) {
         if (currentTeacher && currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') return;
 
@@ -1724,7 +1890,7 @@
                         localStorage.setItem('studentsData', JSON.stringify(studentsData)); 
                         localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
                         
-                        renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderManagerView(); renderClassCards();
+                        renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderMonthlyReport(); renderManagerView(); renderClassCards(); renderAttendanceTable();
                     }
                     showMessage('app-msg', 'تم استعادة كافة بيانات الدرجات والطلاب والمدرسين بنجاح!', 'success');
                 } else {
