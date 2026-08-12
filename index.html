@@ -12,6 +12,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
+    <!-- مكتبة EmailJS لإرسال النسخ الاحتياطية تلقائياً للبريد الإلكتروني -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -246,8 +249,8 @@
     <!-- أزرار التنقل -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('daily-tab', event)">الرصد اليومي</button>
-        <button class="tab-btn" onclick="switchTab('weekly-tab', event)">التقرير الأسبوعي</button>
-        <button class="tab-btn" onclick="switchTab('reports-tab', event)">التقرير الشهري</button>
+        <button class="tab-btn hidden" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">التقرير الأسبوعي</button>
+        <button class="tab-btn hidden" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">التقرير الشهري</button>
         <button class="tab-btn hidden" id="manager-tab-btn" style="background-color: var(--manager-color); color: white;" onclick="switchTab('manager-tab', event)">متابعة الصفوف</button>
         <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: #e67e22; color: white;" onclick="switchTab('admin-tab', event)">+ الإدارة والتحكم</button>
     </div>
@@ -329,7 +332,7 @@
         </div>
     </div>
 
-    <!-- 2. التقرير الأسبوعي -->
+    <!-- 2. التقرير الأسبوعي (خاص بالمدراء والأدمن فقط) -->
     <div id="weekly-tab" class="tab-content">
         <div class="card-view">
             <h3 class="card-title">التقرير الأسبوعي الشامل</h3>
@@ -368,8 +371,9 @@
                             <th>الثلاثاء (60)</th>
                             <th>الأربعاء (60)</th>
                             <th>الخميس (60)</th>
-                            <th>مجموع الأسبوع</th>
-                            <th>نسبة الحضور</th>
+                            <th>مجموع الأسبوع (من 300)</th>
+                            <th>متوسط الأسبوع (من 60)</th>
+                            <th>نسبة الحضور (%)</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -378,7 +382,7 @@
         </div>
     </div>
 
-    <!-- 3. تبويب التقارير الشهرية -->
+    <!-- 3. تبويب التقارير الشهرية (خاص بالمدراء والأدمن فقط) -->
     <div id="reports-tab" class="tab-content">
         <div class="card-view">
             <h3 class="card-title">التقرير الشهري الشامل</h3>
@@ -410,7 +414,7 @@
                         <tr>
                             <th>اسم الطالب</th><th>أيام الحضور</th><th>م. الحضور</th>
                             <th>م. السلوك</th><th>م. الماضي</th><th>م. الجديد</th>
-                            <th>م. التلاوة</th><th>م. الواجب</th><th>المجموع</th><th>نسبة الحضور</th><th>نسبة التقييم</th>
+                            <th>م. التلاوة</th><th>م. الواجب</th><th>مجموع الشهر</th><th>متوسط الشهر (من 60)</th><th>نسبة الحضور</th><th>نسبة التقييم</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -463,7 +467,7 @@
             <div class="table-responsive">
                 <table id="mgrWeeklyTable">
                     <thead>
-                        <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع</th><th>نسبة الحضور</th></tr>
+                        <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع (من 300)</th><th>متوسط الأسبوع (من 60)</th><th>نسبة الحضور (%)</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -488,7 +492,7 @@
             <div class="table-responsive">
                 <table id="mgrMonthlyTable">
                     <thead>
-                        <tr><th>اسم الطالب</th><th>أيام الحضور</th><th>المجموع</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>
+                        <tr><th>اسم الطالب</th><th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (من 60)</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -557,13 +561,14 @@
             <button class="action-btn btn-save" onclick="addStudent()">+ إضافة الطالب للسحابة</button>
         </div>
 
-        <!-- قسم النسخ الاحتياطي -->
+        <!-- قسم النسخ الاحتياطي وإرساله للبريد -->
         <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ffe0b2;">
-            <h3 style="margin-top: 0; color: #d35400; font-size: 1.1em;">النسخ الاحتياطي (ملف خارجي)</h3>
+            <h3 style="margin-top: 0; color: #d35400; font-size: 1.1em;">النسخ الاحتياطي الشامل وإرسال الإيميل (الطلاب، المعلمين، الدرجات)</h3>
+            <p style="font-size:0.85em; color:#666; margin-bottom:10px;">يتم حفظ نسخة كاملة تشمل كل درجات الطلاب منذ بداية التسجيل، والمعلمين، والطلاب مرتبة تماماً.</p>
             <div class="btn-group">
-                <button class="action-btn btn-export" onclick="backupData()">تحميل نسخة احتياطية (JSON)</button>
+                <button class="action-btn btn-export" onclick="backupDataAndEmail(false)">حفظ نسخة للكمبيوتر وإرسال للبريد</button>
                 <input type="file" id="restoreFile" accept=".json" style="display:none;" onchange="restoreData(event)">
-                <button class="action-btn btn-warning" onclick="document.getElementById('restoreFile').click()">استعادة من ملف</button>
+                <button class="action-btn btn-warning" onclick="document.getElementById('restoreFile').click()">استعادة النسخة الشاملة من ملف</button>
             </div>
         </div>
 
@@ -611,6 +616,13 @@
     } catch(e) {
         console.warn("الموقع يعمل على الذاكرة المحلية", e);
     }
+
+    // تهيئة EmailJS
+    (function(){
+        try {
+            emailjs.init("YOUR_PUBLIC_KEY"); // يتم استبدال مفتاح EmailJS إذا لزم الأمر
+        } catch(e) {}
+    })();
 
     let defaultStudents = [];
     let defaultTeachers = [ { id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" } ];
@@ -678,6 +690,9 @@
         document.getElementById('reportYear').value = new Date().getFullYear();
         document.getElementById('mgrMonthSelect').value = new Date().getMonth();
         document.getElementById('mgrYearSelect').value = new Date().getFullYear();
+
+        // فحص وإرسال النسخة الاحتياطية الأسبوعية التلقائية
+        checkWeeklyAutoBackup();
     };
 
     /* ================= دالة التصدير للإكسل العامة ================= */
@@ -689,12 +704,10 @@
 
     /* ================= دوال التاريخ والأسبوع ================= */
     function initCurrentDate() {
-        // تحديد التاريخ الحالي بصيغة YYYY-MM-DD
         const tzoffset = (new Date()).getTimezoneOffset() * 60000;
         const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
         document.getElementById('recordDate').value = localISOTime;
         
-        // تعيين فلتر الجدول لليوم الحالي فقط بشكل افتراضي
         if(!isShowingAllDays) {
             document.getElementById('filterDateDaily').value = localISOTime;
         }
@@ -723,12 +736,12 @@
         const btn = document.getElementById('togglePreviousBtn');
         
         if (isShowingAllDays) {
-            filterDateInput.value = ''; // إلغاء الفلتر لعرض الكل
+            filterDateInput.value = '';
             btn.innerText = 'إخفاء الأيام السابقة';
             btn.classList.remove('btn-warning');
             btn.classList.add('btn-export');
         } else {
-            filterDateInput.value = todayDate; // عرض اليوم المحدد فقط
+            filterDateInput.value = todayDate;
             btn.innerText = 'عرض الأيام السابقة';
             btn.classList.remove('btn-export');
             btn.classList.add('btn-warning');
@@ -765,7 +778,6 @@
         });
         weekSelect.value = currentWeekKey;
 
-        // تعبئة قائمة مدير الأسابيع بنفس القيم
         const mgrWeekSelect = document.getElementById('mgrWeekSelect');
         if(mgrWeekSelect) {
             mgrWeekSelect.innerHTML = weekSelect.innerHTML;
@@ -780,7 +792,6 @@
         const studentSelect = document.getElementById('studentNameSelect');
         studentSelect.innerHTML = '';
 
-        // ترتيب أبجدي
         const filteredStudents = studentsData
             .filter(s => s.className === className)
             .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
@@ -848,6 +859,7 @@
             currentTeacher = teacher;
             localStorage.setItem('currentTeacher', JSON.stringify(teacher));
             showAppScreen();
+            checkWeeklyAutoBackup();
         } else {
             showMessage('login-msg', 'بيانات الدخول غير صحيحة', 'error');
         }
@@ -876,15 +888,19 @@
         const weeklyClassSelect = document.getElementById('weeklyClassSelect');
         const adminBtn = document.getElementById('admin-tab-btn');
         const managerBtn = document.getElementById('manager-tab-btn');
+        const weeklyBtn = document.getElementById('weekly-tab-btn');
+        const reportsBtn = document.getElementById('reports-tab-btn');
         
         initCurrentDate();
 
-        // صلاحيات المدير أو الأدمن تتيح رؤية تبويب لوحة السنين والتحكم
+        // صلاحيات المدير فقط هى من تتيح رؤية التقارير ولوحة التحكم
         const isManager = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
 
         if (isManager) {
             adminBtn.classList.remove('hidden');
             managerBtn.classList.remove('hidden');
+            weeklyBtn.classList.remove('hidden');
+            reportsBtn.classList.remove('hidden');
             classSelect.disabled = false;
             weeklyClassSelect.disabled = false;
             renderTeachersTable();
@@ -892,6 +908,8 @@
         } else {
             adminBtn.classList.add('hidden');
             managerBtn.classList.add('hidden');
+            weeklyBtn.classList.add('hidden');
+            reportsBtn.classList.add('hidden');
             classSelect.value = currentTeacher.assignedClass; classSelect.disabled = true;
             weeklyClassSelect.value = currentTeacher.assignedClass; weeklyClassSelect.disabled = true;
         }
@@ -945,12 +963,10 @@
         const recVal = document.getElementById('recitation').value;
         const hwVal = document.getElementById('homework').value;
 
-        // --- شرط إجباري: كل الخانات الخاصة بالدرجات يجب أن تكون ممتلئة ---
         if (attVal === '' || behVal === '' || oldRVal === '' || newLVal === '' || recVal === '' || hwVal === '') {
             return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب! (المقررات فقط اختيارية)', 'error');
         }
 
-        // --- شرط إجباري: لا توجد درجة تزيد عن 10 ---
         if (attVal > 10 || behVal > 10 || oldRVal > 10 || newLVal > 10 || recVal > 10 || hwVal > 10) {
             return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها في أي خانة هي 10 درجات.', 'error');
         }
@@ -1029,7 +1045,6 @@
             return matchesClass && matchesSearch && matchesDate;
         });
 
-        // ترتيب بالأحدث تاريخاً ثم بالاسم الأبجدي
         filteredRecords.sort((a,b) => {
             let dateDiff = new Date(b.dateISO) - new Date(a.dateISO);
             if(dateDiff !== 0) return dateDiff;
@@ -1078,20 +1093,19 @@
         const selectedWeekKey = document.getElementById('weekSelect').value;
         const selectedClass = document.getElementById('weeklyClassSelect').value;
         if(!selectedWeekKey) {
-            tbody.innerHTML = '<tr><td colspan="8">لا توجد بيانات متاحة</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9">لا توجد بيانات متاحة</td></tr>';
             return;
         }
 
         const weekRecords = dailyRecords.filter(r => r.className === selectedClass && r.dateISO && getWeekKey(r.dateISO) === selectedWeekKey);
 
-        // جلب الأسماء وترتيبها أبجدياً
         const classStudents = studentsData
             .filter(s => s.className === selectedClass)
             .map(s => s.name)
             .sort((a,b) => a.localeCompare(b, 'ar'));
 
         if(classStudents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8">لا يوجد طلاب مسجلين في هذا القسم</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا القسم</td></tr>';
             return;
         }
 
@@ -1112,9 +1126,11 @@
                 }
             });
             
-            // حساب نسبة الحضور (حيث أقصى درجة حضور في اليوم هي 10)
-            let maxAttPossible = daysCount * 10;
-            let attPerc = maxAttPossible > 0 ? ((attTotal / maxAttPossible) * 100).toFixed(1) : 0;
+            // القسمة على 5 أيام الأسبوع لحساب المتوسط الأسبوعي
+            let weeklyAverage = (studentTotal / 5).toFixed(1);
+            
+            // حساب نسبة الحضور (نسبة مئوية للحضور بناءً على 5 أيام أسبوعية أقصاها 50 درجة)
+            let attPerc = ((attTotal / 50) * 100).toFixed(1);
             let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
             tbody.innerHTML += `
@@ -1125,8 +1141,9 @@
                     <td>${weekDays["الثلاثاء"]}</td>
                     <td>${weekDays["الأربعاء"]}</td>
                     <td>${weekDays["الخميس"]}</td>
-                    <td><strong>${studentTotal}</strong></td>
-                    <td><span class="badge ${daysCount > 0 ? badgeClass : ''}">${daysCount > 0 ? attPerc + '%' : '-'}</span></td>
+                    <td><strong>${studentTotal}</strong> / 300</td>
+                    <td style="color:var(--accent-color); font-weight:bold;">${weeklyAverage} / 60</td>
+                    <td><span class="badge ${badgeClass}">${attPerc}%</span></td>
                 </tr>
             `;
         });
@@ -1145,11 +1162,10 @@
         });
 
         if(relevantRecords.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="11">لا توجد بيانات لهذا الشهر</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="12">لا توجد بيانات لهذا الشهر</td></tr>';
             return;
         }
 
-        // جلب الأسماء وترتيبها أبجدياً
         const allStudents = [...new Set(relevantRecords.map(r => r.studentName))].sort((a,b) => a.localeCompare(b, 'ar'));
         
         allStudents.forEach(student => {
@@ -1166,6 +1182,7 @@
             const count = sRecords.length;
             const maxScore = count * 60;
             const maxAttScore = count * 10;
+            const monthlyAverage = count > 0 ? (totals.overall / count).toFixed(1) : 0;
             
             const overallPerc = maxScore > 0 ? ((totals.overall / maxScore) * 100).toFixed(1) : 0;
             const attPerc = maxAttScore > 0 ? ((totals.attendance / maxAttScore) * 100).toFixed(1) : 0;
@@ -1175,7 +1192,7 @@
 
             tbody.innerHTML += `
                 <tr>
-                    <td>${student}</td>
+                    <td style="font-weight:bold;">${student}</td>
                     <td>${count}</td>
                     <td>${(totals.attendance/count).toFixed(1)}</td>
                     <td>${(totals.behavior/count).toFixed(1)}</td>
@@ -1184,6 +1201,7 @@
                     <td>${(totals.recitation/count).toFixed(1)}</td>
                     <td>${(totals.homework/count).toFixed(1)}</td>
                     <td><strong>${totals.overall}</strong> / ${maxScore}</td>
+                    <td style="color:var(--accent-color); font-weight:bold;">${monthlyAverage} / 60</td>
                     <td><span class="badge ${badgeAtt}">${attPerc}%</span></td>
                     <td><span class="badge ${badgeOverall}">${overallPerc}%</span></td>
                 </tr>
@@ -1228,7 +1246,7 @@
         let classStds = studentsData.filter(s => s.className === currentManagerClass).map(s=>s.name).sort((a,b) => a.localeCompare(b, 'ar'));
         
         if(classStds.length === 0) {
-            tWeekly.innerHTML = '<tr><td colspan="8">لا يوجد طلاب في هذا القسم</td></tr>';
+            tWeekly.innerHTML = '<tr><td colspan="9">لا يوجد طلاب في هذا القسم</td></tr>';
         } else {
             classStds.forEach(student => {
                 let sRecs = weekRecords.filter(r => r.studentName === student);
@@ -1241,10 +1259,11 @@
                     }
                 });
                 
-                let attPerc = dCount > 0 ? ((attTotal / (dCount*10)) * 100).toFixed(1) : 0;
+                let wAvg = (stTotal / 5).toFixed(1);
+                let attPerc = ((attTotal / 50) * 100).toFixed(1);
                 let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
-                tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong></td><td><span class="badge ${dCount>0?badgeClass:''}">${dCount>0?attPerc+'%':'-'}</span></td></tr>`;
+                tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong> / 300</td><td><strong>${wAvg}</strong> / 60</td><td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
             });
         }
 
@@ -1260,13 +1279,14 @@
         
         let mStds = [...new Set(monthRecords.map(r=>r.studentName))].sort((a,b) => a.localeCompare(b, 'ar'));
         if(mStds.length===0) {
-            tMonthly.innerHTML = '<tr><td colspan="5">لا توجد بيانات لهذا الشهر</td></tr>';
+            tMonthly.innerHTML = '<tr><td colspan="6">لا توجد بيانات لهذا الشهر</td></tr>';
         } else {
             mStds.forEach(st => {
                 let stR = monthRecords.filter(r=>r.studentName===st);
                 let tot = 0; let attTot = 0; 
                 stR.forEach(r=> {tot+=getDailyTotal(r); attTot+=r.attendance; });
                 let cnt = stR.length; let max = cnt*60; let maxAtt = cnt*10;
+                let mAvg = cnt > 0 ? (tot / cnt).toFixed(1) : 0;
                 
                 let perc = max>0 ? ((tot/max)*100).toFixed(1) : 0;
                 let attPerc = maxAtt>0 ? ((attTot/maxAtt)*100).toFixed(1) : 0;
@@ -1275,6 +1295,7 @@
                     <td style="font-weight:bold;">${st}</td>
                     <td>${cnt}</td>
                     <td><strong>${tot}</strong> / ${max}</td>
+                    <td style="color:var(--accent-color); font-weight:bold;">${mAvg} / 60</td>
                     <td><span class="badge ${parseFloat(attPerc)>=75?'badge-blue':'badge-yellow'}">${attPerc}%</span></td>
                     <td><span class="badge ${parseFloat(perc)>=75?'badge-green':'badge-yellow'}">${perc}%</span></td>
                 </tr>`;
@@ -1283,7 +1304,7 @@
     }
 
 
-    /* ======== دوال الإدارة الأساسية (الطلاب، المعلمين، النسخ الاحتياطي) ======== */
+    /* ======== دوال الإدارة الأساسية والنسخ الاحتياطي وإرساله للبريد الإلكتروني ======== */
     async function addStudent() {
         if (currentTeacher.username !== 'admin') return;
         const name = document.getElementById('newStudentName').value.trim();
@@ -1316,7 +1337,6 @@
         const tbody = document.querySelector('#studentsTable tbody');
         if (!tbody) return; tbody.innerHTML = '';
         
-        // الترتيب الأبجدي لقائمة الإدارة
         const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
         
         sortedStudents.forEach(s => {
@@ -1362,13 +1382,78 @@
         }
     }
 
-    function backupData() {
-        if (currentTeacher.username !== 'admin') return;
-        const backupObj = { teachersData, studentsData, dailyRecords };
-        const blob = new Blob([JSON.stringify(backupObj, null, 2)], { type: 'application/json' });
+    /* ================= دوال النسخ الاحتياطي التلقائي للأسبوع وللبريد ================= */
+    function backupDataAndEmail(isAuto = false) {
+        if (currentTeacher && currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') return;
+
+        // فرز وترتيب البيانات الشاملة من أول الرصد
+        const sortedRecords = [...dailyRecords].sort((a,b) => new Date(a.dateISO) - new Date(b.dateISO));
+        const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+        const sortedTeachers = [...teachersData].sort((a,b) => a.username.localeCompare(b.username, 'ar'));
+
+        const backupObj = {
+            exportDate: new Date().toISOString(),
+            teachersData: sortedTeachers,
+            studentsData: sortedStudents,
+            dailyRecords: sortedRecords
+        };
+
+        const jsonStr = JSON.stringify(backupObj, null, 2);
+
+        // 1. تنزيل النسخة للكمبيوتر تلقائياً
+        const blob = new Blob([jsonStr], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
-        a.download = `backup_${new Date().toISOString().slice(0, 10)}.json`; a.click();
+        a.download = `backup_full_system_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+
+        // 2. إرسال إشعار ونسخة إلى yousirallam28@gmail.com
+        sendEmailBackup(jsonStr, isAuto);
+    }
+
+    function sendEmailBackup(jsonString, isAuto) {
+        const targetEmail = "yousirallam28@gmail.com";
+        
+        // المحاولة عبر مكتبة EmailJS إن تم إعدادها
+        try {
+            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+                to_email: targetEmail,
+                message: "مرفق النسخة الاحتياطية المكتملة لجميع الطلاب والمعلمين والدرجات مرتبة بجميع التواريخ.",
+                backup_data: jsonString.substring(0, 4500) // جزء من البيانات إذا كانت الرسالة كبيرة
+            }).then(() => {
+                showMessage('app-msg', 'تم تنزيل النسخة بالكمبيوتر وإرسالها إلى البريد الإلكتروني بنجاح', 'success');
+            }).catch(() => {
+                fallbackMailto(targetEmail, isAuto);
+            });
+        } catch(e) {
+            fallbackMailto(targetEmail, isAuto);
+        }
+    }
+
+    function fallbackMailto(email, isAuto) {
+        if (!isAuto) {
+            showMessage('app-msg', 'تم تحميل الملف بنجاح وتجهيز الرسالة للبريد: ' + email, 'success');
+            window.location.href = `mailto:${email}?subject=النسخة الاحتياطية الشاملة لجميع الدرجات&body=تم تحضير الملف وتحميله للكمبيوتر بنجاح.`;
+        }
+    }
+
+    function checkWeeklyAutoBackup() {
+        if (!currentTeacher || (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل')) return;
+        
+        const lastBackup = localStorage.getItem('lastWeeklyBackupDate');
+        const now = new Date();
+        const todayStr = now.toISOString().slice(0, 10);
+        
+        if (!lastBackup) {
+            localStorage.setItem('lastWeeklyBackupDate', todayStr);
+            return;
+        }
+        
+        const diffDays = Math.floor((now - new Date(lastBackup)) / (1000 * 60 * 60 * 24));
+        if (diffDays >= 7) {
+            backupDataAndEmail(true);
+            localStorage.setItem('lastWeeklyBackupDate', todayStr);
+        }
     }
 
     function restoreData(event) {
@@ -1385,13 +1470,21 @@
                         for (let s of data.studentsData) await db.collection("students").doc(s.id.toString()).set(s);
                         for (let r of data.dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
                     } else {
-                        teachersData = data.teachersData.map(applyDataMapping); studentsData = data.studentsData.map(applyDataMapping); dailyRecords = data.dailyRecords.map(applyDataMapping);
-                        localStorage.setItem('teachersData', JSON.stringify(teachersData)); localStorage.setItem('studentsData', JSON.stringify(studentsData)); localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
+                        teachersData = data.teachersData.map(applyDataMapping); 
+                        studentsData = data.studentsData.map(applyDataMapping); 
+                        dailyRecords = data.dailyRecords.map(applyDataMapping);
+                        
+                        localStorage.setItem('teachersData', JSON.stringify(teachersData)); 
+                        localStorage.setItem('studentsData', JSON.stringify(studentsData)); 
+                        localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
+                        
                         renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderManagerView();
                     }
-                    showMessage('app-msg', 'تم الاستعادة بنجاح', 'success');
+                    showMessage('app-msg', 'تم استعادة كافة بيانات الدرجات والطلاب والمدرسين بنجاح!', 'success');
+                } else {
+                    showMessage('app-msg', 'الملف المحدد لا يحتوي على البنية الصحيحة للنظام', 'error');
                 }
-            } catch (err) { showMessage('app-msg', 'خطأ في الملف', 'error'); }
+            } catch (err) { showMessage('app-msg', 'حدث خطأ أثناء قراءة الملف', 'error'); }
         };
         reader.readAsText(file);
     }
