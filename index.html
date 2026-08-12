@@ -269,17 +269,22 @@
             <div class="form-group">
                 <label>الصف:</label>
                 <select id="classSelect" onchange="updateStudentListDropdown();">
-                    <option value="أولى">أولى</option>
+                    <option value="أولى - أولاد">أولى - أولاد</option>
+                    <option value="أولى - بنات">أولى - بنات</option>
                     <option value="أولى شرعي">أولى شرعي</option>
-                    <option value="ثانية">ثانية</option>
-                    <option value="ثالثة">ثالثة</option>
-                    <option value="رابعة">رابعة</option>
-                    <option value="خامسة">خامسة</option>
+                    <option value="ثانية - أولاد">ثانية - أولاد</option>
+                    <option value="ثانية - بنات">ثانية - بنات</option>
+                    <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                    <option value="ثالثة - بنات">ثالثة - بنات</option>
+                    <option value="رابعة - أولاد">رابعة - أولاد</option>
+                    <option value="رابعة - بنات">رابعة - بنات</option>
+                    <option value="خامسة - أولاد">خامسة - أولاد</option>
+                    <option value="خامسة - بنات">خامسة - بنات</option>
                 </select>
             </div>
             
             <div class="form-group" style="grid-column: span 2;">
-                <label>اسم الطالب:</label>
+                <label>اسم الطالب/الطالبة:</label>
                 <select id="studentNameSelect" style="font-weight: bold; color: var(--primary-color);">
                     <!-- يتم تعبئتها ديناميكياً -->
                 </select>
@@ -308,12 +313,12 @@
         </div>
 
         <div class="btn-group">
-            <button class="action-btn btn-save" onclick="addGrade()">حفظ درجات الطالب (من 60)</button>
+            <button class="action-btn btn-save" onclick="addGrade()">حفظ الدرجات (من 60)</button>
             <button class="action-btn btn-export" onclick="exportToExcel('gradesTable', 'الرصد_اليومي')">تصدير إكسل (اليومي)</button>
         </div>
 
         <div class="search-box">
-            <input type="text" id="searchDaily" placeholder="🔍 بحث باسم الطالب..." oninput="renderDailyTable()">
+            <input type="text" id="searchDaily" placeholder="🔍 بحث باسم الطالب/الطالبة..." oninput="renderDailyTable()">
             <input type="date" id="filterDateDaily" title="عرض درجات يوم محدد" onchange="renderDailyTable()" style="flex:1;">
             <button class="action-btn btn-warning" id="togglePreviousBtn" style="flex: none; padding: 8px;" onclick="togglePreviousRecords()">عرض الأيام السابقة</button>
         </div>
@@ -322,7 +327,7 @@
             <table id="gradesTable">
                 <thead>
                     <tr>
-                        <th>التاريخ واليوم</th><th>الصف</th><th>المعلم</th><th>اسم الطالب</th>
+                        <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب/الطالبة</th>
                         <th>مقرر التلاوة</th><th>مقرر الماضي</th><th>مقرر الجديد</th>
                         <th>حضور</th><th>سلوك</th><th>ماضي</th><th>جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
                     </tr>
@@ -345,12 +350,17 @@
                 <div class="form-group">
                     <label>الصف:</label>
                     <select id="weeklyClassSelect" onchange="renderWeeklyTable()">
-                        <option value="أولى">أولى</option>
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
                         <option value="أولى شرعي">أولى شرعي</option>
-                        <option value="ثانية">ثانية</option>
-                        <option value="ثالثة">ثالثة</option>
-                        <option value="رابعة">رابعة</option>
-                        <option value="خامسة">خامسة</option>
+                        <option value="ثانية - أولاد">ثانية - أولاد</option>
+                        <option value="ثانية - بنات">ثانية - بنات</option>
+                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                        <option value="ثالثة - بنات">ثالثة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسة - أولاد">خامسة - أولاد</option>
+                        <option value="خامسة - بنات">خامسة - بنات</option>
                     </select>
                 </div>
             </div>
@@ -365,7 +375,7 @@
                 <table id="weeklyTable">
                     <thead>
                         <tr>
-                            <th style="min-width: 150px;">اسم الطالب</th>
+                            <th style="min-width: 150px;">اسم الطالب/الطالبة</th>
                             <th>الأحد (60)</th>
                             <th>الاثنين (60)</th>
                             <th>الثلاثاء (60)</th>
@@ -412,7 +422,7 @@
                 <table id="monthlyReportTable">
                     <thead>
                         <tr>
-                            <th>اسم الطالب</th><th>أيام الحضور</th><th>م. الحضور</th>
+                            <th>اسم الطالب/الطالبة</th><th>أيام الحضور</th><th>م. الحضور</th>
                             <th>م. السلوك</th><th>م. الماضي</th><th>م. الجديد</th>
                             <th>م. التلاوة</th><th>م. الواجب</th><th>مجموع الشهر</th><th>متوسط الشهر (من 60)</th><th>نسبة الحضور</th><th>نسبة التقييم</th>
                         </tr>
@@ -426,15 +436,20 @@
     <!-- 4. تبويب متابعة الصفوف (خاص بالمديرين والأدمن فقط) -->
     <div id="manager-tab" class="tab-content">
         <div class="tabs" id="manager-classes-tabs" style="border-bottom: 2px solid var(--manager-color); padding-bottom: 10px;">
-            <button class="tab-btn manager-active" onclick="switchManagerClass('أولى', event)">أولى</button>
+            <button class="tab-btn manager-active" onclick="switchManagerClass('أولى - أولاد', event)">أولى - أولاد</button>
+            <button class="tab-btn" onclick="switchManagerClass('أولى - بنات', event)">أولى - بنات</button>
             <button class="tab-btn" onclick="switchManagerClass('أولى شرعي', event)">أولى شرعي</button>
-            <button class="tab-btn" onclick="switchManagerClass('ثانية', event)">ثانية</button>
-            <button class="tab-btn" onclick="switchManagerClass('ثالثة', event)">ثالثة</button>
-            <button class="tab-btn" onclick="switchManagerClass('رابعة', event)">رابعة</button>
-            <button class="tab-btn" onclick="switchManagerClass('خامسة', event)">خامسة</button>
+            <button class="tab-btn" onclick="switchManagerClass('ثانية - أولاد', event)">ثانية - أولاد</button>
+            <button class="tab-btn" onclick="switchManagerClass('ثانية - بنات', event)">ثانية - بنات</button>
+            <button class="tab-btn" onclick="switchManagerClass('ثالثة - أولاد', event)">ثالثة - أولاد</button>
+            <button class="tab-btn" onclick="switchManagerClass('ثالثة - بنات', event)">ثالثة - بنات</button>
+            <button class="tab-btn" onclick="switchManagerClass('رابعة - أولاد', event)">رابعة - أولاد</button>
+            <button class="tab-btn" onclick="switchManagerClass('رابعة - بنات', event)">رابعة - بنات</button>
+            <button class="tab-btn" onclick="switchManagerClass('خامسة - أولاد', event)">خامسة - أولاد</button>
+            <button class="tab-btn" onclick="switchManagerClass('خامسة - بنات', event)">خامسة - بنات</button>
         </div>
         
-        <h3 style="color: var(--manager-color); text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">شاشة المراقبة المجمعة لـ: <span id="mgr-class-name" style="color:var(--danger-color);">أولى</span></h3>
+        <h3 style="color: var(--manager-color); text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">شاشة المراقبة المجمعة لـ: <span id="mgr-class-name" style="color:var(--danger-color);">أولى - أولاد</span></h3>
         
         <!-- قسم اليومي للمدير -->
         <div class="card-view">
@@ -448,7 +463,7 @@
             <div class="table-responsive">
                 <table id="mgrDailyTable">
                     <thead>
-                        <tr><th>التاريخ</th><th>المعلم</th><th>اسم الطالب</th><th>م. التلاوة</th><th>ماضي</th><th>جديد</th><th>حضور</th><th>سلوك</th><th>م.ماضي</th><th>م.جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th></tr>
+                        <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب/الطالبة</th><th>م. التلاوة</th><th>ماضي</th><th>جديد</th><th>حضور</th><th>سلوك</th><th>م.ماضي</th><th>م.جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -467,7 +482,7 @@
             <div class="table-responsive">
                 <table id="mgrWeeklyTable">
                     <thead>
-                        <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع (من 300)</th><th>متوسط الأسبوع (من 60)</th><th>نسبة الحضور (%)</th></tr>
+                        <tr><th>اسم الطالب/الطالبة</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع (من 300)</th><th>متوسط الأسبوع (من 60)</th><th>نسبة الحضور (%)</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -492,7 +507,7 @@
             <div class="table-responsive">
                 <table id="mgrMonthlyTable">
                     <thead>
-                        <tr><th>اسم الطالب</th><th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (من 60)</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>
+                        <tr><th>اسم الطالب/الطالبة</th><th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (من 60)</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -502,9 +517,9 @@
 
     <!-- 5. تبويب لوحة التحكم والإدارة (للأدمن فقط) -->
     <div id="admin-tab" class="tab-content">
-        <!-- قسم إضافة معلم -->
+        <!-- قسم إضافة معلم/معلمة -->
         <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd;">
-            <h3 style="margin-top: 0; font-size: 1.1em; color: var(--primary-color);">إضافة معلم جديد</h3>
+            <h3 style="margin-top: 0; font-size: 1.1em; color: var(--primary-color);">إضافة معلم / معلمة جديد</h3>
             <div class="form-grid">
                 <div class="form-group">
                     <label>اسم المستخدم:</label>
@@ -515,14 +530,19 @@
                     <input type="text" id="newTeacherPass" placeholder="كلمة المرور">
                 </div>
                 <div class="form-group">
-                    <label>الصف:</label>
+                    <label>الصف المسند:</label>
                     <select id="newTeacherClass">
-                        <option value="أولى">أولى</option>
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
                         <option value="أولى شرعي">أولى شرعي</option>
-                        <option value="ثانية">ثانية</option>
-                        <option value="ثالثة">ثالثة</option>
-                        <option value="رابعة">رابعة</option>
-                        <option value="خامسة">خامسة</option>
+                        <option value="ثانية - أولاد">ثانية - أولاد</option>
+                        <option value="ثانية - بنات">ثانية - بنات</option>
+                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                        <option value="ثالثة - بنات">ثالثة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسة - أولاد">خامسة - أولاد</option>
+                        <option value="خامسة - بنات">خامسة - بنات</option>
                         <option value="الكل">مدير (جميع الصلاحيات)</option>
                     </select>
                 </div>
@@ -535,30 +555,35 @@
                     </select>
                 </div>
             </div>
-            <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم</button>
+            <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم / المعلمة</button>
         </div>
 
         <!-- قسم إضافة طالب -->
         <div style="background: #eef7fc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #bce1f3;">
-            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">إضافة طالب جديد</h3>
+            <h3 style="margin-top: 0; font-size: 1.1em; color: #2980b9;">إضافة طالب / طالبة جديد</h3>
             <div class="form-grid">
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>اسم الطالب:</label>
-                    <input type="text" id="newStudentName" placeholder="اسم الطالب بالكامل">
+                    <label>اسم الطالب/الطالبة:</label>
+                    <input type="text" id="newStudentName" placeholder="الاسم بالكامل">
                 </div>
                 <div class="form-group">
                     <label>الصف:</label>
                     <select id="newStudentClass">
-                        <option value="أولى">أولى</option>
+                        <option value="أولى - أولاد">أولى - أولاد</option>
+                        <option value="أولى - بنات">أولى - بنات</option>
                         <option value="أولى شرعي">أولى شرعي</option>
-                        <option value="ثانية">ثانية</option>
-                        <option value="ثالثة">ثالثة</option>
-                        <option value="رابعة">رابعة</option>
-                        <option value="خامسة">خامسة</option>
+                        <option value="ثانية - أولاد">ثانية - أولاد</option>
+                        <option value="ثانية - بنات">ثانية - بنات</option>
+                        <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                        <option value="ثالثة - بنات">ثالثة - بنات</option>
+                        <option value="رابعة - أولاد">رابعة - أولاد</option>
+                        <option value="رابعة - بنات">رابعة - بنات</option>
+                        <option value="خامسة - أولاد">خامسة - أولاد</option>
+                        <option value="خامسة - بنات">خامسة - بنات</option>
                     </select>
                 </div>
             </div>
-            <button class="action-btn btn-save" onclick="addStudent()">+ إضافة الطالب للسحابة</button>
+            <button class="action-btn btn-save" onclick="addStudent()">+ إضافة للسحابة</button>
         </div>
 
         <!-- قسم النسخ الاحتياطي وإرساله للبريد -->
@@ -572,21 +597,21 @@
             </div>
         </div>
 
-        <h3 style="color: var(--primary-color);">إدارة المعلمين المسجلين</h3>
+        <h3 style="color: var(--primary-color);">إدارة المعلمين والمعلمات المسجلين</h3>
         <div class="table-responsive" style="margin-bottom: 20px;">
             <table id="teachersTable">
                 <thead>
-                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف</th><th>المركز</th><th>إجراء</th></tr>
+                    <tr><th>اسم المستخدم</th><th>كلمة المرور</th><th>الصف المسند</th><th>المركز</th><th>إجراء</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
         </div>
 
-        <h3 style="color: var(--primary-color);">إدارة الطلاب المسجلين</h3>
+        <h3 style="color: var(--primary-color);">إدارة الطلاب والطلبات المسجلين</h3>
         <div class="table-responsive">
             <table id="studentsTable">
                 <thead>
-                    <tr><th>اسم الطالب</th><th>الصف</th><th>إجراء</th></tr>
+                    <tr><th>الاسم</th><th>الصف</th><th>إجراء</th></tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -620,7 +645,7 @@
     // تهيئة EmailJS
     (function(){
         try {
-            emailjs.init("YOUR_PUBLIC_KEY"); // يتم استبدال مفتاح EmailJS إذا لزم الأمر
+            emailjs.init("YOUR_PUBLIC_KEY");
         } catch(e) {}
     })();
 
@@ -631,17 +656,17 @@
     let studentsData = [];
     let dailyRecords = [];
     let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
-    let isShowingAllDays = false; // متحكم إظهار الأيام السابقة للمعلم
-    let currentManagerClass = 'أولى'; // الصف الافتراضي في لوحة الإدارة
+    let isShowingAllDays = false;
+    let currentManagerClass = 'أولى - أولاد';
 
-    /* خريطة التصحيح وفصل "أولى" عن "أولى شرعي" بدقة */
+    /* خريطة التصحيح وفصل البنين والبنات لجميع المراحل عدا "أولى شرعي" */
     const nameMapping = {
         "اولي شارعي": "أولى شرعي", "الصف الأول الشرعي - أولاد": "أولى شرعي", "الصف الأول الشرعي - بنات": "أولى شرعي",
-        "الصف الأول - أولاد": "أولى", "الصف الأول - بنات": "أولى", "الصف الأول": "أولى", "اولي": "أولى", "أولي": "أولى", "أولى": "أولى",
-        "الصف الثاني - أولاد": "ثانية", "الصف الثاني - بنات": "ثانية",
-        "الصف الثالث - أولاد": "ثالثة", "الصف الثالث - بنات": "ثالثة",
-        "الصف الرابع - أولاد": "رابعة", "الصف الرابع - بنات": "رابعة",
-        "الصف الخامس - أولاد": "خامسة", "الصف الخامس - بنات": "خامسة"
+        "الصف الأول - أولاد": "أولى - أولاد", "الصف الأول - بنات": "أولى - بنات",
+        "الصف الثاني - أولاد": "ثانية - أولاد", "الصف الثاني - بنات": "ثانية - بنات",
+        "الصف الثالث - أولاد": "ثالثة - أولاد", "الصف الثالث - بنات": "ثالثة - بنات",
+        "الصف الرابع - أولاد": "رابعة - أولاد", "الصف الرابع - بنات": "رابعة - بنات",
+        "الصف الخامس - أولاد": "خامسة - أولاد", "الصف الخامس - بنات": "خامسة - بنات"
     };
 
     function applyDataMapping(item) {
@@ -691,7 +716,6 @@
         document.getElementById('mgrMonthSelect').value = new Date().getMonth();
         document.getElementById('mgrYearSelect').value = new Date().getFullYear();
 
-        // فحص وإرسال النسخة الاحتياطية الأسبوعية التلقائية
         checkWeeklyAutoBackup();
     };
 
@@ -797,7 +821,7 @@
             .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
         if (filteredStudents.length === 0) {
-            studentSelect.innerHTML = '<option value="">لا توجد أسماء طلاب مسجلة في هذا القسم</option>';
+            studentSelect.innerHTML = '<option value="">لا توجد أسماء مسجلة في هذا الصف</option>';
             return;
         }
         filteredStudents.forEach(s => {
@@ -881,7 +905,7 @@
         document.getElementById('app-screen').classList.remove('hidden');
 
         document.getElementById('teacher-name-display').innerText = currentTeacher.username;
-        document.getElementById('teacher-class-display').innerText = currentTeacher.assignedClass === 'الكل' ? 'جميع الأقسام (إدارة)' : currentTeacher.assignedClass;
+        document.getElementById('teacher-class-display').innerText = currentTeacher.assignedClass === 'الكل' ? 'جميع الصفوف (إدارة)' : currentTeacher.assignedClass;
         document.getElementById('teacher-center-display').innerText = currentTeacher.center || '-';
 
         const classSelect = document.getElementById('classSelect');
@@ -893,7 +917,6 @@
         
         initCurrentDate();
 
-        // صلاحيات المدير فقط هى من تتيح رؤية التقارير ولوحة التحكم
         const isManager = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
 
         if (isManager) {
@@ -971,7 +994,7 @@
             return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها في أي خانة هي 10 درجات.', 'error');
         }
 
-        if (!studentName) return showMessage('app-msg', 'يرجى اختيار اسم الطالب', 'error');
+        if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
         if (!dateISO) return showMessage('app-msg', 'يرجى اختيار التاريخ بشكل صحيح', 'error');
 
         const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
@@ -1105,7 +1128,7 @@
             .sort((a,b) => a.localeCompare(b, 'ar'));
 
         if(classStudents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا القسم</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا الصف</td></tr>';
             return;
         }
 
@@ -1126,10 +1149,7 @@
                 }
             });
             
-            // القسمة على 5 أيام الأسبوع لحساب المتوسط الأسبوعي
             let weeklyAverage = (studentTotal / 5).toFixed(1);
-            
-            // حساب نسبة الحضور (نسبة مئوية للحضور بناءً على 5 أيام أسبوعية أقصاها 50 درجة)
             let attPerc = ((attTotal / 50) * 100).toFixed(1);
             let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
@@ -1209,7 +1229,7 @@
         });
     }
 
-    /* =================== دوال لوحة متابعة السنين (خاص بالمدير) =================== */
+    /* =================== دوال لوحة متابعة الصفوف (خاص بالمدير) =================== */
     function switchManagerClass(className, event) {
         document.querySelectorAll('#manager-classes-tabs .tab-btn').forEach(btn => btn.classList.remove('manager-active'));
         event.target.classList.add('manager-active');
@@ -1246,7 +1266,7 @@
         let classStds = studentsData.filter(s => s.className === currentManagerClass).map(s=>s.name).sort((a,b) => a.localeCompare(b, 'ar'));
         
         if(classStds.length === 0) {
-            tWeekly.innerHTML = '<tr><td colspan="9">لا يوجد طلاب في هذا القسم</td></tr>';
+            tWeekly.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا الصف</td></tr>';
         } else {
             classStds.forEach(student => {
                 let sRecs = weekRecords.filter(r => r.studentName === student);
@@ -1309,7 +1329,7 @@
         if (currentTeacher.username !== 'admin') return;
         const name = document.getElementById('newStudentName').value.trim();
         const className = document.getElementById('newStudentClass').value;
-        if (!name) return showMessage('app-msg', 'يرجى كتابة اسم الطالب', 'error');
+        if (!name) return showMessage('app-msg', 'يرجى كتابة الاسم بالكامل', 'error');
 
         const newStudent = { id: 's_' + Date.now(), name, className };
         if (useFirebase) await db.collection("students").doc(newStudent.id).set(newStudent);
@@ -1323,7 +1343,7 @@
 
     async function deleteStudent(id) {
         if (currentTeacher.username !== 'admin') return;
-        if (confirm('حذف هذا الطالب؟')) {
+        if (confirm('هل أنت متأكد من الحذف؟')) {
             if (useFirebase) await db.collection("students").doc(id.toString()).delete();
             else {
                 studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
@@ -1352,13 +1372,13 @@
         const c = document.getElementById('newTeacherClass').value;
         const cn = document.getElementById('newTeacherCenter').value;
 
-        if(!u || !p) return showMessage('app-msg', 'يرجى إدخال البيانات', 'error');
-        if(teachersData.some(t => t.username === u)) return showMessage('app-msg', 'الاسم موجود مسبقاً', 'error');
+        if(!u || !p) return showMessage('app-msg', 'يرجى إدخال البيانات كاملة', 'error');
+        if(teachersData.some(t => t.username === u)) return showMessage('app-msg', 'اسم المستخدم موجود مسبقاً', 'error');
 
         const newTeacher = { id: Date.now().toString(), username: u, password: p, assignedClass: c, center: cn };
         if (useFirebase) await db.collection("teachers").doc(newTeacher.id).set(newTeacher);
         else { teachersData.push(newTeacher); localStorage.setItem('teachersData', JSON.stringify(teachersData)); renderTeachersTable(); }
-        showMessage('app-msg', 'تم الإضافة', 'success');
+        showMessage('app-msg', 'تم إضافة المعلم/المعلمة بنجاح', 'success');
         document.getElementById('newTeacherUser').value = ''; document.getElementById('newTeacherPass').value = '';
     }
 
@@ -1375,8 +1395,8 @@
     async function deleteTeacher(id) {
         if (currentTeacher.username !== 'admin') return;
         const teacherToDelete = teachersData.find(t => t.id.toString() === id.toString());
-        if (teacherToDelete && teacherToDelete.username === 'admin') return showMessage('app-msg', 'لا يمكن حذف المدير', 'error');
-        if(confirm('حذف هذا المعلم؟')) {
+        if (teacherToDelete && teacherToDelete.username === 'admin') return showMessage('app-msg', 'لا يمكن حذف حساب المدير الرئيسي', 'error');
+        if(confirm('هل أنت متأكد من الحذف؟')) {
             if (useFirebase) await db.collection("teachers").doc(id.toString()).delete();
             else { teachersData = teachersData.filter(t => t.id.toString() !== id.toString()); localStorage.setItem('teachersData', JSON.stringify(teachersData)); renderTeachersTable(); }
         }
@@ -1386,7 +1406,6 @@
     function backupDataAndEmail(isAuto = false) {
         if (currentTeacher && currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') return;
 
-        // فرز وترتيب البيانات الشاملة من أول الرصد
         const sortedRecords = [...dailyRecords].sort((a,b) => new Date(a.dateISO) - new Date(b.dateISO));
         const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
         const sortedTeachers = [...teachersData].sort((a,b) => a.username.localeCompare(b.username, 'ar'));
@@ -1400,26 +1419,23 @@
 
         const jsonStr = JSON.stringify(backupObj, null, 2);
 
-        // 1. تنزيل النسخة للكمبيوتر تلقائياً
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
         a.download = `backup_full_system_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
 
-        // 2. إرسال إشعار ونسخة إلى yousirallam28@gmail.com
         sendEmailBackup(jsonStr, isAuto);
     }
 
     function sendEmailBackup(jsonString, isAuto) {
         const targetEmail = "yousirallam28@gmail.com";
         
-        // المحاولة عبر مكتبة EmailJS إن تم إعدادها
         try {
             emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
                 to_email: targetEmail,
                 message: "مرفق النسخة الاحتياطية المكتملة لجميع الطلاب والمعلمين والدرجات مرتبة بجميع التواريخ.",
-                backup_data: jsonString.substring(0, 4500) // جزء من البيانات إذا كانت الرسالة كبيرة
+                backup_data: jsonString.substring(0, 4500)
             }).then(() => {
                 showMessage('app-msg', 'تم تنزيل النسخة بالكمبيوتر وإرسالها إلى البريد الإلكتروني بنجاح', 'success');
             }).catch(() => {
