@@ -174,11 +174,28 @@
         .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; color: white; }
         .badge-green { background-color: var(--success-color); }
         .badge-yellow { background-color: var(--warning-color); }
+        .badge-blue { background-color: var(--accent-color); }
 
         .search-box { margin-bottom: 15px; display: flex; gap: 8px; flex-wrap: wrap; }
         .search-box input { flex: 1; min-width: 150px; }
 
         .hidden { display: none !important; }
+
+        .card-view {
+            background: #fff; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ddd; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .card-title {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 10px;
+        }
 
         @media (max-width: 600px) {
             body { padding: 5px; }
@@ -193,6 +210,7 @@
             .tabs, .btn-group, .user-bar, .form-grid, .search-box, #admin-tab, #manager-tab .tabs, .toast-msg { display: none !important; }
             .container { box-shadow: none; padding: 0; }
             body { background: white; padding: 0; }
+            .card-view { box-shadow: none; border: none; padding: 0; }
         }
     </style>
 </head>
@@ -265,30 +283,30 @@
             </div>
             
             <div class="form-group" style="grid-column: span 2;">
-                <label style="color: var(--accent-color);">مقرر التلاوة:</label>
+                <label style="color: var(--accent-color);">مقرر التلاوة (اختياري):</label>
                 <input type="text" id="recitationTopic" placeholder="اكتب المقرر أو الملاحظة هنا..." style="border-color: var(--accent-color); font-weight: bold;">
             </div>
 
             <div class="form-group" style="grid-column: span 2;">
-                <label>مقرر الماضي (تسميع):</label>
+                <label>مقرر الماضي تسميع (اختياري):</label>
                 <input type="text" id="oldTopicText" placeholder="اكتب المقرر أو الملاحظة هنا...">
             </div>
             <div class="form-group" style="grid-column: span 2;">
-                <label>مقرر الجديد (حفظ):</label>
+                <label>مقرر الجديد حفظ (اختياري):</label>
                 <input type="text" id="newTopicText" placeholder="اكتب المقرر أو الملاحظة هنا...">
             </div>
 
-            <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10"></div>
-            <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10"></div>
-            <div class="form-group"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10"></div>
-            <div class="form-group"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10"></div>
-            <div class="form-group"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10"></div>
-            <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10"></div>
+            <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10" placeholder="مطلوب"></div>
+            <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="مطلوب"></div>
+            <div class="form-group"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="مطلوب"></div>
+            <div class="form-group"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="مطلوب"></div>
+            <div class="form-group"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="مطلوب"></div>
+            <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="مطلوب"></div>
         </div>
 
         <div class="btn-group">
-            <button class="action-btn btn-save" onclick="addGrade()">حفظ بيانات الطالب (من 60)</button>
-            <button id="btn-export-daily" class="action-btn btn-export hidden" onclick="exportDailyToExcel()">تصدير إكسل (اليومي)</button>
+            <button class="action-btn btn-save" onclick="addGrade()">حفظ درجات الطالب (من 60)</button>
+            <button class="action-btn btn-export" onclick="exportToExcel('gradesTable', 'الرصد_اليومي')">تصدير إكسل (اليومي)</button>
         </div>
 
         <div class="search-box">
@@ -313,83 +331,91 @@
 
     <!-- 2. التقرير الأسبوعي -->
     <div id="weekly-tab" class="tab-content">
-        <div class="form-grid">
-            <div class="form-group" style="grid-column: span 2;">
-                <label>اختر الأسبوع (تلقائي مع التحديث):</label>
-                <select id="weekSelect" onchange="renderWeeklyTable()" style="font-weight:bold; color:var(--primary-color);">
-                </select>
+        <div class="card-view">
+            <h3 class="card-title">التقرير الأسبوعي الشامل</h3>
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>اختر الأسبوع (تلقائي مع التحديث):</label>
+                    <select id="weekSelect" onchange="renderWeeklyTable()" style="font-weight:bold; color:var(--primary-color);">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الصف:</label>
+                    <select id="weeklyClassSelect" onchange="renderWeeklyTable()">
+                        <option value="أولى">أولى</option>
+                        <option value="أولى شرعي">أولى شرعي</option>
+                        <option value="ثانية">ثانية</option>
+                        <option value="ثالثة">ثالثة</option>
+                        <option value="رابعة">رابعة</option>
+                        <option value="خامسة">خامسة</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>الصف:</label>
-                <select id="weeklyClassSelect" onchange="renderWeeklyTable()">
-                    <option value="أولى">أولى</option>
-                    <option value="أولى شرعي">أولى شرعي</option>
-                    <option value="ثانية">ثانية</option>
-                    <option value="ثالثة">ثالثة</option>
-                    <option value="رابعة">رابعة</option>
-                    <option value="خامسة">خامسة</option>
-                </select>
+
+            <div class="btn-group">
+                <button class="action-btn btn-save" onclick="renderWeeklyTable()">تحديث التقرير الأسبوعي</button>
+                <button class="action-btn btn-export" onclick="exportToExcel('weeklyTable', 'التقرير_الأسبوعي')">تصدير التقرير (إكسل)</button>
+                <button class="action-btn btn-warning" onclick="window.print()">طباعة</button>
             </div>
-        </div>
 
-        <div class="btn-group">
-            <button class="action-btn btn-save" onclick="renderWeeklyTable()">تحديث التقرير الأسبوعي</button>
-            <button class="action-btn btn-warning" onclick="window.print()">طباعة</button>
-        </div>
-
-        <div class="table-responsive">
-            <table id="weeklyTable">
-                <thead>
-                    <tr>
-                        <th style="min-width: 150px;">اسم الطالب</th>
-                        <th>الأحد (60)</th>
-                        <th>الاثنين (60)</th>
-                        <th>الثلاثاء (60)</th>
-                        <th>الأربعاء (60)</th>
-                        <th>الخميس (60)</th>
-                        <th>مجموع الأسبوع</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="weeklyTable">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 150px;">اسم الطالب</th>
+                            <th>الأحد (60)</th>
+                            <th>الاثنين (60)</th>
+                            <th>الثلاثاء (60)</th>
+                            <th>الأربعاء (60)</th>
+                            <th>الخميس (60)</th>
+                            <th>مجموع الأسبوع</th>
+                            <th>نسبة الحضور</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- 3. تبويب التقارير الشهرية -->
     <div id="reports-tab" class="tab-content">
-        <div class="form-grid">
-            <div class="form-group">
-                <label>الشهر:</label>
-                <select id="reportMonth">
-                    <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
-                    <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
-                    <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
-                    <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
-                </select>
+        <div class="card-view">
+            <h3 class="card-title">التقرير الشهري الشامل</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>الشهر:</label>
+                    <select id="reportMonth">
+                        <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
+                        <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
+                        <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
+                        <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>السنة:</label>
+                    <input type="number" id="reportYear" value="2026">
+                </div>
             </div>
-            <div class="form-group">
-                <label>السنة:</label>
-                <input type="number" id="reportYear" value="2026">
+
+            <div class="btn-group">
+                <button class="action-btn btn-save" onclick="renderMonthlyReport()">عرض التقرير الشهري</button>
+                <button class="action-btn btn-export" onclick="exportToExcel('monthlyReportTable', 'التقرير_الشهري')">تصدير التقرير (إكسل)</button>
+                <button class="action-btn btn-warning" onclick="window.print()">طباعة التقرير</button>
             </div>
-        </div>
 
-        <div class="btn-group">
-            <button class="action-btn btn-save" onclick="renderMonthlyReport()">عرض التقرير الشهري</button>
-            <button id="btn-export-monthly" class="action-btn btn-export hidden" onclick="exportMonthlyReportToExcel()">تصدير التقرير (إكسل)</button>
-            <button class="action-btn btn-warning" onclick="window.print()">طباعة التقرير</button>
-        </div>
-
-        <div class="table-responsive">
-            <table id="monthlyReportTable">
-                <thead>
-                    <tr>
-                        <th>اسم الطالب</th><th>أيام الحضور</th><th>م. الحضور</th>
-                        <th>م. السلوك</th><th>م. الماضي</th><th>م. الجديد</th>
-                        <th>م. التلاوة</th><th>م. الواجب</th><th>المجموع</th><th>النسبة</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="table-responsive">
+                <table id="monthlyReportTable">
+                    <thead>
+                        <tr>
+                            <th>اسم الطالب</th><th>أيام الحضور</th><th>م. الحضور</th>
+                            <th>م. السلوك</th><th>م. الماضي</th><th>م. الجديد</th>
+                            <th>م. التلاوة</th><th>م. الواجب</th><th>المجموع</th><th>نسبة الحضور</th><th>نسبة التقييم</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -407,10 +433,13 @@
         <h3 style="color: var(--manager-color); text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px;">شاشة المراقبة المجمعة لـ: <span id="mgr-class-name" style="color:var(--danger-color);">أولى</span></h3>
         
         <!-- قسم اليومي للمدير -->
-        <div style="background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                <h4 style="color: var(--primary-color);">درجات اليوم المباشرة (<span id="mgr-today-date"></span>)</h4>
-                <button class="action-btn btn-warning" style="min-width: auto; padding: 5px 10px;" onclick="window.print()">طباعة</button>
+        <div class="card-view">
+            <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
+                <h4 style="color: var(--primary-color); margin:0;">درجات اليوم المباشرة (<span id="mgr-today-date"></span>)</h4>
+                <div>
+                    <button class="action-btn btn-export" style="min-width: auto; padding: 5px 10px;" onclick="exportToExcel('mgrDailyTable', 'متابعة_اليوم')">إكسل</button>
+                    <button class="action-btn btn-warning" style="min-width: auto; padding: 5px 10px;" onclick="window.print()">طباعة</button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table id="mgrDailyTable">
@@ -423,15 +452,18 @@
         </div>
 
         <!-- قسم الأسبوعي للمدير -->
-        <div style="background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <h4 style="color: var(--primary-color);">التقرير الأسبوعي المجمع</h4>
+        <div class="card-view">
+            <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+                <h4 style="color: var(--primary-color); margin:0;">التقرير الأسبوعي المجمع</h4>
+                <button class="action-btn btn-export" style="min-width: auto; padding: 5px 10px;" onclick="exportToExcel('mgrWeeklyTable', 'متابعة_الأسبوع')">تصدير إكسل</button>
+            </div>
             <div class="form-group" style="max-width: 250px; margin-bottom: 10px;">
                 <select id="mgrWeekSelect" onchange="renderManagerView()"></select>
             </div>
             <div class="table-responsive">
                 <table id="mgrWeeklyTable">
                     <thead>
-                        <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع</th></tr>
+                        <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع</th><th>نسبة الحضور</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -439,8 +471,11 @@
         </div>
 
         <!-- قسم الشهري للمدير -->
-        <div style="background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <h4 style="color: var(--primary-color);">التقرير الشهري الشامل</h4>
+        <div class="card-view">
+            <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+                <h4 style="color: var(--primary-color); margin:0;">التقرير الشهري الشامل</h4>
+                <button class="action-btn btn-export" style="min-width: auto; padding: 5px 10px;" onclick="exportToExcel('mgrMonthlyTable', 'متابعة_الشهر')">تصدير إكسل</button>
+            </div>
             <div style="display: flex; gap: 10px; max-width: 300px; margin-bottom: 10px;">
                 <select id="mgrMonthSelect" onchange="renderManagerView()" class="form-group">
                     <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
@@ -453,7 +488,7 @@
             <div class="table-responsive">
                 <table id="mgrMonthlyTable">
                     <thead>
-                        <tr><th>اسم الطالب</th><th>أيام الحضور</th><th>المجموع</th><th>النسبة المئوية</th></tr>
+                        <tr><th>اسم الطالب</th><th>أيام الحضور</th><th>المجموع</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -644,6 +679,13 @@
         document.getElementById('mgrMonthSelect').value = new Date().getMonth();
         document.getElementById('mgrYearSelect').value = new Date().getFullYear();
     };
+
+    /* ================= دالة التصدير للإكسل العامة ================= */
+    function exportToExcel(tableId, filename) {
+        let table = document.getElementById(tableId);
+        let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
 
     /* ================= دوال التاريخ والأسبوع ================= */
     function initCurrentDate() {
@@ -893,8 +935,25 @@
         const dayName = document.getElementById('daySelect').value;
         const studentName = document.getElementById('studentNameSelect').value;
         const recitationTopic = document.getElementById('recitationTopic').value.trim() || '-';
-        const oldTopicText = document.getElementById('oldTopicText').value.trim();
-        const newTopicText = document.getElementById('newTopicText').value.trim();
+        const oldTopicText = document.getElementById('oldTopicText').value.trim() || '-';
+        const newTopicText = document.getElementById('newTopicText').value.trim() || '-';
+        
+        const attVal = document.getElementById('attendance').value;
+        const behVal = document.getElementById('behavior').value;
+        const oldRVal = document.getElementById('oldRevision').value;
+        const newLVal = document.getElementById('newLesson').value;
+        const recVal = document.getElementById('recitation').value;
+        const hwVal = document.getElementById('homework').value;
+
+        // --- شرط إجباري: كل الخانات الخاصة بالدرجات يجب أن تكون ممتلئة ---
+        if (attVal === '' || behVal === '' || oldRVal === '' || newLVal === '' || recVal === '' || hwVal === '') {
+            return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب! (المقررات فقط اختيارية)', 'error');
+        }
+
+        // --- شرط إجباري: لا توجد درجة تزيد عن 10 ---
+        if (attVal > 10 || behVal > 10 || oldRVal > 10 || newLVal > 10 || recVal > 10 || hwVal > 10) {
+            return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها في أي خانة هي 10 درجات.', 'error');
+        }
 
         if (!studentName) return showMessage('app-msg', 'يرجى اختيار اسم الطالب', 'error');
         if (!dateISO) return showMessage('app-msg', 'يرجى اختيار التاريخ بشكل صحيح', 'error');
@@ -911,12 +970,12 @@
             recitationTopic,
             oldTopicText,
             newTopicText,
-            attendance: clampGrade(document.getElementById('attendance').value),
-            behavior: clampGrade(document.getElementById('behavior').value),
-            oldRevision: clampGrade(document.getElementById('oldRevision').value),
-            newLesson: clampGrade(document.getElementById('newLesson').value),
-            recitation: clampGrade(document.getElementById('recitation').value),
-            homework: clampGrade(document.getElementById('homework').value)
+            attendance: clampGrade(attVal),
+            behavior: clampGrade(behVal),
+            oldRevision: clampGrade(oldRVal),
+            newLesson: clampGrade(newLVal),
+            recitation: clampGrade(recVal),
+            homework: clampGrade(hwVal)
         };
 
         if (useFirebase) {
@@ -1019,7 +1078,7 @@
         const selectedWeekKey = document.getElementById('weekSelect').value;
         const selectedClass = document.getElementById('weeklyClassSelect').value;
         if(!selectedWeekKey) {
-            tbody.innerHTML = '<tr><td colspan="7">لا توجد بيانات متاحة</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8">لا توجد بيانات متاحة</td></tr>';
             return;
         }
 
@@ -1032,7 +1091,7 @@
             .sort((a,b) => a.localeCompare(b, 'ar'));
 
         if(classStudents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7">لا يوجد طلاب مسجلين في هذا القسم</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8">لا يوجد طلاب مسجلين في هذا القسم</td></tr>';
             return;
         }
 
@@ -1040,14 +1099,23 @@
             let sRecords = weekRecords.filter(r => r.studentName === student);
             let weekDays = { "الأحد": "-", "الاثنين": "-", "الثلاثاء": "-", "الأربعاء": "-", "الخميس": "-" };
             let studentTotal = 0;
+            let attTotal = 0;
+            let daysCount = 0;
 
             sRecords.forEach(r => {
                 if(weekDays[r.dayName] !== undefined) {
                     let totalDaily = getDailyTotal(r);
                     weekDays[r.dayName] = totalDaily;
                     studentTotal += totalDaily;
+                    attTotal += (r.attendance || 0);
+                    daysCount++;
                 }
             });
+            
+            // حساب نسبة الحضور (حيث أقصى درجة حضور في اليوم هي 10)
+            let maxAttPossible = daysCount * 10;
+            let attPerc = maxAttPossible > 0 ? ((attTotal / maxAttPossible) * 100).toFixed(1) : 0;
+            let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
             tbody.innerHTML += `
                 <tr>
@@ -1058,6 +1126,7 @@
                     <td>${weekDays["الأربعاء"]}</td>
                     <td>${weekDays["الخميس"]}</td>
                     <td><strong>${studentTotal}</strong></td>
+                    <td><span class="badge ${daysCount > 0 ? badgeClass : ''}">${daysCount > 0 ? attPerc + '%' : '-'}</span></td>
                 </tr>
             `;
         });
@@ -1076,7 +1145,7 @@
         });
 
         if(relevantRecords.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="10">لا توجد بيانات لهذا الشهر</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11">لا توجد بيانات لهذا الشهر</td></tr>';
             return;
         }
 
@@ -1096,8 +1165,13 @@
 
             const count = sRecords.length;
             const maxScore = count * 60;
-            const percentage = maxScore > 0 ? ((totals.overall / maxScore) * 100).toFixed(1) : 0;
-            const badgeClass = parseFloat(percentage) >= 75 ? 'badge-green' : 'badge-yellow';
+            const maxAttScore = count * 10;
+            
+            const overallPerc = maxScore > 0 ? ((totals.overall / maxScore) * 100).toFixed(1) : 0;
+            const attPerc = maxAttScore > 0 ? ((totals.attendance / maxAttScore) * 100).toFixed(1) : 0;
+            
+            const badgeOverall = parseFloat(overallPerc) >= 75 ? 'badge-green' : 'badge-yellow';
+            const badgeAtt = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
             tbody.innerHTML += `
                 <tr>
@@ -1110,7 +1184,8 @@
                     <td>${(totals.recitation/count).toFixed(1)}</td>
                     <td>${(totals.homework/count).toFixed(1)}</td>
                     <td><strong>${totals.overall}</strong> / ${maxScore}</td>
-                    <td><span class="badge ${badgeClass}">${percentage}%</span></td>
+                    <td><span class="badge ${badgeAtt}">${attPerc}%</span></td>
+                    <td><span class="badge ${badgeOverall}">${overallPerc}%</span></td>
                 </tr>
             `;
         });
@@ -1153,14 +1228,23 @@
         let classStds = studentsData.filter(s => s.className === currentManagerClass).map(s=>s.name).sort((a,b) => a.localeCompare(b, 'ar'));
         
         if(classStds.length === 0) {
-            tWeekly.innerHTML = '<tr><td colspan="7">لا يوجد طلاب في هذا القسم</td></tr>';
+            tWeekly.innerHTML = '<tr><td colspan="8">لا يوجد طلاب في هذا القسم</td></tr>';
         } else {
             classStds.forEach(student => {
                 let sRecs = weekRecords.filter(r => r.studentName === student);
                 let wd = {"الأحد":"-","الاثنين":"-","الثلاثاء":"-","الأربعاء":"-","الخميس":"-"};
-                let stTotal = 0;
-                sRecs.forEach(r => { if(wd[r.dayName]!==undefined){ let d=getDailyTotal(r); wd[r.dayName]=d; stTotal+=d; }});
-                tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong></td></tr>`;
+                let stTotal = 0; let attTotal = 0; let dCount = 0;
+                
+                sRecs.forEach(r => { 
+                    if(wd[r.dayName]!==undefined){ 
+                        let d=getDailyTotal(r); wd[r.dayName]=d; stTotal+=d; attTotal+=r.attendance; dCount++; 
+                    }
+                });
+                
+                let attPerc = dCount > 0 ? ((attTotal / (dCount*10)) * 100).toFixed(1) : 0;
+                let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
+
+                tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong></td><td><span class="badge ${dCount>0?badgeClass:''}">${dCount>0?attPerc+'%':'-'}</span></td></tr>`;
             });
         }
 
@@ -1176,14 +1260,24 @@
         
         let mStds = [...new Set(monthRecords.map(r=>r.studentName))].sort((a,b) => a.localeCompare(b, 'ar'));
         if(mStds.length===0) {
-            tMonthly.innerHTML = '<tr><td colspan="4">لا توجد بيانات لهذا الشهر</td></tr>';
+            tMonthly.innerHTML = '<tr><td colspan="5">لا توجد بيانات لهذا الشهر</td></tr>';
         } else {
             mStds.forEach(st => {
                 let stR = monthRecords.filter(r=>r.studentName===st);
-                let tot = 0; stR.forEach(r=> tot+=getDailyTotal(r));
-                let cnt = stR.length; let max = cnt*60;
+                let tot = 0; let attTot = 0; 
+                stR.forEach(r=> {tot+=getDailyTotal(r); attTot+=r.attendance; });
+                let cnt = stR.length; let max = cnt*60; let maxAtt = cnt*10;
+                
                 let perc = max>0 ? ((tot/max)*100).toFixed(1) : 0;
-                tMonthly.innerHTML += `<tr><td style="font-weight:bold;">${st}</td><td>${cnt}</td><td><strong>${tot}</strong> / ${max}</td><td><span class="badge ${parseFloat(perc)>=75?'badge-green':'badge-yellow'}">${perc}%</span></td></tr>`;
+                let attPerc = maxAtt>0 ? ((attTot/maxAtt)*100).toFixed(1) : 0;
+                
+                tMonthly.innerHTML += `<tr>
+                    <td style="font-weight:bold;">${st}</td>
+                    <td>${cnt}</td>
+                    <td><strong>${tot}</strong> / ${max}</td>
+                    <td><span class="badge ${parseFloat(attPerc)>=75?'badge-blue':'badge-yellow'}">${attPerc}%</span></td>
+                    <td><span class="badge ${parseFloat(perc)>=75?'badge-green':'badge-yellow'}">${perc}%</span></td>
+                </tr>`;
             });
         }
     }
