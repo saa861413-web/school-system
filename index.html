@@ -45,9 +45,9 @@ body {
   margin: 0;
   padding: 12px;
   background-color: var(--bg-color);
-  /* خلفية الصورة المستلمة مع طبقة شفافة مريحة للعين */
+  /* خلفية معالجة تظهر المظهر الجمالي حتى في حال عدم تحميل الصورة المحلية */
   background-image: 
-    linear-gradient(rgba(237, 243, 239, 0.90), rgba(237, 243, 239, 0.90)),
+    linear-gradient(rgba(237, 243, 239, 0.92), rgba(237, 243, 239, 0.92)),
     url('1000054284_2.jpg');
   background-position: center;
   background-repeat: repeat;
@@ -108,7 +108,7 @@ body {
   height: 60px;
   border-radius: 50%;
   background: white;
-  padding: 4px;
+  padding: 2px;
   border: 2px solid var(--accent-gold);
   object-fit: contain;
   box-shadow: 0 3px 10px rgba(0,0,0,0.2);
@@ -199,6 +199,10 @@ body {
   display: block;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
   transition: transform 0.3s ease;
+  border-radius: 50%;
+  background: #fff;
+  padding: 4px;
+  border: 2px solid var(--accent-gold);
 }
 
 .login-logo-img:hover {
@@ -497,12 +501,33 @@ tr:hover { background-color: #f2f8f5; }
 </head>
 <body>
 
-<!-- صورة العلامة المائية في خلفية الموقع -->
-<img src="1000054284_2.jpg" class="watermark-bg" alt="معهد المجد">
+<!-- دالة المعالجة الفورية لإصلاح الصور في حال عدم توفر الصورة المحلية -->
+<script>
+function handleImgError(el, isWatermark = false) {
+  if (isWatermark) {
+    el.style.display = 'none';
+    return;
+  }
+  el.onerror = null;
+  /* شعار متجهي (SVG) بديل مصمم خصيصاً لمعهد المجد بالأخضر والذهبي */
+  el.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="56" fill="#13684d" stroke="#c5a059" stroke-width="4"/>
+      <circle cx="60" cy="60" r="48" fill="none" stroke="#e6d5ac" stroke-width="1.5" stroke-dasharray="4 2"/>
+      <path d="M35 75 Q60 65 85 75 Q60 83 35 75 Z" fill="#c5a059"/>
+      <path d="M38 48 C38 48 53 50 60 56 C67 50 82 48 82 48 C82 48 82 68 60 72 C38 68 38 48 38 48 Z" fill="#ffffff" stroke="#c5a059" stroke-width="1.5"/>
+      <text x="60" y="38" font-family="Amiri, serif" font-size="16" fill="#c5a059" text-anchor="middle" font-weight="bold">معهد المجد</text>
+    </svg>
+  `);
+}
+</script>
+
+<!-- صورة العلامة المائية في خلفية الموقع مع إصلاح حماية التحميل -->
+<img src="1000054284_2.jpg" class="watermark-bg" alt="معهد المجد" onerror="handleImgError(this, true)">
 
 <!-- شاشة تسجيل الدخول المزخرفة إسلامياً -->
 <div id="login-screen" class="login-card">
-  <img src="1000054284_2.jpg" class="login-logo-img" alt="شعار معهد المجد">
+  <img src="1000054284_2.jpg" class="login-logo-img" alt="شعار معهد المجد" onerror="handleImgError(this)">
   <h2 class="login-header-text">مَعْهَدُ المَجْدِ</h2>
   <div class="login-subtitle">نظام رصد وتقييم درجات الطلاب المتكامل</div>
   
@@ -533,7 +558,7 @@ tr:hover { background-color: #f2f8f5; }
   <!-- هيدر المعهد الرئيسي -->
   <div class="institute-header">
     <div class="header-brand">
-      <img src="1000054284_2.jpg" class="header-logo" alt="شعار معهد المجد">
+      <img src="1000054284_2.jpg" class="header-logo" alt="شعار معهد المجد" onerror="handleImgError(this)">
       <div class="header-titles">
         <h1>مَعْهَدُ المَجْدِ</h1>
         <span>AL-MAJD INSTITUTE</span>
@@ -601,7 +626,7 @@ tr:hover { background-color: #f2f8f5; }
       </div>
       <div class="form-group" style="grid-column: span 2;">
         <label style="color: var(--primary-color);">📖 مقرر التلاوة (اختياري):</label>
-        <input type="text" id="recitationTopic" placeholder="اكتب المقرر أو الملاحظة..." style="border-color: var(--primary-color);">
+        <input type="text" id="recitationTopic" placeholder="اكتب مقرر التلاوة أو الملاحظة..." style="border-color: var(--primary-color);">
       </div>
       <div class="form-group" style="grid-column: span 2;">
         <label>🔁 مقرر الماضي تسميع (اختياري):</label>
