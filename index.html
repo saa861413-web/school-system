@@ -287,7 +287,7 @@
 
         <div class="btn-group">
             <button class="action-btn btn-save" onclick="addGrade()">حفظ بيانات الطالب (من 60)</button>
-            <button id="btn-export-daily" class="action-btn btn-export hidden" onclick="exportDailyToExcel()">تصدير إكسل (اليومي)</button>
+            <button id="btn-export-daily" class="action-btn btn-export" onclick="exportDailyToExcel()">تصدير إكسل (اليومي)</button>
         </div>
 
         <div class="search-box">
@@ -311,7 +311,7 @@
         </div>
     </div>
 
-    <!-- 2. التقرير الأسبوعي (الجديد) -->
+    <!-- 2. التقرير الأسبوعي -->
     <div id="weekly-tab" class="tab-content">
         <div class="form-grid">
             <div class="form-group" style="grid-column: span 2;">
@@ -376,7 +376,7 @@
 
         <div class="btn-group">
             <button class="action-btn btn-save" onclick="renderMonthlyReport()">عرض التقرير الشهري</button>
-            <button id="btn-export-monthly" class="action-btn btn-export hidden" onclick="exportMonthlyReportToExcel()">تصدير التقرير (إكسل)</button>
+            <button id="btn-export-monthly" class="action-btn btn-export" onclick="exportMonthlyReportToExcel()">تصدير التقرير (إكسل)</button>
             <button class="action-btn btn-warning" onclick="window.print()">طباعة التقرير</button>
         </div>
 
@@ -576,7 +576,6 @@
 
     /* ================= دوال التاريخ والأسبوع ================= */
     function initCurrentDate() {
-        // تحديد التاريخ الحالي للمتصفح بصيغة YYYY-MM-DD
         const tzoffset = (new Date()).getTimezoneOffset() * 60000;
         const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
         document.getElementById('recordDate').value = localISOTime;
@@ -593,10 +592,9 @@
     }
 
     function getWeekKey(dateStr) {
-        // تحويل أي تاريخ إلى نطاق أسبوع (الأحد إلى الخميس)
         let d = new Date(dateStr);
         let day = d.getDay(); 
-        let diffToSunday = d.getDate() - day; // يوم الأحد
+        let diffToSunday = d.getDate() - day;
         
         let sunday = new Date(d);
         sunday.setDate(diffToSunday);
@@ -606,7 +604,7 @@
         
         let sDate = sunday.toISOString().split('T')[0];
         let tDate = thursday.toISOString().split('T')[0];
-        return `${sDate}_${tDate}`; // مفتاح برمجي للأسبوع
+        return `${sDate}_${tDate}`;
     }
 
     function formatWeekDisplay(weekKey) {
@@ -618,11 +616,9 @@
         const weekSelect = document.getElementById('weekSelect');
         const weeks = new Set();
         
-        // أضف الأسبوع الحالي بشكل افتراضي
         const currentWeekKey = getWeekKey(document.getElementById('recordDate').value || new Date().toISOString());
         weeks.add(currentWeekKey);
         
-        // أضف أسابيع السجلات المخزنة
         dailyRecords.forEach(r => {
             if(r.dateISO) weeks.add(getWeekKey(r.dateISO));
         });
@@ -735,7 +731,7 @@
         const weeklyClassSelect = document.getElementById('weeklyClassSelect');
         const adminBtn = document.getElementById('admin-tab-btn');
 
-        initCurrentDate(); // ضبط تاريخ اليوم
+        initCurrentDate();
 
         if (currentTeacher.username !== 'admin') {
             adminBtn.classList.add('hidden');
@@ -791,7 +787,6 @@
         if (!studentName) return showMessage('app-msg', 'يرجى اختيار اسم الطالب', 'error');
         if (!dateISO) return showMessage('app-msg', 'يرجى اختيار التاريخ بشكل صحيح', 'error');
 
-        // مفتاح يمنع تسجيل نفس الطالب مرتين في نفس اليوم لنفس المادة (تعديل مباشر)
         const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
 
         const record = {
@@ -815,7 +810,6 @@
         if (useFirebase) {
             await db.collection("dailyRecords").doc(record.id).set(record);
         } else {
-            // تحديث إذا كان موجود، وإلا أضف جديد
             const idx = dailyRecords.findIndex(r => r.id === record.id);
             if(idx > -1) dailyRecords[idx] = record;
             else dailyRecords.push(record);
@@ -862,7 +856,6 @@
             return matchesClass && matchesSearch && matchesDate;
         });
 
-        // ترتيب الأحدث أولاً
         filteredRecords.sort((a,b) => new Date(b.dateISO) - new Date(a.dateISO));
 
         if (filteredRecords.length === 0) {
@@ -911,14 +904,12 @@
             return;
         }
 
-        // فلترة السجلات التي تنتمي للأسبوع المحدد والصف المحدد
         const weekRecords = dailyRecords.filter(r => {
             if(r.className !== selectedClass) return false;
             if(!r.dateISO) return false;
             return getWeekKey(r.dateISO) === selectedWeekKey;
         });
 
-        // الحصول على جميع الطلاب التابعين لهذا الصف (المسجلين في النظام)
         const classStudents = studentsData.filter(s => s.className === selectedClass).map(s => s.name);
 
         if(classStudents.length === 0) {
@@ -929,7 +920,6 @@
         classStudents.forEach(student => {
             let sRecords = weekRecords.filter(r => r.studentName === student);
             
-            // تهيئة بيانات أيام الأسبوع
             let weekDays = { "الأحد": "-", "الاثنين": "-", "الثلاثاء": "-", "الأربعاء": "-", "الخميس": "-" };
             let studentTotal = 0;
 
@@ -1006,7 +996,106 @@
         });
     }
 
-    /* ======== دوال الإدارة الأساسية (الطلاب، المعلمين، النسخ الاحتياطي) بقيت كما هي ======== */
+    /* =================== دوال التصدير إلى إكسل =================== */
+    function exportDailyToExcel() {
+        if (typeof XLSX === 'undefined') {
+            return showMessage('app-msg', 'مكتبة التصدير غير محملة بعد، يرجى المحاولة لاحقاً', 'error');
+        }
+
+        const searchKeyword = (document.getElementById('searchDaily')?.value || '').toLowerCase();
+        const filterDate = document.getElementById('filterDateDaily').value;
+
+        const filteredRecords = dailyRecords.filter(r => {
+            const matchesClass = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل') 
+                ? true : r.className === currentTeacher.assignedClass;
+            const matchesSearch = r.studentName.toLowerCase().includes(searchKeyword);
+            const matchesDate = filterDate ? (r.dateISO === filterDate) : true;
+            return matchesClass && matchesSearch && matchesDate;
+        });
+
+        if (filteredRecords.length === 0) {
+            return showMessage('app-msg', 'لا توجد بيانات لتصديرها', 'error');
+        }
+
+        const exportData = filteredRecords.map(r => ({
+            "التاريخ": r.dateISO,
+            "اليوم": r.dayName,
+            "الصف": r.className,
+            "المعلم": r.teacherName,
+            "اسم الطالب": r.studentName,
+            "مقرر التلاوة": r.recitationTopic || '-',
+            "مقرر الماضي": r.oldTopicText || '-',
+            "مقرر الجديد": r.newTopicText || '-',
+            "الحضور": r.attendance,
+            "السلوك": r.behavior,
+            "الماضي": r.oldRevision,
+            "الجديد": r.newLesson,
+            "التلاوة": r.recitation,
+            "الواجب": r.homework || 0,
+            "المجموع": getDailyTotal(r)
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "الرصد اليومي");
+        XLSX.writeFile(wb, `الرصد_اليومي_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    }
+
+    function exportMonthlyReportToExcel() {
+        if (typeof XLSX === 'undefined') {
+            return showMessage('app-msg', 'مكتبة التصدير غير محملة بعد، يرجى المحاولة لاحقاً', 'error');
+        }
+
+        const month = document.getElementById('reportMonth').value;
+        const year = document.getElementById('reportYear').value;
+        
+        const relevantRecords = dailyRecords.filter(r => {
+            if (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل' && r.className !== currentTeacher.assignedClass) return false;
+            const rDate = new Date(r.dateISO);
+            return rDate.getMonth() == month && rDate.getFullYear() == year;
+        });
+
+        if(relevantRecords.length === 0) {
+            return showMessage('app-msg', 'لا توجد بيانات لتصديرها لهذا الشهر', 'error');
+        }
+
+        const allStudents = [...new Set(relevantRecords.map(r => r.studentName))];
+        const exportData = allStudents.map(student => {
+            const sRecords = relevantRecords.filter(r => r.studentName === student);
+            let totals = { attendance: 0, behavior: 0, oldRevision: 0, newLesson: 0, recitation: 0, homework: 0, overall: 0 };
+            
+            sRecords.forEach(r => {
+                totals.attendance += r.attendance; totals.behavior += r.behavior;
+                totals.oldRevision += r.oldRevision; totals.newLesson += r.newLesson;
+                totals.recitation += r.recitation; totals.homework += (r.homework || 0);
+                totals.overall += getDailyTotal(r);
+            });
+
+            const count = sRecords.length;
+            const maxScore = count * 60;
+            const percentage = maxScore > 0 ? ((totals.overall / maxScore) * 100).toFixed(1) : 0;
+
+            return {
+                "اسم الطالب": student,
+                "أيام الحضور": count,
+                "م. الحضور": (totals.attendance/count).toFixed(1),
+                "م. السلوك": (totals.behavior/count).toFixed(1),
+                "م. الماضي": (totals.oldRevision/count).toFixed(1),
+                "م. الجديد": (totals.newLesson/count).toFixed(1),
+                "م. التلاوة": (totals.recitation/count).toFixed(1),
+                "م. الواجب": (totals.homework/count).toFixed(1),
+                "المجموع": `${totals.overall} / ${maxScore}`,
+                "النسبة": `${percentage}%`
+            };
+        });
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "التقرير الشهري");
+        XLSX.writeFile(wb, `التقرير_الشهري_${year}_${parseInt(month) + 1}.xlsx`);
+    }
+
+    /* ======== دوال الإدارة الأساسية (الطلاب، المعلمين، النسخ الاحتياطي) ======== */
     async function addStudent() {
         if (currentTeacher.username !== 'admin') return;
         const name = document.getElementById('newStudentName').value.trim();
