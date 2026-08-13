@@ -942,7 +942,7 @@ function handleImgError(el, isWatermark = false) {
                   <th>الثلاثاء (60)</th>
                   <th>الأربعاء (60)</th>
                   <th>الخميس (60)</th>
-                  <th>مجموع الأسبوع (من 420)</th>
+                  <th>مجموع الأسبوع (من 300)</th>
                   <th>متوسط الأسبوع (قسمة على 7 أيام)</th>
                   <th>نسبة الحضور (%)</th>
                 </tr>
@@ -1647,7 +1647,6 @@ function switchTab(tabId, event) {
   const targetTab = document.getElementById(tabId);
   if(targetTab) targetTab.classList.add('active');
 
-  // إغلاق الشريحة عند الاختيار على الهواتف
   toggleSidebarMenu(false);
 
   if (tabId === 'daily-tab') {
@@ -1895,30 +1894,33 @@ function renderClassStatusTable() {
 }
 
 function showUnrecordedStudents(className, dateVal) {
+  const card = document.getElementById('unrecordedDetailsCard');
+  const titleName = document.getElementById('unrecordedClassName');
+  const listDiv = document.getElementById('unrecordedStudentsList');
+  if(!card || !listDiv) return;
+
+  titleName.innerText = `${className} (تاريخ: ${dateVal})`;
+
   const classStudents = studentsData.filter(s => s.className === className);
   const classRecords = dailyRecords.filter(r => r.className === className && r.dateISO === dateVal);
   const recordedNames = classRecords.map(r => r.studentName);
 
   const unrecorded = classStudents.filter(s => !recordedNames.includes(s.name));
 
-  const card = document.getElementById('unrecordedDetailsCard');
-  const title = document.getElementById('unrecordedClassName');
-  const listContainer = document.getElementById('unrecordedStudentsList');
-
-  title.innerText = `${className} (بتاريخ: ${dateVal})`;
-
   if (unrecorded.length === 0) {
-    listContainer.innerHTML = '<p style="color:var(--success-color); font-weight:bold;">جميع الطلاب مسجلون بالكامل!</p>';
+    listDiv.innerHTML = '<p style="color:var(--success-color); font-weight:bold;">✨ جميع الطلاب تم رصد درجاتهم لهذا اليوم!</p>';
   } else {
-    let html = '<p style="margin-top:0; font-weight:bold; color:#555;">الطلاب الذين لم تُسجَّل درجاتهم بعد في هذا اليوم:</p>';
-    html += '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">';
-    unrecorded.forEach((s, i) => {
-      html += `<div style="background:#fdf2e9; color:#a04000; padding:10px 14px; border-radius:8px; border:1px solid #f5cba7; font-weight:bold; display:flex; align-items:center; gap:8px;">
-                 <span>❌ ${i+1}.</span> <span>${s.name}</span>
-               </div>`;
+    let html = '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:10px;">';
+    unrecorded.forEach((st, idx) => {
+      html += `
+        <div style="background:#fff0f0; border:1px solid #f5c6cb; padding:8px 12px; border-radius:8px; display:flex; align-items:center; justify-content:space-between;">
+          <span style="font-weight:bold; color:var(--danger-color);">${idx + 1}. ${st.name}</span>
+          <span class="badge" style="background-color:var(--danger-color);">لم يُرصد</span>
+        </div>
+      `;
     });
     html += '</div>';
-    listContainer.innerHTML = html;
+    listDiv.innerHTML = html;
   }
 
   card.classList.remove('hidden');
@@ -1927,665 +1929,558 @@ function showUnrecordedStudents(className, dateVal) {
 
 function hideUnrecordedDetails() {
   const card = document.getElementById('unrecordedDetailsCard');
-  if (card) card.classList.add('hidden');
+  if(card) card.classList.add('hidden');
 }
 
-/* ================= سجـل الحضور لآخر 20 يوماً (متقسم دائماً على 20 يوماً ثابتة) ================= */
 function renderAttendanceTable() {
-  let endDateVal = document.getElementById('attendanceEndDate').value;
-  if (!endDateVal) {
-    endDateVal = document.getElementById('recordDate').value || new Date().toISOString().slice(0, 10);
-    document.getElementById('attendanceEndDate').value = endDateVal;
-  }
-
-  const selectedClass = document.getElementById('attendanceClassSelect').value;
-  const dates = [];
-  let endDate = new Date(endDateVal);
-
-  for (let i = 19; i >= 0; i--) {
-    let d = new Date(endDate);
-    d.setDate(d.getDate() - i);
-    let tzoffset = d.getTimezoneOffset() * 60000;
-    let iso = new Date(d.getTime() - tzoffset).toISOString().slice(0, 10);
-    dates.push(iso);
-  }
-
-  const thead = document.querySelector('#attendanceTable thead');
   const tbody = document.querySelector('#attendanceTable tbody');
-  if (!thead || !tbody) return;
+  const thead = document.querySelector('#attendanceTable thead');
+  if (!tbody || !thead) return;
 
-  let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
-  dates.forEach(dStr => {
-    let parts = dStr.split('-');
-    let shortDate = `${parts[2]}/${parts[1]}`;
-    headerHtml += `<th style="font-size:0.75em; padding:4px; min-width:38px;">${shortDate}</th>`;
+  const className = document.getElementById('attendanceClassSelect').value;
+  const endDateStr = document.getElementById('attendanceEndDate').value || new Date().toISOString().slice(0, 10);
+
+  let dates = [];
+  let curr = new Date(endDateStr);
+  for (let i = 0; i < 20; i++) {
+    let dStr = curr.toISOString().slice(0, 10);
+    dates.unshift(dStr);
+    curr.setDate(curr.getDate() - 1);
+  }
+
+  let headerHTML = '<tr><th style="min-width:140px;">اسم الطالب</th>';
+  dates.forEach(d => {
+    let parts = d.split('-');
+    headerHTML += `<th style="font-size:0.75em; padding:4px;">${parts[1]}/${parts[2]}</th>`;
   });
-  headerHtml += '<th>أيام الحضور</th><th>نسبة الحضور (من 20)</th></tr>';
-  thead.innerHTML = headerHtml;
-
-  tbody.innerHTML = '';
+  headerHTML += '<th>أيام الحضور</th><th>النسبة (%)</th></tr>';
+  thead.innerHTML = headerHTML;
 
   const classStudents = studentsData
-    .filter(s => s.className === selectedClass)
-    .map(s => s.name)
-    .sort((a, b) => a.localeCompare(b, 'ar'));
+    .filter(s => s.className === className)
+    .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
 
   if (classStudents.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="${dates.length + 3}">لا يوجد طلاب مسجلين في هذا الصف</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="23">لا يوجد طلاب في هذا الصف</td></tr>`;
     return;
   }
 
-  classStudents.forEach(student => {
-    let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
-    let attendedDaysCount = 0;
+  tbody.innerHTML = '';
+  classStudents.forEach(st => {
+    let presentCount = 0;
+    let rowHTML = `<tr><td style="font-weight:bold; color:var(--primary-dark);">${st.name}</td>`;
 
-    dates.forEach(dStr => {
-      let rec = dailyRecords.find(r => r.className === selectedClass && r.studentName === student && r.dateISO === dStr);
-      if (rec) {
-        if (rec.attendance > 0) {
-          attendedDaysCount++;
-          rowHtml += `<td style="color:var(--success-color); font-weight:bold; background:#e8f8f1;">✓</td>`;
-        } else {
-          rowHtml += `<td style="color:var(--danger-color); font-weight:bold; background:#fadbd8;">✗</td>`;
-        }
+    dates.forEach(d => {
+      let rec = dailyRecords.find(r => r.className === className && r.studentName === st.name && r.dateISO === d);
+      if (rec && rec.attendance > 0) {
+        presentCount++;
+        rowHTML += '<td style="color:var(--success-color); font-weight:bold;">ح</td>';
+      } else if (rec && rec.attendance === 0) {
+        rowHTML += '<td style="color:var(--danger-color); font-weight:bold;">غ</td>';
       } else {
-        rowHtml += `<td style="color:#ccc;">-</td>`;
+        rowHTML += '<td style="color:#aaa;">-</td>';
       }
     });
 
-    // احتساب القسمة دائماً على 20 يوماً كاملة اليوم بيومه
-    let attPerc = ((attendedDaysCount / 20) * 100).toFixed(0);
-    let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-green' : 'badge-yellow';
+    let percent = Math.round((presentCount / 20) * 100);
+    let badgeClass = percent >= 75 ? 'badge-green' : (percent >= 50 ? 'badge-yellow' : 'badge-blue');
 
-    rowHtml += `<td><strong>${attendedDaysCount}</strong> / 20</td>`;
-    rowHtml += `<td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
-    tbody.innerHTML += rowHtml;
+    rowHTML += `
+      <td><strong>${presentCount}</strong> / 20</td>
+      <td><span class="badge ${badgeClass}">${percent}%</span></td>
+    </tr>`;
+
+    tbody.innerHTML += rowHTML;
   });
 }
 
-/* ================= حساب التقرير الأسبوعي ================= */
 function renderWeeklyTable() {
   const tbody = document.querySelector('#weeklyTable tbody');
   if(!tbody) return;
   tbody.innerHTML = '';
 
-  const selectedWeekKey = document.getElementById('weekSelect').value;
-  const selectedClass = document.getElementById('weeklyClassSelect').value;
+  const className = document.getElementById('weeklyClassSelect').value;
+  const weekKey = document.getElementById('weekSelect').value;
+  if(!weekKey) return;
 
-  if(!selectedWeekKey) {
-    tbody.innerHTML = '<tr><td colspan="9">لا توجد بيانات متاحة</td></tr>';
-    return;
-  }
-
-  const weekRecords = dailyRecords.filter(r => r.className === selectedClass && r.dateISO && getWeekKey(r.dateISO) === selectedWeekKey);
+  const [startDateStr, endDateStr] = weekKey.split('_');
 
   const classStudents = studentsData
-    .filter(s => s.className === selectedClass)
-    .map(s => s.name)
-    .sort((a,b) => a.localeCompare(b, 'ar'));
+    .filter(s => s.className === className)
+    .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
 
   if(classStudents.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا الصف</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="9">لا يوجد طلاب في هذا الصف</td></tr>`;
     return;
   }
 
-  classStudents.forEach(student => {
-    let sRecords = weekRecords.filter(r => r.studentName === student);
-    let weekDays = { "الأحد": "-", "الاثنين": "-", "الثلاثاء": "-", "الأربعاء": "-", "الخميس": "-" };
-    let studentTotal = 0;
-    let attTotal = 0;
+  let startD = new Date(startDateStr);
 
-    sRecords.forEach(r => {
-      if(weekDays[r.dayName] !== undefined) {
-        let totalDaily = getDailyTotal(r);
-        weekDays[r.dayName] = totalDaily;
-        studentTotal += totalDaily;
-        attTotal += (r.attendance || 0);
+  classStudents.forEach(st => {
+    let daysScores = [0, 0, 0, 0, 0];
+    let daysPresent = 0;
+    let totalScore = 0;
+
+    for(let i = 0; i < 5; i++) {
+      let d = new Date(startD);
+      d.setDate(d.getDate() + i);
+      let iso = d.toISOString().split('T')[0];
+
+      let rec = dailyRecords.find(r => r.className === className && r.studentName === st.name && r.dateISO === iso);
+      if(rec) {
+        let score = getDailyTotal(rec);
+        daysScores[i] = score;
+        totalScore += score;
+        if(rec.attendance > 0) daysPresent++;
       }
-    });
+    }
 
-    let weeklyAverage = (studentTotal / 7).toFixed(1);
-    let attPerc = ((attTotal / 70) * 100).toFixed(1);
-    let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
+    let avgScore = (totalScore / 7).toFixed(1);
+    let attendancePercent = Math.round((daysPresent / 5) * 100);
 
     tbody.innerHTML += `
       <tr>
-        <td style="font-weight:bold;">${student}</td>
-        <td>${weekDays["الأحد"]}</td>
-        <td>${weekDays["الاثنين"]}</td>
-        <td>${weekDays["الثلاثاء"]}</td>
-        <td>${weekDays["الأربعاء"]}</td>
-        <td>${weekDays["الخميس"]}</td>
-        <td><strong>${studentTotal}</strong> / 420</td>
-        <td style="color:var(--primary-color); font-weight:bold;">${weeklyAverage} / 60</td>
-        <td><span class="badge ${badgeClass}">${attPerc}%</span></td>
+        <td style="font-weight:bold; color:var(--primary-dark);">${st.name}</td>
+        <td>${daysScores[0]}</td>
+        <td>${daysScores[1]}</td>
+        <td>${daysScores[2]}</td>
+        <td>${daysScores[3]}</td>
+        <td>${daysScores[4]}</td>
+        <td><strong>${totalScore}</strong> / 300</td>
+        <td style="color:var(--primary-color); font-weight:bold;">${avgScore}</td>
+        <td><span class="badge ${attendancePercent >= 75 ? 'badge-green' : 'badge-yellow'}">${attendancePercent}%</span></td>
       </tr>
     `;
   });
 }
 
-function getMonthWorkingDays(year, month) {
-  const workingDays = [];
-  const date = new Date(year, month, 1);
-  const monthNum = Number(month);
-
-  while (date.getMonth() === monthNum) {
-    const dayOfWeek = date.getDay();
-    if (dayOfWeek >= 0 && dayOfWeek <= 4) {
-      const tzoffset = date.getTimezoneOffset() * 60000;
-      const iso = new Date(date.getTime() - tzoffset).toISOString().slice(0, 10);
-      const dayNames = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
-      workingDays.push({
-        dateISO: iso,
-        dayName: dayNames[dayOfWeek],
-        dayNum: date.getDate()
-      });
-    }
-    date.setDate(date.getDate() + 1);
-  }
-  return workingDays;
-}
-
-/* ================= التقرير الشهري ================= */
 function renderMonthlyReport() {
-  const month = document.getElementById('reportMonth').value;
-  const year = document.getElementById('reportYear').value;
-  const selectedClass = document.getElementById('monthlyClassSelect').value;
-
-  const thead = document.querySelector('#monthlyReportTable thead');
   const tbody = document.querySelector('#monthlyReportTable tbody');
-  if(!thead || !tbody) return;
+  const thead = document.querySelector('#monthlyReportTable thead');
+  if(!tbody || !thead) return;
 
-  const workingDays = getMonthWorkingDays(year, month);
-  const totalMonthWorkingDays = workingDays.length || 1;
+  const month = parseInt(document.getElementById('reportMonth').value);
+  const year = parseInt(document.getElementById('reportYear').value);
+  const className = document.getElementById('monthlyClassSelect').value;
 
-  let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
-  workingDays.forEach(wd => {
-    let parts = wd.dateISO.split('-');
-    let shortDate = `${parts[2]}/${parts[1]}`;
-    headerHtml += `<th style="font-size:0.78em; padding:5px 3px; min-width:42px;">${wd.dayName}<br><span style="color:#666;">${shortDate}</span></th>`;
-  });
-  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
-  thead.innerHTML = headerHtml;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  tbody.innerHTML = '';
+  let headHTML = '<tr><th style="min-width:140px;">اسم الطالب</th>';
+  for(let d = 1; d <= daysInMonth; d++) {
+    headHTML += `<th style="font-size:0.7em; padding:2px;">${d}</th>`;
+  }
+  headHTML += '<th>المجموع</th><th>المتوسط</th></tr>';
+  thead.innerHTML = headHTML;
 
   const classStudents = studentsData
-    .filter(s => s.className === selectedClass)
-    .map(s => s.name)
-    .sort((a,b) => a.localeCompare(b, 'ar'));
+    .filter(s => s.className === className)
+    .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
 
   if(classStudents.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="${workingDays.length + 6}">لا يوجد طلاب مسجلين في هذا الصف</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${daysInMonth + 3}">لا يوجد طلاب في هذا الصف</td></tr>`;
     return;
   }
 
-  classStudents.forEach(student => {
-    let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
-    let totalScore = 0;
-    let attendedDaysCount = 0;
+  tbody.innerHTML = '';
+  classStudents.forEach(st => {
+    let totalMonthScore = 0;
+    let recordedDaysCount = 0;
+    let rowHTML = `<tr><td style="font-weight:bold; color:var(--primary-dark);">${st.name}</td>`;
 
-    workingDays.forEach(wd => {
-      let rec = dailyRecords.find(r => r.className === selectedClass && r.studentName === student && r.dateISO === wd.dateISO);
-      if (rec) {
-        let dailyScore = getDailyTotal(rec);
-        totalScore += dailyScore;
-        if (rec.attendance > 0) attendedDaysCount++;
-        rowHtml += `<td style="font-weight:bold; color:var(--primary-dark); background:#f9fbf9;">${dailyScore}</td>`;
+    for(let d = 1; d <= daysInMonth; d++) {
+      let dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      let rec = dailyRecords.find(r => r.className === className && r.studentName === st.name && r.dateISO === dStr);
+      if(rec) {
+        let score = getDailyTotal(rec);
+        totalMonthScore += score;
+        recordedDaysCount++;
+        rowHTML += `<td style="font-size:0.8em;">${score}</td>`;
       } else {
-        rowHtml += `<td style="color:#ccc;">-</td>`;
+        rowHTML += `<td style="color:#ccc;">-</td>`;
       }
-    });
+    }
 
-    const monthlyAverage = (totalScore / totalMonthWorkingDays).toFixed(1);
-    const overallPerc = ((totalScore / (totalMonthWorkingDays * 60)) * 100).toFixed(1);
-    const attPerc = ((attendedDaysCount / totalMonthWorkingDays) * 100).toFixed(1);
+    let avgMonth = recordedDaysCount > 0 ? (totalMonthScore / recordedDaysCount).toFixed(1) : '0';
 
-    const badgeOverall = parseFloat(overallPerc) >= 75 ? 'badge-green' : 'badge-yellow';
-    const badgeAtt = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
+    rowHTML += `
+      <td><strong>${totalMonthScore}</strong></td>
+      <td style="color:var(--primary-color); font-weight:bold;">${avgMonth}</td>
+    </tr>`;
 
-    rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${totalMonthWorkingDays}</td>`;
-    rowHtml += `<td><strong>${totalScore}</strong></td>`;
-    rowHtml += `<td style="color:var(--primary-color); font-weight:bold;">${monthlyAverage}</td>`;
-    rowHtml += `<td><span class="badge ${badgeAtt}">${attPerc}%</span></td>`;
-    rowHtml += `<td><span class="badge ${badgeOverall}">${overallPerc}%</span></td></tr>`;
-
-    tbody.innerHTML += rowHtml;
+    tbody.innerHTML += rowHTML;
   });
 }
 
 function switchManagerClass(className, event) {
-  document.querySelectorAll('#manager-classes-tabs .tab-btn').forEach(btn => btn.classList.remove('manager-active'));
-  event.target.classList.add('manager-active');
   currentManagerClass = className;
   document.getElementById('mgr-class-name').innerText = className;
+
+  const container = document.getElementById('manager-classes-tabs');
+  if(container) {
+    container.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('manager-active'));
+  }
+  if(event && event.target) {
+    event.target.classList.add('manager-active');
+  }
+
   renderManagerView();
 }
 
 function renderManagerView() {
-  if(!document.getElementById('manager-tab').classList.contains('active')) return;
+  const className = currentManagerClass;
 
-  const today = document.getElementById('recordDate').value;
-  document.getElementById('mgr-today-date').innerText = today;
+  const todayISO = new Date().toISOString().slice(0, 10);
+  document.getElementById('mgr-today-date').innerText = todayISO;
 
-  const tDaily = document.querySelector('#mgrDailyTable tbody');
-  tDaily.innerHTML = '';
-  let dailyClassRecs = dailyRecords.filter(r => r.className === currentManagerClass && r.dateISO === today)
-                                  .sort((a,b) => a.studentName.localeCompare(b.studentName, 'ar'));
+  const mgrDailyTbody = document.querySelector('#mgrDailyTable tbody');
+  if(mgrDailyTbody) {
+    mgrDailyTbody.innerHTML = '';
+    const todayRecords = dailyRecords.filter(r => r.className === className && r.dateISO === todayISO);
 
-  if(dailyClassRecs.length === 0) {
-    tDaily.innerHTML = '<tr><td colspan="13">لا توجد درجات مسجلة لهذا الصف اليوم.</td></tr>';
-  } else {
-    dailyClassRecs.forEach(r => {
-      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td style="color:#27ae60;">${r.oldTopicText||'-'}</td><td style="color:#e67e22;">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td>${r.oldRevision}</td><td>${r.newLesson}</td><td>${r.recitation}</td><td>${r.homework||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / 60</td></tr>`;
-    });
-  }
-
-  const tWeekly = document.querySelector('#mgrWeeklyTable tbody');
-  tWeekly.innerHTML = '';
-  const selWeek = document.getElementById('mgrWeekSelect').value;
-  let weekRecords = dailyRecords.filter(r => r.className === currentManagerClass && r.dateISO && getWeekKey(r.dateISO) === selWeek);
-  let classStds = studentsData.filter(s => s.className === currentManagerClass).map(s=>s.name).sort((a,b) => a.localeCompare(b, 'ar'));
-
-  if(classStds.length === 0) {
-    tWeekly.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا الصف</td></tr>';
-  } else {
-    classStds.forEach(student => {
-      let sRecs = weekRecords.filter(r => r.studentName === student);
-      let wd = {"الأحد":"-","الاثنين":"-","الثلاثاء":"-","الأربعاء":"-","الخميس":"-"};
-      let stTotal = 0; let attTotal = 0;
-      sRecs.forEach(r => {
-        if(wd[r.dayName]!==undefined){
-          let d=getDailyTotal(r); wd[r.dayName]=d; stTotal+=d; attTotal+=r.attendance;
-        }
+    if(todayRecords.length === 0) {
+      mgrDailyTbody.innerHTML = `<tr><td colspan="13">لم يتم رصد درجات لـ (${className}) اليوم بعد</td></tr>`;
+    } else {
+      todayRecords.forEach(r => {
+        mgrDailyTbody.innerHTML += `
+          <tr>
+            <td>${r.dateISO}</td>
+            <td>${r.teacherName}</td>
+            <td style="font-weight:bold;">${r.studentName}</td>
+            <td>${r.recitationTopic || '-'}</td>
+            <td>${r.oldTopicText || '-'}</td>
+            <td>${r.newTopicText || '-'}</td>
+            <td>${r.attendance}</td>
+            <td>${r.behavior}</td>
+            <td>${r.oldRevision}</td>
+            <td>${r.newLesson}</td>
+            <td>${r.recitation}</td>
+            <td>${r.homework}</td>
+            <td><strong>${getDailyTotal(r)}</strong></td>
+          </tr>
+        `;
       });
-      let wAvg = (stTotal / 7).toFixed(1);
-      let attPerc = ((attTotal / 70) * 100).toFixed(1);
-      let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
-      tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong> / 420</td><td><strong>${wAvg}</strong> / 60</td><td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
+    }
+  }
+
+  const mgrWeekSelect = document.getElementById('mgrWeekSelect');
+  const mgrWeeklyTbody = document.querySelector('#mgrWeeklyTable tbody');
+  if(mgrWeekSelect && mgrWeeklyTbody && mgrWeekSelect.value) {
+    mgrWeeklyTbody.innerHTML = '';
+    const [startDateStr, endDateStr] = mgrWeekSelect.value.split('_');
+    const startD = new Date(startDateStr);
+
+    const classStudents = studentsData.filter(s => s.className === className).sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+
+    classStudents.forEach(st => {
+      let daysScores = [0, 0, 0, 0, 0];
+      let daysPresent = 0;
+      let totalScore = 0;
+
+      for(let i = 0; i < 5; i++) {
+        let d = new Date(startD);
+        d.setDate(d.getDate() + i);
+        let iso = d.toISOString().split('T')[0];
+
+        let rec = dailyRecords.find(r => r.className === className && r.studentName === st.name && r.dateISO === iso);
+        if(rec) {
+          let score = getDailyTotal(rec);
+          daysScores[i] = score;
+          totalScore += score;
+          if(rec.attendance > 0) daysPresent++;
+        }
+      }
+
+      let avgScore = (totalScore / 7).toFixed(1);
+      let attPercent = Math.round((daysPresent / 5) * 100);
+
+      mgrWeeklyTbody.innerHTML += `
+        <tr>
+          <td style="font-weight:bold;">${st.name}</td>
+          <td>${daysScores[0]}</td>
+          <td>${daysScores[1]}</td>
+          <td>${daysScores[2]}</td>
+          <td>${daysScores[3]}</td>
+          <td>${daysScores[4]}</td>
+          <td><strong>${totalScore}</strong> / 300</td>
+          <td style="color:var(--primary-color);">${avgScore}</td>
+          <td><span class="badge ${attPercent >= 75 ? 'badge-green' : 'badge-yellow'}">${attPercent}%</span></td>
+        </tr>
+      `;
     });
   }
 
-  const tMonthlyHead = document.querySelector('#mgrMonthlyTable thead');
-  const tMonthly = document.querySelector('#mgrMonthlyTable tbody');
-  tMonthly.innerHTML = '';
-  const selMonth = document.getElementById('mgrMonthSelect').value;
-  const selYear = document.getElementById('mgrYearSelect').value;
+  const mSelect = document.getElementById('mgrMonthSelect');
+  const ySelect = document.getElementById('mgrYearSelect');
+  const mgrMonthlyTbody = document.querySelector('#mgrMonthlyTable tbody');
+  const mgrMonthlyThead = document.querySelector('#mgrMonthlyTable thead');
 
-  const workingDays = getMonthWorkingDays(selYear, selMonth);
-  const totalDays = workingDays.length || 1;
+  if(mSelect && ySelect && mgrMonthlyTbody && mgrMonthlyThead) {
+    const month = parseInt(mSelect.value);
+    const year = parseInt(ySelect.value);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
-  workingDays.forEach(wd => {
-    let parts = wd.dateISO.split('-');
-    headerHtml += `<th style="font-size:0.75em; padding:4px;">${wd.dayName}<br>${parts[2]}/${parts[1]}</th>`;
-  });
-  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر</th><th>نسبة التقييم</th></tr>';
-  tMonthlyHead.innerHTML = headerHtml;
+    let headHTML = '<tr><th style="min-width:140px;">اسم الطالب</th>';
+    for(let d = 1; d <= daysInMonth; d++) {
+      headHTML += `<th style="font-size:0.7em; padding:2px;">${d}</th>`;
+    }
+    headHTML += '<th>المجموع</th><th>المتوسط</th></tr>';
+    mgrMonthlyThead.innerHTML = headHTML;
 
-  let mStds = studentsData.filter(s => s.className === currentManagerClass).map(s => s.name).sort((a,b) => a.localeCompare(b, 'ar'));
+    const classStudents = studentsData.filter(s => s.className === className).sort((a,b) => a.name.localeCompare(b.name, 'ar'));
 
-  if(mStds.length===0) {
-    tMonthly.innerHTML = `<tr><td colspan="${workingDays.length + 5}">لا يوجد طلاب في هذا الصف</td></tr>`;
-  } else {
-    mStds.forEach(st => {
-      let rowHtml = `<tr><td style="font-weight:bold; position: sticky; right: 0; background: white; z-index: 1;">${st}</td>`;
-      let tot = 0; let attCnt = 0;
+    mgrMonthlyTbody.innerHTML = '';
+    classStudents.forEach(st => {
+      let totalMonthScore = 0;
+      let recordedDaysCount = 0;
+      let rowHTML = `<tr><td style="font-weight:bold;">${st.name}</td>`;
 
-      workingDays.forEach(wd => {
-        let rec = dailyRecords.find(r => r.className === currentManagerClass && r.studentName === st && r.dateISO === wd.dateISO);
-        if (rec) {
-          let dScore = getDailyTotal(rec);
-          tot += dScore;
-          if (rec.attendance > 0) attCnt++;
-          rowHtml += `<td>${dScore}</td>`;
+      for(let d = 1; d <= daysInMonth; d++) {
+        let dStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        let rec = dailyRecords.find(r => r.className === className && r.studentName === st.name && r.dateISO === dStr);
+        if(rec) {
+          let score = getDailyTotal(rec);
+          totalMonthScore += score;
+          recordedDaysCount++;
+          rowHTML += `<td style="font-size:0.8em;">${score}</td>`;
         } else {
-          rowHtml += `<td style="color:#ccc;">-</td>`;
+          rowHTML += `<td style="color:#ccc;">-</td>`;
         }
-      });
+      }
 
-      let mAvg = (tot / totalDays).toFixed(1);
-      let perc = ((tot / (totalDays * 60)) * 100).toFixed(1);
+      let avgMonth = recordedDaysCount > 0 ? (totalMonthScore / recordedDaysCount).toFixed(1) : '0';
 
-      rowHtml += `<td><strong>${attCnt}</strong> / ${totalDays}</td>`;
-      rowHtml += `<td><strong>${tot}</strong></td>`;
-      rowHtml += `<td style="color:var(--primary-color); font-weight:bold;">${mAvg}</td>`;
-      rowHtml += `<td><span class="badge ${parseFloat(perc)>=75?'badge-green':'badge-yellow'}">${perc}%</span></td></tr>`;
+      rowHTML += `
+        <td><strong>${totalMonthScore}</strong></td>
+        <td style="color:var(--primary-color); font-weight:bold;">${avgMonth}</td>
+      </tr>`;
 
-      tMonthly.innerHTML += rowHtml;
+      mgrMonthlyTbody.innerHTML += rowHTML;
     });
   }
 }
 
 async function addBulkStudents() {
-  if (currentTeacher.username !== 'admin') return;
-  const rawText = document.getElementById('bulkStudentNames').value;
+  const textarea = document.getElementById('bulkStudentNames');
   const className = document.getElementById('newStudentClass').value;
-
-  const namesList = rawText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
-
-  if (namesList.length === 0) {
-    return customAlert('يرجى كتابة أو لصق أسماء الطلاب أولاً', 'تنبيـه');
+  if (!textarea || !textarea.value.trim()) {
+    customAlert('يرجى كتابة أو نسخ قائمة الأسماء أولاً!');
+    return;
   }
 
-  let addedCount = 0;
-  for (let name of namesList) {
-    const newStudent = {
-      id: 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-      name: name,
-      className: className
-    };
+  const lines = textarea.value.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (lines.length === 0) return;
 
-    if (useFirebase) {
-      await db.collection("students").doc(newStudent.id).set(newStudent);
-    } else {
-      studentsData.push(newStudent);
+  let addedCount = 0;
+
+  for (let name of lines) {
+    const exists = studentsData.some(s => s.name === name && s.className === className);
+    if (!exists) {
+      const newStudent = { id: 'st_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), name, className };
+      if (useFirebase) {
+        await db.collection("students").doc(newStudent.id).set(newStudent);
+      } else {
+        studentsData.push(newStudent);
+      }
+      addedCount++;
     }
-    addedCount++;
   }
 
   if (!useFirebase) {
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
-    renderStudentsTable();
-    renderClassCards();
-    renderDailySheetTable();
-    renderManagerView();
-    renderAttendanceTable();
-    renderClassStatusTable();
   }
 
-  customAlert(`تمت إضافة وترفيع (${addedCount}) طالب بنجاح إلى صف (${className}) بالسحابة!`, 'تم الحفظ بنجاح ✨');
-  document.getElementById('bulkStudentNames').value = '';
+  textarea.value = '';
+  renderStudentsTable();
+  renderClassCards();
+  customAlert(`تمت إضافة ${addedCount} طالب بنجاح إلى صف (${className}) ✨`);
 }
 
 function renderClassCards() {
   const container = document.getElementById('class-cards-container');
-  if (!container) return;
+  if(!container) return;
+
   container.innerHTML = '';
 
   ALL_CLASSES.forEach(cName => {
     const classTeachers = teachersData.filter(t => t.assignedClass === cName || t.assignedClass === 'الكل');
-    const primaryTeachers = classTeachers.filter(t => t.center === 'رئيسي' || t.assignedClass === 'الكل').map(t => t.username);
-    const assistantTeachers = classTeachers.filter(t => t.center === 'مساعد').map(t => t.username);
+    const classStudents = studentsData.filter(s => s.className === cName);
 
-    const classStudents = studentsData.filter(s => s.className === cName)
-      .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
-
-    let studentsHtml = '';
-    if (classStudents.length === 0) {
-      studentsHtml = '<p style="color:#888; font-size:0.85em; margin: 5px 0;">لا يوجد طلاب مسجلين في هذا الفصل</p>';
-    } else {
-      studentsHtml = '<div style="max-height: 180px; overflow-y: auto; padding-left:5px;">';
-      classStudents.forEach(s => {
-        studentsHtml += `<div class="student-item-row"> <span>👤 ${s.name}</span> <div> <button class="action-btn btn-edit" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </div> </div>`;
-      });
-      studentsHtml += '</div>';
-    }
+    let teachersHTML = classTeachers.map(t => `<span class="badge badge-blue" style="margin-left:4px;">${t.username} (${t.center || 'معلم'})</span>`).join(' ');
 
     container.innerHTML += `
       <div class="class-box">
-        <h4>🏫 ${cName} <span style="font-size:0.8em; color:var(--accent-gold-dark);">(${classStudents.length} طالب)</span></h4>
+        <h4>🏫 ${cName}</h4>
         <div class="teachers-tag-list">
-          <div><strong>المعلم الرئيسي:</strong> ${primaryTeachers.length > 0 ? primaryTeachers.join('، ') : 'غير محدد'}</div>
-          <div><strong>المعلم المساعد:</strong> ${assistantTeachers.join('، ')}</div>
+          <strong>المعلمون:</strong> ${teachersHTML || '<span style="color:#888;">لم يتم التعيين</span>'}
         </div>
-        <hr style="border:0; border-top:1px dashed #eee; margin:8px 0;">
-        ${studentsHtml}
+        <div style="font-size:0.88em; font-weight:bold; color:var(--primary-dark); margin-top:8px;">
+          إجمالي الطلاب: (${classStudents.length})
+        </div>
       </div>
     `;
   });
 }
 
-async function editStudent(id) {
-  if (currentTeacher.username !== 'admin') return;
-  const student = studentsData.find(s => s.id.toString() === id.toString());
-  if (!student) return;
-
-  const newName = await customPrompt("تعديل اسم الطالب/الطالبة:", student.name, "الاسم الجديد:", "تعديل بيانات الطالب");
-  if (newName === null) return;
-
-  let optionsList = ALL_CLASSES.join(" | ");
-  const newClass = await customPrompt(`تعديل الصف الدراسي:\n(اختر واكتب الصف كالتالي: ${optionsList})`, student.className, "الصف الدراسي الجديد:", "تعديل الصف");
-  if (newClass === null) return;
-
-  if (!newName.trim() || !newClass.trim()) {
-    return customAlert("خطأ: يرجى إدخال اسم الطالب والصف بشكل صحيح!", "تنبيه");
-  }
-
-  const updatedStudent = { ...student, name: newName.trim(), className: newClass.trim() };
-
-  if (useFirebase) {
-    await db.collection("students").doc(id.toString()).set(updatedStudent);
-  } else {
-    const idx = studentsData.findIndex(s => s.id.toString() === id.toString());
-    if (idx > -1) studentsData[idx] = updatedStudent;
-    localStorage.setItem('studentsData', JSON.stringify(studentsData));
-    renderStudentsTable();
-    renderClassCards();
-    renderDailySheetTable();
-    renderManagerView();
-    renderAttendanceTable();
-    renderClassStatusTable();
-  }
-  showMessage('app-msg', 'تم تعديل بيانات الطالب بنجاح ✨', 'success');
-}
-
-async function editTeacher(id) {
-  if (currentTeacher.username !== 'admin') return;
-  const teacher = teachersData.find(t => t.id.toString() === id.toString());
-  if (!teacher) return;
-
-  const newUsername = await customPrompt("تعديل اسم المستخدم للمعلم:", teacher.username, "اسم المستخدم:", "تعديل المعلم");
-  if (newUsername === null) return;
-
-  const newPassword = await customPrompt("تعديل كلمة المرور للمعلم:", teacher.password, "كلمة المرور:", "تعديل المعلم");
-  if (newPassword === null) return;
-
-  const newClass = await customPrompt(`تعديل الصف المسند (اكتب اسم الصف أو 'الكل' للمدير):`, teacher.assignedClass, "الصف المسند:", "تعديل الصف");
-  if (newClass === null) return;
-
-  const newCenter = await customPrompt("تعديل الدور / المركز (رئيسي أو مساعد أو الكل):", teacher.center || "رئيسي", "الدور / المركز:", "تعديل الدور");
-  if (newCenter === null) return;
-
-  if (!newUsername.trim() || !newPassword.trim()) {
-    return customAlert("خطأ: يرجى ملء اسم المستخدم وكلمة المرور بشكل صحيح!", "تنبيه");
-  }
-
-  const updatedTeacher = {
-    ...teacher,
-    username: newUsername.trim(),
-    password: newPassword.trim(),
-    assignedClass: newClass.trim(),
-    center: newCenter.trim()
-  };
-
-  if (useFirebase) {
-    await db.collection("teachers").doc(id.toString()).set(updatedTeacher);
-  } else {
-    const idx = teachersData.findIndex(t => t.id.toString() === id.toString());
-    if (idx > -1) teachersData[idx] = updatedTeacher;
-    localStorage.setItem('teachersData', JSON.stringify(teachersData));
-    renderTeachersTable();
-    renderClassCards();
-  }
-  showMessage('app-msg', 'تم تعديل بيانات المعلم بنجاح ✨', 'success');
-}
-
-async function deleteStudent(id) {
-  if (currentTeacher.username !== 'admin') return;
-  const confirmed = await customConfirm('هل أنت متأكد من حذف هذا الطالب نهائياً من النظام؟', 'تأكيد الحذف');
-  if (confirmed) {
-    if (useFirebase) await db.collection("students").doc(id.toString()).delete();
-    else {
-      studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
-      localStorage.setItem('studentsData', JSON.stringify(studentsData));
-      renderStudentsTable(); renderClassCards(); renderDailySheetTable(); renderManagerView(); renderAttendanceTable(); renderClassStatusTable();
-    }
-    showMessage('app-msg', 'تم حذف الطالب بنجاح', 'success');
-  }
-}
-
-function renderStudentsTable() {
-  const tbody = document.querySelector('#studentsTable tbody');
-  if (!tbody) return; tbody.innerHTML = '';
-  const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
-  sortedStudents.forEach(s => {
-    tbody.innerHTML += `<tr> <td style="font-weight:bold;">${s.name}</td> <td>${s.className}</td> <td> <button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </td> </tr>`;
-  });
-}
-
 async function addTeacher() {
-  if (currentTeacher.username !== 'admin') return;
-  const u = document.getElementById('newTeacherUser').value.trim();
-  const p = document.getElementById('newTeacherPass').value.trim();
-  const c = document.getElementById('newTeacherClass').value;
-  const cn = document.getElementById('newTeacherCenter').value;
+  const username = document.getElementById('newTeacherUser').value.trim();
+  const password = document.getElementById('newTeacherPass').value.trim();
+  const assignedClass = document.getElementById('newTeacherClass').value;
+  const center = document.getElementById('newTeacherCenter').value;
 
-  if(!u || !p) return showMessage('app-msg', 'يرجى إدخال البيانات كاملة', 'error');
-  if(teachersData.some(t => t.username === u)) return showMessage('app-msg', 'اسم المستخدم موجود مسبقاً', 'error');
+  if(!username || !password) {
+    customAlert('يرجى ملء اسم المستخدم وكلمة المرور');
+    return;
+  }
 
-  const newTeacher = { id: Date.now().toString(), username: u, password: p, assignedClass: c, center: cn };
+  const newTeacher = { id: 't_' + Date.now(), username, password, assignedClass, center };
 
-  if (useFirebase) await db.collection("teachers").doc(newTeacher.id).set(newTeacher);
-  else {
+  if(useFirebase) {
+    await db.collection("teachers").doc(newTeacher.id).set(newTeacher);
+  } else {
     teachersData.push(newTeacher);
     localStorage.setItem('teachersData', JSON.stringify(teachersData));
-    renderTeachersTable();
-    renderClassCards();
   }
-  showMessage('app-msg', 'تم إضافة المعلم/المعلمة بنجاح ✨', 'success');
-  document.getElementById('newTeacherUser').value = ''; document.getElementById('newTeacherPass').value = '';
+
+  document.getElementById('newTeacherUser').value = '';
+  document.getElementById('newTeacherPass').value = '';
+
+  renderTeachersTable();
+  renderClassCards();
+  customAlert('تم حفظ المعلم بنجاح! ✨');
 }
 
 function renderTeachersTable() {
   const tbody = document.querySelector('#teachersTable tbody');
-  if (!tbody) return; tbody.innerHTML = '';
-  teachersData.forEach((t) => {
-    const actions = t.username === 'admin' ? '<span style="color:gray;">مدير النظام الرئيسي</span>' :
-      `<button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editTeacher('${t.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteTeacher('${t.id}')">حذف</button>`;
-    tbody.innerHTML += `<tr><td style="font-weight:bold;">${t.username}</td><td>${t.password}</td><td>${t.assignedClass}</td><td>${t.center}</td><td>${actions}</td></tr>`;
+  if(!tbody) return;
+  tbody.innerHTML = '';
+
+  teachersData.forEach(t => {
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:bold;">${t.username}</td>
+        <td>${t.password}</td>
+        <td>${t.assignedClass}</td>
+        <td>${t.center || 'معلم'}</td>
+        <td>
+          <button class="action-btn btn-danger" style="padding:2px 8px; font-size:0.75em; min-width:auto;" onclick="deleteTeacher('${t.id}')">حذف 🗑️</button>
+        </td>
+      </tr>
+    `;
   });
 }
 
 async function deleteTeacher(id) {
-  if (currentTeacher.username !== 'admin') return;
-  const teacherToDelete = teachersData.find(t => t.id.toString() === id.toString());
-  if (teacherToDelete && teacherToDelete.username === 'admin') return showMessage('app-msg', 'لا يمكن حذف حساب المدير الرئيسي', 'error');
+  const confirmDel = await customConfirm('هل أنت متأكد من حذف هذا المعلم؟');
+  if(!confirmDel) return;
 
-  const confirmed = await customConfirm('هل أنت متأكد من حذف هذا المعلم؟', 'تأكيد الحذف');
-  if(confirmed) {
-    if (useFirebase) await db.collection("teachers").doc(id.toString()).delete();
-    else {
-      teachersData = teachersData.filter(t => t.id.toString() !== id.toString());
-      localStorage.setItem('teachersData', JSON.stringify(teachersData));
-      renderTeachersTable();
-      renderClassCards();
-    }
-    showMessage('app-msg', 'تم حذف المعلم بنجاح', 'success');
+  if(useFirebase) {
+    await db.collection("teachers").doc(id).delete();
+  } else {
+    teachersData = teachersData.filter(t => t.id !== id);
+    localStorage.setItem('teachersData', JSON.stringify(teachersData));
   }
+  renderTeachersTable();
+  renderClassCards();
 }
 
-/* ================= دوال النسخ الاحتياطي والاستعادة ================= */
+function renderStudentsTable() {
+  const tbody = document.querySelector('#studentsTable tbody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+
+  studentsData.forEach(s => {
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:bold;">${s.name}</td>
+        <td>${s.className}</td>
+        <td>
+          <button class="action-btn btn-danger" style="padding:2px 8px; font-size:0.75em; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف 🗑️</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+async function deleteStudent(id) {
+  const confirmDel = await customConfirm('هل أنت متأكد من حذف هذا الطالب؟');
+  if(!confirmDel) return;
+
+  if(useFirebase) {
+    await db.collection("students").doc(id).delete();
+  } else {
+    studentsData = studentsData.filter(s => s.id !== id);
+    localStorage.setItem('studentsData', JSON.stringify(studentsData));
+  }
+  renderStudentsTable();
+  renderClassCards();
+}
+
 function backupDataAndEmail(isAuto = false) {
-  if (currentTeacher && currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') return;
-
-  const sortedRecords = [...dailyRecords].sort((a,b) => new Date(a.dateISO) - new Date(b.dateISO));
-  const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
-  const sortedTeachers = [...teachersData].sort((a,b) => a.username.localeCompare(b.username, 'ar'));
-
-  const backupObj = {
-    exportDate: new Date().toISOString(),
-    teachersData: sortedTeachers,
-    studentsData: sortedStudents,
-    dailyRecords: sortedRecords
+  const data = {
+    teachersData,
+    studentsData,
+    dailyRecords,
+    backupDate: new Date().toISOString()
   };
 
-  const jsonStr = JSON.stringify(backupObj, null, 2);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `backup_al_majd_system_${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
+  const jsonStr = JSON.stringify(data, null, 2);
 
-  sendEmailBackup(jsonStr, isAuto);
-}
-
-function sendEmailBackup(jsonString, isAuto) {
-  const targetEmail = "yousirallam28@gmail.com";
-  try {
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
-      to_email: targetEmail,
-      message: "مرفق النسخة الاحتياطية المكتملة لمعهد المجد - لجميع الطلاب والمعلمين والدرجات مرتبة بجميع التواريخ.",
-      backup_data: jsonString.substring(0, 4500)
-    }).then(() => {
-      showMessage('app-msg', 'تم تنزيل النسخة بالكمبيوتر وإرسالها إلى البريد الإلكتروني بنجاح', 'success');
-    }).catch(() => {
-      fallbackMailto(targetEmail, isAuto);
-    });
-  } catch(e) {
-    fallbackMailto(targetEmail, isAuto);
+  if(!isAuto) {
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `نسخة_احتياطية_معهد_المجد_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    customAlert('تم تنزيل ملف النسخة الاحتياطية بنجاح على جهازك!');
   }
-}
 
-function fallbackMailto(email, isAuto) {
-  if (!isAuto) {
-    showMessage('app-msg', 'تم تحميل الملف بنجاح وتجهيز الرسالة للبريد: ' + email, 'success');
-    window.location.href = `mailto:${email}?subject=النسخة الاحتياطية الشاملة - معهد المجد&body=تم تحضير الملف وتحميله للكمبيوتر بنجاح.`;
-  }
+  localStorage.setItem('lastBackupDate', new Date().toISOString());
 }
 
 function checkWeeklyAutoBackup() {
-  if (!currentTeacher || (currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل')) return;
-
-  const lastBackup = localStorage.getItem('lastWeeklyBackupDate');
-  const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
-
-  if (!lastBackup) {
-    localStorage.setItem('lastWeeklyBackupDate', todayStr);
+  const lastBackup = localStorage.getItem('lastBackupDate');
+  if(!lastBackup) {
+    backupDataAndEmail(true);
     return;
   }
 
-  const diffDays = Math.floor((now - new Date(lastBackup)) / (1000 * 60 * 60 * 24));
-  if (diffDays >= 7) {
+  const diffDays = (new Date() - new Date(lastBackup)) / (1000 * 60 * 60 * 24);
+  if(diffDays >= 7) {
     backupDataAndEmail(true);
-    localStorage.setItem('lastWeeklyBackupDate', todayStr);
   }
 }
 
 function restoreData(event) {
   const file = event.target.files[0];
-  if (!file) return;
+  if(!file) return;
 
   const reader = new FileReader();
   reader.onload = async function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (data.teachersData && data.studentsData && data.dailyRecords) {
-        const confirmed = await customConfirm("هل أنت متأكد من استعادة هذه النسخة الاحتياطية؟ سيتم تحديث البيانات الحالية في النظام.", "تأكيد استعادة البيانات");
-        if (confirmed) {
-          teachersData = data.teachersData;
-          studentsData = data.studentsData;
-          dailyRecords = data.dailyRecords;
+      if(data.teachersData && data.studentsData && data.dailyRecords) {
+        teachersData = data.teachersData;
+        studentsData = data.studentsData;
+        dailyRecords = data.dailyRecords;
 
-          localStorage.setItem('teachersData', JSON.stringify(teachersData));
-          localStorage.setItem('studentsData', JSON.stringify(studentsData));
-          localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
+        localStorage.setItem('teachersData', JSON.stringify(teachersData));
+        localStorage.setItem('studentsData', JSON.stringify(studentsData));
+        localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
 
-          if (useFirebase) {
-            for (let t of teachersData) await db.collection("teachers").doc(t.id.toString()).set(t);
-            for (let s of studentsData) await db.collection("students").doc(s.id.toString()).set(s);
-            for (let r of dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
-          }
-
-          customAlert('تمت استعادة البيانات بنجاح! 🎉', 'نجاح الاستعادة');
-          showAppScreen();
+        if(useFirebase) {
+          for(let t of teachersData) await db.collection("teachers").doc(t.id).set(t);
+          for(let s of studentsData) await db.collection("students").doc(s.id).set(s);
+          for(let r of dailyRecords) await db.collection("dailyRecords").doc(r.id).set(r);
         }
+
+        customAlert('تمت استعادة جميع البيانات والنسخة الاحتياطية بنجاح! ✨');
+        location.reload();
       } else {
-        customAlert('ملف النسخة الاحتياطية غير صالح أو تنسيقه غير مطابق!', 'خطأ في الملف');
+        customAlert('ملف النسخة الاحتياطية غير صالحة أو ينقصها هيكل البيانات المطلوب.');
       }
-    } catch (err) {
-      customAlert('حدث خطأ أثناء قراءة ملف النسخة الاحتياطية', 'خطأ');
+    } catch(err) {
+      customAlert('خطأ في قراءة ملف JSON');
     }
   };
   reader.readAsText(file);
