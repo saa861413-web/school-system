@@ -1608,20 +1608,20 @@ function showAppScreen() {
 
     switchTab('daily-tab', { target: document.getElementById('daily-tab-btn') });
   } else {
-    document.getElementById('daily-tab-btn').classList.add('hidden');
-    document.getElementById('attendance-tab-btn').classList.add('hidden');
-    document.getElementById('weekly-tab-btn').classList.add('hidden');
-    document.getElementById('reports-tab-btn').classList.add('hidden');
+    document.getElementById('daily-tab-btn').classList.remove('hidden');
+    document.getElementById('status-tab-btn').classList.remove('hidden');
+    document.getElementById('attendance-tab-btn').classList.remove('hidden');
+    document.getElementById('weekly-tab-btn').classList.remove('hidden');
+    document.getElementById('reports-tab-btn').classList.remove('hidden');
     document.getElementById('manager-tab-btn').classList.add('hidden');
     document.getElementById('admin-tab-btn').classList.add('hidden');
-    document.getElementById('status-tab-btn').classList.remove('hidden');
 
     classSelect.value = currentTeacher.assignedClass; classSelect.disabled = true;
     weeklyClassSelect.value = currentTeacher.assignedClass; weeklyClassSelect.disabled = true;
     monthlyClassSelect.value = currentTeacher.assignedClass; monthlyClassSelect.disabled = true;
     attendanceClassSelect.value = currentTeacher.assignedClass; attendanceClassSelect.disabled = true;
 
-    switchTab('status-tab', { target: document.getElementById('status-tab-btn') });
+    switchTab('daily-tab', { target: document.getElementById('daily-tab-btn') });
   }
 
   populateWeeks();
