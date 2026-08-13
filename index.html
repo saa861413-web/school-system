@@ -18,14 +18,13 @@
 
 <style>
 :root {
-  /* الألوان المستوحاة بدقة من شعار معهد المجد (الأخضر الزمردي الشجري والذهبي) */
-  --primary-color: #13684d;        /* الأخضر الزمردي الرئيسي للشعار */
-  --primary-dark: #0a3f2e;         /* الأخضر الزيتوني الداكن */
-  --primary-light: #1da37a;        /* الأخضر الفاتح للتأثيرات */
-  --secondary-color: #1a3c34;      /* الكحلي الزيتوني الداكن */
-  --accent-gold: #c5a059;          /* الذهبي الملكي للزخارف */
-  --accent-gold-light: #e6d5ac;    /* الذهبي الفاتح للخلفيات والحدود */
-  --accent-gold-dark: #8c6d2d;     /* الذهبي الداكن للنصوص */
+  --primary-color: #13684d;
+  --primary-dark: #0a3f2e;
+  --primary-light: #1da37a;
+  --secondary-color: #1a3c34;
+  --accent-gold: #c5a059;
+  --accent-gold-light: #e6d5ac;
+  --accent-gold-dark: #8c6d2d;
   --success-color: #1b8a5a;
   --danger-color: #a93226;
   --warning-color: #d35400;
@@ -251,7 +250,6 @@ body {
 
 .user-info { font-size: 0.95em; line-height: 1.5; }
 
-/* ================= تخطيط الواجهة مع القائمة الجانبية (الأيمن) ================= */
 .app-main-layout {
   display: flex;
   gap: 20px;
@@ -317,7 +315,7 @@ body {
 
 .content-area {
   flex: 1;
-  min-width: 0; /* منع تجاوز العرض في الأجهزة */
+  min-width: 0;
 }
 
 .tab-content { display: none; }
@@ -483,7 +481,6 @@ tr:hover { background-color: #f2f8f5; }
   font-size: 0.85em;
 }
 
-/* الاستجابة للهاواتف والأجهزة الذكية */
 @media (max-width: 850px) {
   body { padding: 6px; }
   .container { padding: 14px; border-radius: 14px; }
@@ -583,10 +580,8 @@ function handleImgError(el, isWatermark = false) {
 
   <div id="app-msg" class="toast-msg"></div>
 
-  <!-- التخطيط العام مع الشريط الجانبي الأيمن -->
   <div class="app-main-layout">
     
-    <!-- القائمة الجانبية العمودية على اليمين -->
     <aside class="sidebar-nav">
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي</button>
@@ -599,7 +594,6 @@ function handleImgError(el, isWatermark = false) {
       </div>
     </aside>
 
-    <!-- منطقة المحتوى الرئيسية -->
     <main class="content-area">
 
       <!-- 1. تبويب الرصد اليومي -->
@@ -817,7 +811,7 @@ function handleImgError(el, isWatermark = false) {
         </div>
       </div>
 
-      <!-- 5. التقرير الشهري (عرض جميع أيام العمل في الشهر من الأحد إلى الخميس) -->
+      <!-- 5. التقرير الشهري -->
       <div id="reports-tab" class="tab-content">
         <div class="card-view">
           <h3 class="card-title">📅 التقرير الشهري الشامل (أيام الشهر من الأحد للخميس)</h3>
@@ -1603,7 +1597,6 @@ function renderDailyTable() {
   });
 }
 
-/* =================== متابعة حالة رصد الفصول المكتملة وغير المكتملة =================== */
 function renderClassStatusTable() {
   const statusDateInput = document.getElementById('statusDate');
   let dateVal = statusDateInput ? statusDateInput.value : '';
@@ -1692,7 +1685,6 @@ function hideUnrecordedDetails() {
   if (card) card.classList.add('hidden');
 }
 
-/* =================== جدول وقائمة الحضور لآخر 20 يوم =================== */
 function renderAttendanceTable() {
   let endDateVal = document.getElementById('attendanceEndDate').value;
   if (!endDateVal) {
@@ -1766,7 +1758,6 @@ function renderAttendanceTable() {
   });
 }
 
-/* =================== التقرير الأسبوعي والشهري المفصل بالأيام =================== */
 function renderWeeklyTable() {
   const tbody = document.querySelector('#weeklyTable tbody');
   if(!tbody) return;
@@ -1827,15 +1818,14 @@ function renderWeeklyTable() {
   });
 }
 
-// دالة جلب جميع أيام العمل (من الأحد إلى الخميس) لشهر معين
 function getMonthWorkingDays(year, month) {
   const workingDays = [];
   const date = new Date(year, month, 1);
   const monthNum = Number(month);
 
   while (date.getMonth() === monthNum) {
-    const dayOfWeek = date.getDay(); // 0 = الأحد, 1 = الاثنين, ..., 4 = الخميس
-    if (dayOfWeek >= 0 && dayOfWeek <= 4) { // من الأحد إلى الخميس
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek >= 0 && dayOfWeek <= 4) {
       const tzoffset = date.getTimezoneOffset() * 60000;
       const iso = new Date(date.getTime() - tzoffset).toISOString().slice(0, 10);
       const dayNames = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
@@ -1850,7 +1840,6 @@ function getMonthWorkingDays(year, month) {
   return workingDays;
 }
 
-// التقرير الشهري لعرض جميع أيام العمل الرسمية في الشهر مع الدرجات والمجاميع
 function renderMonthlyReport() {
   const month = document.getElementById('reportMonth').value;
   const year = document.getElementById('reportYear').value;
@@ -1862,7 +1851,6 @@ function renderMonthlyReport() {
 
   const workingDays = getMonthWorkingDays(year, month);
 
-  // رأس الجدول
   let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
   workingDays.forEach(wd => {
     let parts = wd.dateISO.split('-');
@@ -2025,7 +2013,6 @@ function renderManagerView() {
   }
 }
 
-/* ======== إضافة الطلاب المجمعة + دليل الفصول + دوال التعديل ======== */
 async function addBulkStudents() {
   if (currentTeacher.username !== 'admin') return;
   const rawText = document.getElementById('bulkStudentNames').value;
@@ -2252,7 +2239,7 @@ async function deleteTeacher(id) {
   }
 }
 
-/* ================= دوال النسخ الاحتياطي ================= */
+/* ================= دوال النسخ الاحتياطي والاستعادة ================= */
 function backupDataAndEmail(isAuto = false) {
   if (currentTeacher && currentTeacher.username !== 'admin' && currentTeacher.assignedClass !== 'الكل') return;
 
@@ -2320,8 +2307,8 @@ function checkWeeklyAutoBackup() {
   }
 }
 
+// دالة استعادة البيانات المكتملة
 function restoreData(event) {
-  if (currentTeacher.username !== 'admin') return;
   const file = event.target.files[0];
   if (!file) return;
 
@@ -2330,26 +2317,30 @@ function restoreData(event) {
     try {
       const data = JSON.parse(e.target.result);
       if (data.teachersData && data.studentsData && data.dailyRecords) {
-        if (useFirebase) {
-          for (let t of data.teachersData) await db.collection("teachers").doc(t.id.toString()).set(t);
-          for (let s of data.studentsData) await db.collection("students").doc(s.id.toString()).set(s);
-          for (let r of data.dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
-        } else {
-          teachersData = data.teachersData.map(applyDataMapping);
-          studentsData = data.studentsData.map(applyDataMapping);
-          dailyRecords = data.dailyRecords.map(applyDataMapping);
+        if (confirm("هل أنت متأكد من استعادة هذه النسخة الاحتياطية؟ سيتم تحديث البيانات الحالية في النظام.")) {
+          teachersData = data.teachersData;
+          studentsData = data.studentsData;
+          dailyRecords = data.dailyRecords;
 
           localStorage.setItem('teachersData', JSON.stringify(teachersData));
           localStorage.setItem('studentsData', JSON.stringify(studentsData));
           localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
 
-          renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderMonthlyReport(); renderManagerView(); renderClassCards(); renderAttendanceTable(); renderClassStatusTable();
+          if (useFirebase) {
+            for (let t of teachersData) await db.collection("teachers").doc(t.id.toString()).set(t);
+            for (let s of studentsData) await db.collection("students").doc(s.id.toString()).set(s);
+            for (let r of dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
+          }
+
+          showMessage('app-msg', 'تمت استعادة البيانات بنجاح! 🎉', 'success');
+          showAppScreen();
         }
-        showMessage('app-msg', 'تم استعادة كافة بيانات معهد المجد بنجاح!', 'success');
       } else {
-        showMessage('app-msg', 'الملف المحدد لا يحتوي على البنية الصحيحة للنظام', 'error');
+        showMessage('app-msg', 'ملف النسخة الاحتياطية غير صالح أو تنسيقه غير مطابق!', 'error');
       }
-    } catch (err) { showMessage('app-msg', 'حدث خطأ أثناء قراءة الملف', 'error'); }
+    } catch (err) {
+      showMessage('app-msg', 'حدث خطأ أثناء قراءة ملف النسخة الاحتياطية', 'error');
+    }
   };
   reader.readAsText(file);
 }
