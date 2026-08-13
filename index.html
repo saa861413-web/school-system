@@ -45,7 +45,6 @@ body {
   margin: 0;
   padding: 12px;
   background-color: var(--bg-color);
-  /* خلفية معالجة تظهر المظهر الجمالي حتى في حال عدم تحميل الصورة المحلية */
   background-image: 
     linear-gradient(rgba(237, 243, 239, 0.92), rgba(237, 243, 239, 0.92)),
     url('1000054284_2.jpg');
@@ -58,7 +57,6 @@ body {
   min-height: 100vh;
 }
 
-/* العلامة المائية لشعار الموقع في الخلفية */
 .watermark-bg {
   position: fixed;
   top: 50%;
@@ -83,7 +81,6 @@ body {
   backdrop-filter: blur(6px);
 }
 
-/* رأس الصفحة المزين بالأخضر والذهبي */
 .institute-header {
   display: flex;
   align-items: center;
@@ -130,7 +127,6 @@ body {
   font-weight: 600;
 }
 
-/* رسائل النظام (Toast) */
 .toast-msg {
   padding: 12px 18px;
   border-radius: 8px;
@@ -148,7 +144,6 @@ body {
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ==================== شاشة تسجيل الدخول المزخرفة إسلامياً ==================== */
 .login-card {
   max-width: 450px;
   margin: 40px auto;
@@ -164,7 +159,6 @@ body {
   outline-offset: -8px;
 }
 
-/* القوس والزخرفة الإسلامية العلوية لبطاقة الدخول */
 .login-card::before {
   content: "";
   position: absolute;
@@ -205,9 +199,7 @@ body {
   border: 2px solid var(--accent-gold);
 }
 
-.login-logo-img:hover {
-  transform: scale(1.05);
-}
+.login-logo-img:hover { transform: scale(1.05); }
 
 .login-header-text {
   font-family: 'Amiri', serif;
@@ -225,7 +217,6 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* الفاصل الإسلامي المحسّن */
 .islamic-divider {
   display: flex;
   align-items: center;
@@ -258,12 +249,8 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.user-info {
-  font-size: 0.95em;
-  line-height: 1.5;
-}
+.user-info { font-size: 0.95em; line-height: 1.5; }
 
-/* التبويبات والأزرار العلوية */
 .tabs {
   display: flex;
   gap: 8px;
@@ -313,7 +300,6 @@ body {
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 
-/* نموذج الإدخال */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -376,7 +362,6 @@ button.action-btn:hover {
 .btn-warning { background: linear-gradient(135deg, var(--warning-color) 0%, #a04000 100%); }
 .btn-edit { background: linear-gradient(135deg, #2980b9 0%, #1b4f72 100%); }
 
-/* الجداول والتصميم العام */
 .table-responsive {
   overflow-x: auto;
   background: white;
@@ -400,7 +385,7 @@ th {
 
 tr:hover { background-color: #f2f8f5; }
 
-.badge { padding: 4px 11px; border-radius: 12px; font-size: 0.8em; font-weight: 700; color: white; }
+.badge { padding: 4px 11px; border-radius: 12px; font-size: 0.8em; font-weight: 700; color: white; display: inline-block; }
 .badge-green { background-color: var(--success-color); }
 .badge-yellow { background-color: var(--warning-color); }
 .badge-blue { background-color: var(--primary-color); }
@@ -433,7 +418,6 @@ tr:hover { background-color: #f2f8f5; }
   gap: 8px;
 }
 
-/* شبكة خانات الفصول */
 .classes-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -465,11 +449,7 @@ tr:hover { background-color: #f2f8f5; }
   font-family: 'Amiri', serif;
 }
 
-.teachers-tag-list {
-  margin-bottom: 10px;
-  font-size: 0.85em;
-  line-height: 1.6;
-}
+.teachers-tag-list { margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; }
 
 .student-item-row {
   display: flex;
@@ -501,7 +481,6 @@ tr:hover { background-color: #f2f8f5; }
 </head>
 <body>
 
-<!-- دالة المعالجة الفورية لإصلاح الصور في حال عدم توفر الصورة المحلية -->
 <script>
 function handleImgError(el, isWatermark = false) {
   if (isWatermark) {
@@ -509,7 +488,6 @@ function handleImgError(el, isWatermark = false) {
     return;
   }
   el.onerror = null;
-  /* شعار متجهي (SVG) بديل مصمم خصيصاً لمعهد المجد بالأخضر والذهبي */
   el.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
       <circle cx="60" cy="60" r="56" fill="#13684d" stroke="#c5a059" stroke-width="4"/>
@@ -522,10 +500,9 @@ function handleImgError(el, isWatermark = false) {
 }
 </script>
 
-<!-- صورة العلامة المائية في خلفية الموقع مع إصلاح حماية التحميل -->
 <img src="1000054284_2.jpg" class="watermark-bg" alt="معهد المجد" onerror="handleImgError(this, true)">
 
-<!-- شاشة تسجيل الدخول المزخرفة إسلامياً -->
+<!-- شاشة تسجيل الدخول -->
 <div id="login-screen" class="login-card">
   <img src="1000054284_2.jpg" class="login-logo-img" alt="شعار معهد المجد" onerror="handleImgError(this)">
   <h2 class="login-header-text">مَعْهَدُ المَجْدِ</h2>
@@ -555,7 +532,6 @@ function handleImgError(el, isWatermark = false) {
 <!-- واجهة التطبيق الرئيسية -->
 <div id="app-screen" class="container hidden">
 
-  <!-- هيدر المعهد الرئيسي -->
   <div class="institute-header">
     <div class="header-brand">
       <img src="1000054284_2.jpg" class="header-logo" alt="شعار معهد المجد" onerror="handleImgError(this)">
@@ -569,7 +545,6 @@ function handleImgError(el, isWatermark = false) {
     </div>
   </div>
 
-  <!-- الشريط العلوي للمستخدم -->
   <div class="user-bar">
     <div class="user-info">
       أهلاً بك: <strong id="teacher-name-display" style="color: var(--accent-gold-light);"></strong> | 
@@ -578,12 +553,12 @@ function handleImgError(el, isWatermark = false) {
     <button class="action-btn btn-danger" style="min-width: auto; padding: 6px 16px; font-size: 0.82em;" onclick="handleLogout()">تسجيل خروج 🚪</button>
   </div>
 
-  <!-- رسائل النظام -->
   <div id="app-msg" class="toast-msg"></div>
 
   <!-- أزرار التنقل الرئيسية -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي</button>
+    <button class="tab-btn" id="status-tab-btn" onclick="switchTab('status-tab', event)">🔍 حالة إنجاز الرصد</button>
     <button class="tab-btn hidden" id="attendance-tab-btn" onclick="switchTab('attendance-tab', event)">📋 حضور 20 يوم</button>
     <button class="tab-btn hidden" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">📊 التقرير الأسبوعي</button>
     <button class="tab-btn hidden" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">📅 التقرير الشهري</button>
@@ -607,7 +582,6 @@ function handleImgError(el, isWatermark = false) {
         <select id="classSelect" onchange="updateStudentListDropdown();">
           <option value="أولى - أولاد">أولى - أولاد</option>
           <option value="أولى - بنات">أولى - بنات</option>
-          <option value="أولى شرعي">أولى شرعي</option>
           <option value="ثانية - أولاد">ثانية - أولاد</option>
           <option value="ثانية - بنات">ثانية - بنات</option>
           <option value="ثالثة - أولاد">ثالثة - أولاد</option>
@@ -616,12 +590,12 @@ function handleImgError(el, isWatermark = false) {
           <option value="رابعة - بنات">رابعة - بنات</option>
           <option value="خامسة - أولاد">خامسة - أولاد</option>
           <option value="خامسة - بنات">خامسة - بنات</option>
+          <option value="أولى شرعي">أولى شرعي</option>
         </select>
       </div>
       <div class="form-group" style="grid-column: span 2;">
         <label>اسم الطالب/الطالبة:</label>
         <select id="studentNameSelect" style="font-weight: bold; color: var(--primary-dark);">
-          <!-- تعبئة تلقائية -->
         </select>
       </div>
       <div class="form-group" style="grid-column: span 2;">
@@ -669,7 +643,53 @@ function handleImgError(el, isWatermark = false) {
     </div>
   </div>
 
-  <!-- 2. تبويب سجل الحضور لآخر 20 يوم -->
+  <!-- 2. تبويب متابعة حالة وإنجاز رصد الفصول (جديد) -->
+  <div id="status-tab" class="tab-content">
+    <div class="card-view">
+      <h3 class="card-title">🔍 متابعة حالة إكمال ورصد درجات الفصول</h3>
+      <p style="font-size: 0.9em; color: #555; margin-bottom: 15px;">
+        تُظهر هذه القائمة موقف كل فصل من رصد درجات الطلاب لليوم المحدد، والطلاب الذين لم تُسجّل درجاتهم بعد.
+      </p>
+      <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: end;">
+        <div class="form-group">
+          <label>تاريخ الرصد المراد تفقده:</label>
+          <input type="date" id="statusDate" onchange="renderClassStatusTable(); hideUnrecordedDetails();">
+        </div>
+        <div class="form-group">
+          <button class="action-btn btn-save" onclick="renderClassStatusTable()">🔄 تحديث حالة الرصد</button>
+        </div>
+      </div>
+
+      <div class="table-responsive" style="margin-top: 15px;">
+        <table id="classStatusTable">
+          <thead>
+            <tr>
+              <th>اسم الصف الدراسي</th>
+              <th>إجمالي الطلاب</th>
+              <th>تم رصدهم اليوم</th>
+              <th>حالة الرصد</th>
+              <th>الطلاب المتبقيين / التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- بطاقة تفاصيل الطلاب غير المسجلين -->
+    <div id="unrecordedDetailsCard" class="card-view hidden" style="border-top: 4px solid var(--danger-color);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h4 style="margin:0; color:var(--danger-color); font-family:'Amiri', serif; font-size:1.2em;">
+          ⚠️ قائمة الطلاب الذين لم يتم تسجيل درجاتهم في: <span id="unrecordedClassName" style="color:var(--primary-dark);"></span>
+        </h4>
+        <button class="action-btn btn-danger" style="min-width:auto; padding:4px 12px; font-size:0.85em;" onclick="hideUnrecordedDetails()">إغلاق ✖</button>
+      </div>
+      <hr style="border:0; border-top:1px dashed #ccc; margin:12px 0;">
+      <div id="unrecordedStudentsList"></div>
+    </div>
+  </div>
+
+  <!-- 3. تبويب سجل الحضور لآخر 20 يوم -->
   <div id="attendance-tab" class="tab-content">
     <div class="card-view">
       <h3 class="card-title">📋 سجل الحضور والغياب لآخر 20 يوم</h3>
@@ -683,7 +703,6 @@ function handleImgError(el, isWatermark = false) {
           <select id="attendanceClassSelect" onchange="renderAttendanceTable()">
             <option value="أولى - أولاد">أولى - أولاد</option>
             <option value="أولى - بنات">أولى - بنات</option>
-            <option value="أولى شرعي">أولى شرعي</option>
             <option value="ثانية - أولاد">ثانية - أولاد</option>
             <option value="ثانية - بنات">ثانية - بنات</option>
             <option value="ثالثة - أولاد">ثالثة - أولاد</option>
@@ -692,6 +711,7 @@ function handleImgError(el, isWatermark = false) {
             <option value="رابعة - بنات">رابعة - بنات</option>
             <option value="خامسة - أولاد">خامسة - أولاد</option>
             <option value="خامسة - بنات">خامسة - بنات</option>
+            <option value="أولى شرعي">أولى شرعي</option>
           </select>
         </div>
       </div>
@@ -709,7 +729,7 @@ function handleImgError(el, isWatermark = false) {
     </div>
   </div>
 
-  <!-- 3. التقرير الأسبوعي -->
+  <!-- 4. التقرير الأسبوعي -->
   <div id="weekly-tab" class="tab-content">
     <div class="card-view">
       <h3 class="card-title">📊 التقرير الأسبوعي الشامل</h3>
@@ -724,7 +744,6 @@ function handleImgError(el, isWatermark = false) {
           <select id="weeklyClassSelect" onchange="renderWeeklyTable()">
             <option value="أولى - أولاد">أولى - أولاد</option>
             <option value="أولى - بنات">أولى - بنات</option>
-            <option value="أولى شرعي">أولى شرعي</option>
             <option value="ثانية - أولاد">ثانية - أولاد</option>
             <option value="ثانية - بنات">ثانية - بنات</option>
             <option value="ثالثة - أولاد">ثالثة - أولاد</option>
@@ -733,6 +752,7 @@ function handleImgError(el, isWatermark = false) {
             <option value="رابعة - بنات">رابعة - بنات</option>
             <option value="خامسة - أولاد">خامسة - أولاد</option>
             <option value="خامسة - بنات">خامسة - بنات</option>
+            <option value="أولى شرعي">أولى شرعي</option>
           </select>
         </div>
       </div>
@@ -762,7 +782,7 @@ function handleImgError(el, isWatermark = false) {
     </div>
   </div>
 
-  <!-- 4. التقرير الشهري -->
+  <!-- 5. التقرير الشهري -->
   <div id="reports-tab" class="tab-content">
     <div class="card-view">
       <h3 class="card-title">📅 التقرير الشهري الشامل</h3>
@@ -785,7 +805,6 @@ function handleImgError(el, isWatermark = false) {
           <select id="monthlyClassSelect" onchange="renderMonthlyReport()">
             <option value="أولى - أولاد">أولى - أولاد</option>
             <option value="أولى - بنات">أولى - بنات</option>
-            <option value="أولى شرعي">أولى شرعي</option>
             <option value="ثانية - أولاد">ثانية - أولاد</option>
             <option value="ثانية - بنات">ثانية - بنات</option>
             <option value="ثالثة - أولاد">ثالثة - أولاد</option>
@@ -794,6 +813,7 @@ function handleImgError(el, isWatermark = false) {
             <option value="رابعة - بنات">رابعة - بنات</option>
             <option value="خامسة - أولاد">خامسة - أولاد</option>
             <option value="خامسة - بنات">خامسة - بنات</option>
+            <option value="أولى شرعي">أولى شرعي</option>
           </select>
         </div>
       </div>
@@ -817,12 +837,11 @@ function handleImgError(el, isWatermark = false) {
     </div>
   </div>
 
-  <!-- 5. تبويب متابعة الصفوف -->
+  <!-- 6. تبويب متابعة الصفوف -->
   <div id="manager-tab" class="tab-content">
     <div class="tabs" id="manager-classes-tabs" style="border-bottom: 2px solid var(--manager-color); padding-bottom: 10px;">
       <button class="tab-btn manager-active" onclick="switchManagerClass('أولى - أولاد', event)">أولى - أولاد</button>
       <button class="tab-btn" onclick="switchManagerClass('أولى - بنات', event)">أولى - بنات</button>
-      <button class="tab-btn" onclick="switchManagerClass('أولى شرعي', event)">أولى شرعي</button>
       <button class="tab-btn" onclick="switchManagerClass('ثانية - أولاد', event)">ثانية - أولاد</button>
       <button class="tab-btn" onclick="switchManagerClass('ثانية - بنات', event)">ثانية - بنات</button>
       <button class="tab-btn" onclick="switchManagerClass('ثالثة - أولاد', event)">ثالثة - أولاد</button>
@@ -831,6 +850,7 @@ function handleImgError(el, isWatermark = false) {
       <button class="tab-btn" onclick="switchManagerClass('رابعة - بنات', event)">رابعة - بنات</button>
       <button class="tab-btn" onclick="switchManagerClass('خامسة - أولاد', event)">خامسة - أولاد</button>
       <button class="tab-btn" onclick="switchManagerClass('خامسة - بنات', event)">خامسة - بنات</button>
+      <button class="tab-btn" onclick="switchManagerClass('أولى شرعي', event)">أولى شرعي</button>
     </div>
 
     <h3 style="color: var(--manager-color); text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px; font-family:'Amiri', serif;">
@@ -898,10 +918,9 @@ function handleImgError(el, isWatermark = false) {
     </div>
   </div>
 
-  <!-- 6. تبويب لوحة التحكم والإدارة المتقدمة -->
+  <!-- 7. تبويب لوحة التحكم والإدارة المتقدمة -->
   <div id="admin-tab" class="tab-content">
     
-    <!-- قسم إضافة الطلاب المجمعة -->
     <div style="background: #eef7f2; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid #bce1ce; border-top: 4px solid var(--primary-color);">
       <h3 style="margin-top: 0; font-size: 1.15em; color: var(--primary-dark); font-family:'Amiri', serif;">📥 إضافة الطلاب (نسخ ولصق قائمة أسماء)</h3>
       <p style="font-size: 0.88em; color: #555; margin-bottom: 12px;">
@@ -917,7 +936,6 @@ function handleImgError(el, isWatermark = false) {
           <select id="newStudentClass">
             <option value="أولى - أولاد">أولى - أولاد</option>
             <option value="أولى - بنات">أولى - بنات</option>
-            <option value="أولى شرعي">أولى شرعي</option>
             <option value="ثانية - أولاد">ثانية - أولاد</option>
             <option value="ثانية - بنات">ثانية - بنات</option>
             <option value="ثالثة - أولاد">ثالثة - أولاد</option>
@@ -926,21 +944,19 @@ function handleImgError(el, isWatermark = false) {
             <option value="رابعة - بنات">رابعة - بنات</option>
             <option value="خامسة - أولاد">خامسة - أولاد</option>
             <option value="خامسة - بنات">خامسة - بنات</option>
+            <option value="أولى شرعي">أولى شرعي</option>
           </select>
         </div>
       </div>
       <button class="action-btn btn-save" onclick="addBulkStudents()">+ رفع جميع الأسماء للسحابة</button>
     </div>
 
-    <!-- قسم دليل وإشراف الفصول -->
     <div style="background: #fff; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--accent-gold-light);">
       <h3 style="margin-top: 0; font-size: 1.15em; color: var(--primary-dark); font-family:'Amiri', serif;">🏫 دليل الفصول المعين (معلمين ومساعدين وطلاب)</h3>
       <div id="class-cards-container" class="classes-cards-grid">
-        <!-- تعبئة تلقائية -->
       </div>
     </div>
 
-    <!-- قسم إضافة معلم/معلمة -->
     <div style="background: #f8faf8; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid #ddd; border-top: 4px solid var(--accent-gold);">
       <h3 style="margin-top: 0; font-size: 1.15em; color: var(--primary-dark); font-family:'Amiri', serif;">إضافة معلم / معلمة جديد</h3>
       <div class="form-grid">
@@ -957,7 +973,6 @@ function handleImgError(el, isWatermark = false) {
           <select id="newTeacherClass">
             <option value="أولى - أولاد">أولى - أولاد</option>
             <option value="أولى - بنات">أولى - بنات</option>
-            <option value="أولى شرعي">أولى شرعي</option>
             <option value="ثانية - أولاد">ثانية - أولاد</option>
             <option value="ثانية - بنات">ثانية - بنات</option>
             <option value="ثالثة - أولاد">ثالثة - أولاد</option>
@@ -966,6 +981,7 @@ function handleImgError(el, isWatermark = false) {
             <option value="رابعة - بنات">رابعة - بنات</option>
             <option value="خامسة - أولاد">خامسة - أولاد</option>
             <option value="خامسة - بنات">خامسة - بنات</option>
+            <option value="أولى شرعي">أولى شرعي</option>
             <option value="الكل">مدير (جميع الصلاحيات)</option>
           </select>
         </div>
@@ -981,7 +997,6 @@ function handleImgError(el, isWatermark = false) {
       <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم / المعلمة</button>
     </div>
 
-    <!-- قسم النسخ الاحتياطي -->
     <div style="background: #fffdf8; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--accent-gold-light); border-top: 4px solid var(--accent-gold);">
       <h3 style="margin-top: 0; color: var(--accent-gold-dark); font-size: 1.15em; font-family:'Amiri', serif;">📦 النسخ الاحتياطي الشامل (إيميل وحفظ ملف)</h3>
       <p style="font-size:0.88em; color:#666; margin-bottom:12px;">نسخة شاملة لكل بيانات الدرجات والمعلمين والطلاب مرتبة ومزامنة.</p>
@@ -1016,13 +1031,14 @@ function handleImgError(el, isWatermark = false) {
 </div>
 
 <script>
-/* ================= قائمة الصفوف المعتمدة ================= */
+/* ================= قائمة الصفوف المعتمدة مرتبة حسب طلبك ================= */
 const ALL_CLASSES = [
-  "أولى - أولاد", "أولى - بنات", "أولى شرعي",
+  "أولى - أولاد", "أولى - بنات",
   "ثانية - أولاد", "ثانية - بنات",
   "ثالثة - أولاد", "ثالثة - بنات",
   "رابعة - أولاد", "رابعة - بنات",
-  "خامسة - أولاد", "خامسة - بنات"
+  "خامسة - أولاد", "خامسة - بنات",
+  "أولى شرعي"
 ];
 
 /* ================= 1. تهيئة السحابة (Firebase Configuration) ================= */
@@ -1044,7 +1060,7 @@ try {
   db = firebase.firestore();
   useFirebase = true;
 } catch(e) {
-  console.warn("الموقع يعمل على الذاكرة المحلية", e);
+  console.warn("الموقع يعمل على הذاكرة المحلية", e);
 }
 
 // تهيئة EmailJS
@@ -1124,19 +1140,19 @@ window.onload = function() {
   checkWeeklyAutoBackup();
 };
 
-/* ================= دالة التصدير للإكسل ================= */
 function exportToExcel(tableId, filename) {
   let table = document.getElementById(tableId);
   let wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
   XLSX.writeFile(wb, filename + ".xlsx");
 }
 
-/* ================= دوال التاريخ ================= */
 function initCurrentDate() {
   const tzoffset = (new Date()).getTimezoneOffset() * 60000;
   const localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 10);
   document.getElementById('recordDate').value = localISOTime;
   document.getElementById('attendanceEndDate').value = localISOTime;
+  if(document.getElementById('statusDate')) document.getElementById('statusDate').value = localISOTime;
+
   if(!isShowingAllDays) {
     document.getElementById('filterDateDaily').value = localISOTime;
   }
@@ -1263,6 +1279,7 @@ function syncDataFromCloud() {
     renderManagerView();
     renderMonthlyReport();
     renderAttendanceTable();
+    renderClassStatusTable();
   });
 
   db.collection("dailyRecords").onSnapshot((snapshot) => {
@@ -1276,6 +1293,7 @@ function syncDataFromCloud() {
     renderMonthlyReport();
     renderManagerView();
     renderAttendanceTable();
+    renderClassStatusTable();
   });
 }
 
@@ -1371,6 +1389,7 @@ function showAppScreen() {
   renderWeeklyTable();
   renderMonthlyReport();
   renderManagerView();
+  renderClassStatusTable();
 }
 
 function switchTab(tabId, event) {
@@ -1382,6 +1401,8 @@ function switchTab(tabId, event) {
 
   if (tabId === 'attendance-tab') {
     renderAttendanceTable();
+  } else if (tabId === 'status-tab') {
+    renderClassStatusTable();
   } else if (tabId === 'weekly-tab') {
     populateWeeks();
     renderWeeklyTable();
@@ -1470,6 +1491,7 @@ async function addGrade() {
     renderWeeklyTable();
     renderMonthlyReport();
     renderManagerView();
+    renderClassStatusTable();
   }
 
   showMessage('app-msg', 'تم حفظ الدرجات بنجاح ✨', 'success');
@@ -1491,6 +1513,7 @@ async function deleteRecord(id) {
       renderWeeklyTable();
       renderMonthlyReport();
       renderManagerView();
+      renderClassStatusTable();
     }
     showMessage('app-msg', 'تم حذف السجل بنجاح', 'success');
   }
@@ -1525,7 +1548,7 @@ function renderDailyTable() {
   filteredRecords.forEach(r => {
     const total = getDailyTotal(r);
     const deleteBtn = (currentTeacher.username === 'admin' || currentTeacher.username === r.teacherName)
-      ? `<button class="action-btn btn-danger" style="padding:3px 8px; font-size:0.8em; min-width:auto;" onclick="deleteRecord('${r.id}')">حذف</button>` 
+      ? `<button class="action-btn btn-danger" style="padding:3px 8px; font-size:0.8e m; min-width:auto;" onclick="deleteRecord('${r.id}')">حذف</button>` 
       : '-';
 
     tbody.innerHTML += `
@@ -1548,6 +1571,95 @@ function renderDailyTable() {
       </tr>
     `;
   });
+}
+
+/* =================== متابعة حالة رصد الفصول المكتملة وغير المكتملة =================== */
+function renderClassStatusTable() {
+  const statusDateInput = document.getElementById('statusDate');
+  let dateVal = statusDateInput ? statusDateInput.value : '';
+  if (!dateVal) {
+    dateVal = document.getElementById('recordDate').value || new Date().toISOString().slice(0, 10);
+    if(statusDateInput) statusDateInput.value = dateVal;
+  }
+
+  const tbody = document.querySelector('#classStatusTable tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  ALL_CLASSES.forEach(cName => {
+    const classStudents = studentsData.filter(s => s.className === cName);
+    const totalCount = classStudents.length;
+
+    const classRecords = dailyRecords.filter(r => r.className === cName && r.dateISO === dateVal);
+    const recordedNames = classRecords.map(r => r.studentName);
+
+    const unrecorded = classStudents.filter(s => !recordedNames.includes(s.name));
+    const recordedCount = totalCount - unrecorded.length;
+
+    let statusBadge = '';
+    if (totalCount === 0) {
+      statusBadge = '<span class="badge" style="background-color: #7f8c8d;">لا يوجد طلاب</span>';
+    } else if (unrecorded.length === 0) {
+      statusBadge = '<span class="badge badge-green">أكمل</span>';
+    } else {
+      statusBadge = '<span class="badge" style="background-color: var(--danger-color);">لم يكمل</span>';
+    }
+
+    let actionBtn = '';
+    if (totalCount === 0) {
+      actionBtn = '<span style="color:#7f8c8d;">-</span>';
+    } else if (unrecorded.length === 0) {
+      actionBtn = '<span style="color:var(--success-color); font-weight:bold;">✨ اكتمل الرصد بالكامل</span>';
+    } else {
+      actionBtn = `<button class="action-btn btn-warning" style="padding:4px 10px; font-size:0.82em; min-width:auto;" onclick="showUnrecordedStudents('${cName}', '${dateVal}')">عرض الطالب الذي لم يتم تسجيله (${unrecorded.length}) 👁️</button>`;
+    }
+
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:bold; color:var(--primary-dark);">${cName}</td>
+        <td><strong>${totalCount}</strong></td>
+        <td style="color:var(--primary-color); font-weight:bold;">${recordedCount}</td>
+        <td>${statusBadge}</td>
+        <td>${actionBtn}</td>
+      </tr>
+    `;
+  });
+}
+
+function showUnrecordedStudents(className, dateVal) {
+  const classStudents = studentsData.filter(s => s.className === className);
+  const classRecords = dailyRecords.filter(r => r.className === className && r.dateISO === dateVal);
+  const recordedNames = classRecords.map(r => r.studentName);
+
+  const unrecorded = classStudents.filter(s => !recordedNames.includes(s.name));
+
+  const card = document.getElementById('unrecordedDetailsCard');
+  const title = document.getElementById('unrecordedClassName');
+  const listContainer = document.getElementById('unrecordedStudentsList');
+
+  title.innerText = `${className} (بتاريخ: ${dateVal})`;
+
+  if (unrecorded.length === 0) {
+    listContainer.innerHTML = '<p style="color:var(--success-color); font-weight:bold;">جميع الطلاب مسجلون بالكامل!</p>';
+  } else {
+    let html = '<p style="margin-top:0; font-weight:bold; color:#555;">الطلاب الذين لم تُسجَّل درجاتهم بعد في هذا اليوم:</p>';
+    html += '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">';
+    unrecorded.forEach((s, i) => {
+      html += `<div style="background:#fdf2e9; color:#a04000; padding:10px 14px; border-radius:8px; border:1px solid #f5cba7; font-weight:bold; display:flex; align-items:center; gap:8px;">
+                 <span>❌ ${i+1}.</span> <span>${s.name}</span>
+               </div>`;
+    });
+    html += '</div>';
+    listContainer.innerHTML = html;
+  }
+
+  card.classList.remove('hidden');
+  card.scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideUnrecordedDetails() {
+  const card = document.getElementById('unrecordedDetailsCard');
+  if (card) card.classList.add('hidden');
 }
 
 /* =================== جدول وقائمة الحضور لآخر 20 يوم =================== */
@@ -1862,6 +1974,7 @@ async function addBulkStudents() {
     renderClassCards();
     renderManagerView();
     renderAttendanceTable();
+    renderClassStatusTable();
   }
 
   showMessage('app-msg', `تمت إضافة وترفيع ${addedCount} طالب بنجاح إلى صف (${className}) بالسحابة!`, 'success');
@@ -1935,6 +2048,7 @@ async function editStudent(id) {
     renderClassCards();
     renderManagerView();
     renderAttendanceTable();
+    renderClassStatusTable();
   }
   showMessage('app-msg', 'تم تعديل بيانات الطالب بنجاح', 'success');
 }
@@ -1987,7 +2101,7 @@ async function deleteStudent(id) {
     else {
       studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
       localStorage.setItem('studentsData', JSON.stringify(studentsData));
-      renderStudentsTable(); updateStudentListDropdown(); renderClassCards(); renderManagerView(); renderAttendanceTable();
+      renderStudentsTable(); updateStudentListDropdown(); renderClassCards(); renderManagerView(); renderAttendanceTable(); renderClassStatusTable();
     }
     showMessage('app-msg', 'تم الحذف بنجاح', 'success');
   }
@@ -2143,7 +2257,7 @@ function restoreData(event) {
           localStorage.setItem('studentsData', JSON.stringify(studentsData));
           localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
 
-          renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderMonthlyReport(); renderManagerView(); renderClassCards(); renderAttendanceTable();
+          renderDailyTable(); renderTeachersTable(); renderStudentsTable(); updateStudentListDropdown(); populateWeeks(); renderWeeklyTable(); renderMonthlyReport(); renderManagerView(); renderClassCards(); renderAttendanceTable(); renderClassStatusTable();
         }
         showMessage('app-msg', 'تم استعادة كافة بيانات معهد المجد بنجاح!', 'success');
       } else {
