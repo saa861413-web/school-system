@@ -80,6 +80,47 @@ body {
   backdrop-filter: blur(6px);
 }
 
+.top-bar-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.menu-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.95em;
+  box-shadow: 0 4px 12px rgba(140, 109, 45, 0.3);
+  transition: all 0.25s ease;
+}
+
+.menu-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(140, 109, 45, 0.4);
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 998;
+  display: none;
+  backdrop-filter: blur(2px);
+}
+.sidebar-backdrop.active {
+  display: block;
+}
+
 .institute-header {
   display: flex;
   align-items: center;
@@ -254,6 +295,7 @@ body {
   display: flex;
   gap: 20px;
   align-items: flex-start;
+  position: relative;
 }
 
 .sidebar-nav {
@@ -266,6 +308,8 @@ body {
   border-radius: 14px;
   border: 1.5px solid var(--accent-gold-light);
   box-shadow: 0 4px 15px rgba(19, 104, 77, 0.08);
+  transition: transform 0.3s ease, right 0.3s ease;
+  z-index: 999;
 }
 
 .tabs {
@@ -498,13 +542,94 @@ tr:hover { background-color: #f2f8f5; }
   font-size: 0.85em;
 }
 
-@media (max-width: 850px) {
+/* ================= نافذة الحوار المخصصة (Custom Modal System) ================= */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10, 30, 22, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-box {
+  background: #ffffff;
+  border-radius: 18px;
+  max-width: 460px;
+  width: 100%;
+  padding: 24px;
+  border: 2px solid var(--accent-gold);
+  border-top: 6px solid var(--primary-color);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+}
+
+.modal-title {
+  margin-top: 0;
+  font-family: 'Amiri', serif;
+  color: var(--primary-dark);
+  font-size: 1.45em;
+  border-bottom: 1px dashed var(--accent-gold-light);
+  padding-bottom: 8px;
+}
+
+.modal-msg {
+  font-size: 0.98em;
+  color: #333;
+  margin: 15px 0 20px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.modal-input-container {
+  margin-bottom: 18px;
+  text-align: right;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
   body { padding: 6px; }
   .container { padding: 14px; border-radius: 14px; }
-  .app-main-layout { flex-direction: column; }
-  .sidebar-nav { width: 100%; position: static; padding: 8px; }
-  .tabs { flex-direction: row; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
-  .tab-btn { width: auto; min-width: 120px; text-align: center; justify-content: center; }
+  
+  .sidebar-nav {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 260px;
+    height: 100vh;
+    z-index: 999;
+    background: #ffffff;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.25);
+    border-radius: 0;
+    padding: 20px 12px;
+    overflow-y: auto;
+  }
+  
+  .sidebar-nav.open {
+    right: 0;
+  }
+  
+  .tabs {
+    flex-direction: column !important;
+    white-space: normal !important;
+  }
+  
+  .tab-btn {
+    width: 100% !important;
+    text-align: right !important;
+    justify-content: flex-start !important;
+  }
+
   .form-grid { grid-template-columns: repeat(2, 1fr); }
   .user-bar { flex-direction: column; text-align: center; }
   button.action-btn { width: 100%; flex: none; }
@@ -514,7 +639,7 @@ tr:hover { background-color: #f2f8f5; }
 }
 
 @media print {
-  .sidebar-nav, .tabs, .btn-group, .user-bar, .form-grid, .search-box, #admin-tab, #manager-tab .tabs, .toast-msg, .institute-header { display: none !important; }
+  .sidebar-nav, .tabs, .btn-group, .user-bar, .form-grid, .search-box, #admin-tab, #manager-tab .tabs, .toast-msg, .institute-header, .top-bar-controls { display: none !important; }
   .container { box-shadow: none; padding: 0; border: none; }
   body { background: white; padding: 0; }
   .card-view { box-shadow: none; border: none; padding: 0; }
@@ -571,8 +696,20 @@ function handleImgError(el, isWatermark = false) {
   </button>
 </div>
 
+<!-- خلفية مظلمة لإغلاق القائمة الجانبية -->
+<div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleSidebarMenu(false)"></div>
+
 <!-- واجهة التطبيق الرئيسية -->
 <div id="app-screen" class="container hidden">
+
+  <div class="top-bar-controls">
+    <button class="menu-toggle-btn" onclick="toggleSidebarMenu()">
+      <span>☰</span> <span>قائمة الخانات والرصد</span>
+    </button>
+    <div style="font-family:'Amiri', serif; font-size:1.1em; font-weight:bold; color:var(--primary-dark);">
+      معهد المجد
+    </div>
+  </div>
 
   <div class="institute-header">
     <div class="header-brand">
@@ -599,7 +736,11 @@ function handleImgError(el, isWatermark = false) {
 
   <div class="app-main-layout">
     
-    <aside class="sidebar-nav">
+    <aside id="sidebar-nav" class="sidebar-nav">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:8px;">
+        <strong style="color:var(--primary-dark); font-family:'Amiri', serif;">📌 الخانات والخيارات</strong>
+        <button onclick="toggleSidebarMenu(false)" style="border:none; background:none; font-size:1.2em; cursor:pointer; color:var(--danger-color);">✖</button>
+      </div>
       <div class="tabs">
         <button class="tab-btn" id="daily-tab-btn" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي (شيت)</button>
         <button class="tab-btn" id="status-tab-btn" onclick="switchTab('status-tab', event)">🔍 حالة إنجاز الرصد</button>
@@ -719,10 +860,10 @@ function handleImgError(el, isWatermark = false) {
         </div>
       </div>
 
-      <!-- 3. تبويب سجل الحضور لآخر 20 يوم -->
+      <!-- 3. تبويب سجل الحضور لآخر 20 يوم (يُحسب ويُقسم على 20 يوم دائماً) -->
       <div id="attendance-tab" class="tab-content">
         <div class="card-view">
-          <h3 class="card-title">📋 سجل الحضور والغياب لآخر 20 يوم</h3>
+          <h3 class="card-title">📋 سجل الحضور والغياب لآخر 20 يوم (التقسيم على 20 يوماً ثابتة)</h3>
           <div class="form-grid">
             <div class="form-group">
               <label>تاريخ اليوم المرجعي:</label>
@@ -1055,6 +1196,22 @@ function handleImgError(el, isWatermark = false) {
   </div>
 </div>
 
+<!-- عنصر نافذة التنبيه والحوار المخصصة بدلاً من نوافذ المتصفح -->
+<div id="custom-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h3 id="modal-title" class="modal-title">تنبيه</h3>
+    <div id="modal-msg" class="modal-msg"></div>
+    <div id="modal-input-container" class="modal-input-container hidden">
+      <label id="modal-input-label" style="display:block; margin-bottom:6px; font-weight:bold; font-size:0.9em;"></label>
+      <input type="text" id="modal-input" placeholder="أدخل القيمة...">
+    </div>
+    <div class="modal-actions">
+      <button id="modal-btn-confirm" class="action-btn btn-save">موافق</button>
+      <button id="modal-btn-cancel" class="action-btn btn-danger">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ================= قائمة الصفوف المعتمدة ================= */
 const ALL_CLASSES = [
@@ -1112,6 +1269,110 @@ const nameMapping = {
   "الصف الرابع - أولاد": "رابعة - أولاد", "الصف الرابع - بنات": "رابعة - بنات",
   "الصف الخامس - أولاد": "خامسة - أولاد", "الصف الخامس - بنات": "خامسة - بنات"
 };
+
+/* ================= نظام الحوارات والنوافذ المخصصة للموقع ================= */
+function customAlert(msg, title = "تنبيه من النظام") {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('custom-modal');
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-msg').innerText = msg;
+    document.getElementById('modal-input-container').classList.add('hidden');
+    
+    const btnConfirm = document.getElementById('modal-btn-confirm');
+    const btnCancel = document.getElementById('modal-btn-cancel');
+    
+    btnConfirm.innerText = "حسناً";
+    btnCancel.classList.add('hidden');
+    
+    modal.classList.remove('hidden');
+    
+    btnConfirm.onclick = () => {
+      modal.classList.add('hidden');
+      resolve(true);
+    };
+  });
+}
+
+function customConfirm(msg, title = "تأكيد الإجراء") {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('custom-modal');
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-msg').innerText = msg;
+    document.getElementById('modal-input-container').classList.add('hidden');
+    
+    const btnConfirm = document.getElementById('modal-btn-confirm');
+    const btnCancel = document.getElementById('modal-btn-cancel');
+    
+    btnConfirm.innerText = "تأكيد";
+    btnCancel.innerText = "إلغاء";
+    btnCancel.classList.remove('hidden');
+    
+    modal.classList.remove('hidden');
+    
+    btnConfirm.onclick = () => {
+      modal.classList.add('hidden');
+      resolve(true);
+    };
+    btnCancel.onclick = () => {
+      modal.classList.add('hidden');
+      resolve(false);
+    };
+  });
+}
+
+function customPrompt(msg, defaultValue = '', inputLabel = '', title = "إدخال بيانات") {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('custom-modal');
+    document.getElementById('modal-title').innerText = title;
+    document.getElementById('modal-msg').innerText = msg;
+    
+    const inputContainer = document.getElementById('modal-input-container');
+    const input = document.getElementById('modal-input');
+    const label = document.getElementById('modal-input-label');
+    
+    label.innerText = inputLabel;
+    inputContainer.classList.remove('hidden');
+    input.value = defaultValue;
+    
+    const btnConfirm = document.getElementById('modal-btn-confirm');
+    const btnCancel = document.getElementById('modal-btn-cancel');
+    
+    btnConfirm.innerText = "حفظ وموافق";
+    btnCancel.innerText = "إلغاء";
+    btnCancel.classList.remove('hidden');
+    
+    modal.classList.remove('hidden');
+    input.focus();
+    
+    btnConfirm.onclick = () => {
+      modal.classList.add('hidden');
+      resolve(input.value);
+    };
+    btnCancel.onclick = () => {
+      modal.classList.add('hidden');
+      resolve(null);
+    };
+  });
+}
+
+function toggleSidebarMenu(forceState = null) {
+  const sidebar = document.getElementById('sidebar-nav');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if(!sidebar) return;
+
+  if (forceState !== null) {
+    if (forceState) {
+      sidebar.classList.add('open');
+      if(backdrop) backdrop.classList.add('active');
+    } else {
+      sidebar.classList.remove('open');
+      if(backdrop) backdrop.classList.remove('active');
+    }
+  } else {
+    sidebar.classList.toggle('open');
+    if(backdrop) backdrop.classList.toggle('active');
+  }
+}
 
 function applyDataMapping(item) {
   if (item.className && nameMapping[item.className]) item.className = nameMapping[item.className];
@@ -1328,7 +1589,6 @@ function showAppScreen() {
   const isManagerOrAdmin = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
 
   if (isManagerOrAdmin) {
-    // تظهر جميع التبويبات للادمن والمدير العام
     document.getElementById('daily-tab-btn').classList.remove('hidden');
     document.getElementById('attendance-tab-btn').classList.remove('hidden');
     document.getElementById('weekly-tab-btn').classList.remove('hidden');
@@ -1348,7 +1608,6 @@ function showAppScreen() {
 
     switchTab('daily-tab', { target: document.getElementById('daily-tab-btn') });
   } else {
-    // إخفاء الرصد اليومي والتقارير والحضور 20 يوم للمعلم العادي
     document.getElementById('daily-tab-btn').classList.add('hidden');
     document.getElementById('attendance-tab-btn').classList.add('hidden');
     document.getElementById('weekly-tab-btn').classList.add('hidden');
@@ -1387,6 +1646,9 @@ function switchTab(tabId, event) {
 
   const targetTab = document.getElementById(tabId);
   if(targetTab) targetTab.classList.add('active');
+
+  // إغلاق الشريحة عند الاختيار على الهواتف
+  toggleSidebarMenu(false);
 
   if (tabId === 'daily-tab') {
     renderDailySheetTable();
@@ -1533,7 +1795,7 @@ async function saveBulkSheetGrades() {
     const hwVal = row.querySelector('.sheet-hw').value;
 
     if (attVal === '' && behVal === '' && oldRVal === '' && newLVal === '' && recVal === '' && hwVal === '') {
-      continue; // تجاهل الصفوف الفارغة بالكامل
+      continue;
     }
 
     const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
@@ -1668,6 +1930,7 @@ function hideUnrecordedDetails() {
   if (card) card.classList.add('hidden');
 }
 
+/* ================= سجـل الحضور لآخر 20 يوماً (متقسم دائماً على 20 يوماً ثابتة) ================= */
 function renderAttendanceTable() {
   let endDateVal = document.getElementById('attendanceEndDate').value;
   if (!endDateVal) {
@@ -1697,7 +1960,7 @@ function renderAttendanceTable() {
     let shortDate = `${parts[2]}/${parts[1]}`;
     headerHtml += `<th style="font-size:0.75em; padding:4px; min-width:38px;">${shortDate}</th>`;
   });
-  headerHtml += '<th>أيام الحضور</th><th>نسبة الحضور</th></tr>';
+  headerHtml += '<th>أيام الحضور</th><th>نسبة الحضور (من 20)</th></tr>';
   thead.innerHTML = headerHtml;
 
   tbody.innerHTML = '';
@@ -1715,12 +1978,10 @@ function renderAttendanceTable() {
   classStudents.forEach(student => {
     let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
     let attendedDaysCount = 0;
-    let recordedDaysCount = 0;
 
     dates.forEach(dStr => {
       let rec = dailyRecords.find(r => r.className === selectedClass && r.studentName === student && r.dateISO === dStr);
       if (rec) {
-        recordedDaysCount++;
         if (rec.attendance > 0) {
           attendedDaysCount++;
           rowHtml += `<td style="color:var(--success-color); font-weight:bold; background:#e8f8f1;">✓</td>`;
@@ -1732,16 +1993,17 @@ function renderAttendanceTable() {
       }
     });
 
-    let attPerc = recordedDaysCount > 0 ? ((attendedDaysCount / recordedDaysCount) * 100).toFixed(0) : 0;
+    // احتساب القسمة دائماً على 20 يوماً كاملة اليوم بيومه
+    let attPerc = ((attendedDaysCount / 20) * 100).toFixed(0);
     let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-green' : 'badge-yellow';
 
-    rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${recordedDaysCount || 20}</td>`;
+    rowHtml += `<td><strong>${attendedDaysCount}</strong> / 20</td>`;
     rowHtml += `<td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
     tbody.innerHTML += rowHtml;
   });
 }
 
-/* ================= حساب التقرير الأسبوعي (القسمة على 7 أيام دائماً) ================= */
+/* ================= حساب التقرير الأسبوعي ================= */
 function renderWeeklyTable() {
   const tbody = document.querySelector('#weeklyTable tbody');
   if(!tbody) return;
@@ -1782,7 +2044,6 @@ function renderWeeklyTable() {
       }
     });
 
-    // التقسيم على 7 أيام الأسبوع كاملاً
     let weeklyAverage = (studentTotal / 7).toFixed(1);
     let attPerc = ((attTotal / 70) * 100).toFixed(1);
     let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
@@ -1825,7 +2086,7 @@ function getMonthWorkingDays(year, month) {
   return workingDays;
 }
 
-/* ================= التقرير الشهري (التقسيم اليوم بيومه على إجمالي أيام الشهر) ================= */
+/* ================= التقرير الشهري ================= */
 function renderMonthlyReport() {
   const month = document.getElementById('reportMonth').value;
   const year = document.getElementById('reportYear').value;
@@ -1844,7 +2105,7 @@ function renderMonthlyReport() {
     let shortDate = `${parts[2]}/${parts[1]}`;
     headerHtml += `<th style="font-size:0.78em; padding:5px 3px; min-width:42px;">${wd.dayName}<br><span style="color:#666;">${shortDate}</span></th>`;
   });
-  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (قسمة إجمالي الشهر)</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
+  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
   thead.innerHTML = headerHtml;
 
   tbody.innerHTML = '';
@@ -1876,7 +2137,6 @@ function renderMonthlyReport() {
       }
     });
 
-    // التقسيم اليوم بيومه على إجمالي عدد أيام الشهر كاملاً
     const monthlyAverage = (totalScore / totalMonthWorkingDays).toFixed(1);
     const overallPerc = ((totalScore / (totalMonthWorkingDays * 60)) * 100).toFixed(1);
     const attPerc = ((attendedDaysCount / totalMonthWorkingDays) * 100).toFixed(1);
@@ -2005,7 +2265,7 @@ async function addBulkStudents() {
   const namesList = rawText.split('\n').map(n => n.trim()).filter(n => n.length > 0);
 
   if (namesList.length === 0) {
-    return showMessage('app-msg', 'يرجى كتابة أو لصق أسماء الطلاب أولاً', 'error');
+    return customAlert('يرجى كتابة أو لصق أسماء الطلاب أولاً', 'تنبيـه');
   }
 
   let addedCount = 0;
@@ -2034,7 +2294,7 @@ async function addBulkStudents() {
     renderClassStatusTable();
   }
 
-  showMessage('app-msg', `تمت إضافة وترفيع ${addedCount} طالب بنجاح إلى صف (${className}) بالسحابة!`, 'success');
+  customAlert(`تمت إضافة وترفيع (${addedCount}) طالب بنجاح إلى صف (${className}) بالسحابة!`, 'تم الحفظ بنجاح ✨');
   document.getElementById('bulkStudentNames').value = '';
 }
 
@@ -2067,7 +2327,7 @@ function renderClassCards() {
         <h4>🏫 ${cName} <span style="font-size:0.8em; color:var(--accent-gold-dark);">(${classStudents.length} طالب)</span></h4>
         <div class="teachers-tag-list">
           <div><strong>المعلم الرئيسي:</strong> ${primaryTeachers.length > 0 ? primaryTeachers.join('، ') : 'غير محدد'}</div>
-          <div><strong>المعلم المساعد:</strong> ${assistantTeachers.length > 0 ? assistantTeachers.join('، ') : 'غير محدد'}</div>
+          <div><strong>المعلم المساعد:</strong> ${assistantTeachers.join('، ')}</div>
         </div>
         <hr style="border:0; border-top:1px dashed #eee; margin:8px 0;">
         ${studentsHtml}
@@ -2081,15 +2341,15 @@ async function editStudent(id) {
   const student = studentsData.find(s => s.id.toString() === id.toString());
   if (!student) return;
 
-  const newName = prompt("تعديل اسم الطالب/الطالبة:", student.name);
+  const newName = await customPrompt("تعديل اسم الطالب/الطالبة:", student.name, "الاسم الجديد:", "تعديل بيانات الطالب");
   if (newName === null) return;
 
-  let optionsList = ALL_CLASSES.join("\n");
-  const newClass = prompt(`تعديل الصف (اختر واكتب الصف كما هو تماماً):\n${optionsList}`, student.className);
+  let optionsList = ALL_CLASSES.join(" | ");
+  const newClass = await customPrompt(`تعديل الصف الدراسي:\n(اختر واكتب الصف كالتالي: ${optionsList})`, student.className, "الصف الدراسي الجديد:", "تعديل الصف");
   if (newClass === null) return;
 
   if (!newName.trim() || !newClass.trim()) {
-    return alert("خطأ: يرجى إدخل اسم الصف والاسم بشكل صحيح!");
+    return customAlert("خطأ: يرجى إدخال اسم الطالب والصف بشكل صحيح!", "تنبيه");
   }
 
   const updatedStudent = { ...student, name: newName.trim(), className: newClass.trim() };
@@ -2107,7 +2367,7 @@ async function editStudent(id) {
     renderAttendanceTable();
     renderClassStatusTable();
   }
-  showMessage('app-msg', 'تم تعديل بيانات الطالب بنجاح', 'success');
+  showMessage('app-msg', 'تم تعديل بيانات الطالب بنجاح ✨', 'success');
 }
 
 async function editTeacher(id) {
@@ -2115,20 +2375,20 @@ async function editTeacher(id) {
   const teacher = teachersData.find(t => t.id.toString() === id.toString());
   if (!teacher) return;
 
-  const newUsername = prompt("تعديل اسم المستخدم للمعلم:", teacher.username);
+  const newUsername = await customPrompt("تعديل اسم المستخدم للمعلم:", teacher.username, "اسم المستخدم:", "تعديل المعلم");
   if (newUsername === null) return;
 
-  const newPassword = prompt("تعديل كلمة المرور:", teacher.password);
+  const newPassword = await customPrompt("تعديل كلمة المرور للمعلم:", teacher.password, "كلمة المرور:", "تعديل المعلم");
   if (newPassword === null) return;
 
-  const newClass = prompt(`تعديل الصف المسند (اختر الصف أو اكتب 'الكل' للمدير):\n${ALL_CLASSES.join("\n")}`, teacher.assignedClass);
+  const newClass = await customPrompt(`تعديل الصف المسند (اكتب اسم الصف أو 'الكل' للمدير):`, teacher.assignedClass, "الصف المسند:", "تعديل الصف");
   if (newClass === null) return;
 
-  const newCenter = prompt("تعديل الدور / المركز (اكتب: رئيسي أو مساعد أو الكل):", teacher.center || "رئيسي");
+  const newCenter = await customPrompt("تعديل الدور / المركز (رئيسي أو مساعد أو الكل):", teacher.center || "رئيسي", "الدور / المركز:", "تعديل الدور");
   if (newCenter === null) return;
 
   if (!newUsername.trim() || !newPassword.trim()) {
-    return alert("خطأ: يرجى ملء اسم المستخدم وكلمة المرور!");
+    return customAlert("خطأ: يرجى ملء اسم المستخدم وكلمة المرور بشكل صحيح!", "تنبيه");
   }
 
   const updatedTeacher = {
@@ -2148,19 +2408,20 @@ async function editTeacher(id) {
     renderTeachersTable();
     renderClassCards();
   }
-  showMessage('app-msg', 'تم تعديل بيانات المعلم بنجاح', 'success');
+  showMessage('app-msg', 'تم تعديل بيانات المعلم بنجاح ✨', 'success');
 }
 
 async function deleteStudent(id) {
   if (currentTeacher.username !== 'admin') return;
-  if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
+  const confirmed = await customConfirm('هل أنت متأكد من حذف هذا الطالب نهائياً من النظام؟', 'تأكيد الحذف');
+  if (confirmed) {
     if (useFirebase) await db.collection("students").doc(id.toString()).delete();
     else {
       studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
       localStorage.setItem('studentsData', JSON.stringify(studentsData));
       renderStudentsTable(); renderClassCards(); renderDailySheetTable(); renderManagerView(); renderAttendanceTable(); renderClassStatusTable();
     }
-    showMessage('app-msg', 'تم الحذف بنجاح', 'success');
+    showMessage('app-msg', 'تم حذف الطالب بنجاح', 'success');
   }
 }
 
@@ -2192,7 +2453,7 @@ async function addTeacher() {
     renderTeachersTable();
     renderClassCards();
   }
-  showMessage('app-msg', 'تم إضافة المعلم/المعلمة بنجاح', 'success');
+  showMessage('app-msg', 'تم إضافة المعلم/المعلمة بنجاح ✨', 'success');
   document.getElementById('newTeacherUser').value = ''; document.getElementById('newTeacherPass').value = '';
 }
 
@@ -2211,7 +2472,8 @@ async function deleteTeacher(id) {
   const teacherToDelete = teachersData.find(t => t.id.toString() === id.toString());
   if (teacherToDelete && teacherToDelete.username === 'admin') return showMessage('app-msg', 'لا يمكن حذف حساب المدير الرئيسي', 'error');
 
-  if(confirm('هل أنت متأكد من الحذف؟')) {
+  const confirmed = await customConfirm('هل أنت متأكد من حذف هذا المعلم؟', 'تأكيد الحذف');
+  if(confirmed) {
     if (useFirebase) await db.collection("teachers").doc(id.toString()).delete();
     else {
       teachersData = teachersData.filter(t => t.id.toString() !== id.toString());
@@ -2300,7 +2562,8 @@ function restoreData(event) {
     try {
       const data = JSON.parse(e.target.result);
       if (data.teachersData && data.studentsData && data.dailyRecords) {
-        if (confirm("هل أنت متأكد من استعادة هذه النسخة الاحتياطية؟ سيتم تحديث البيانات الحالية في النظام.")) {
+        const confirmed = await customConfirm("هل أنت متأكد من استعادة هذه النسخة الاحتياطية؟ سيتم تحديث البيانات الحالية في النظام.", "تأكيد استعادة البيانات");
+        if (confirmed) {
           teachersData = data.teachersData;
           studentsData = data.studentsData;
           dailyRecords = data.dailyRecords;
@@ -2315,14 +2578,14 @@ function restoreData(event) {
             for (let r of dailyRecords) await db.collection("dailyRecords").doc(r.id.toString()).set(r);
           }
 
-          showMessage('app-msg', 'تمت استعادة البيانات بنجاح! 🎉', 'success');
+          customAlert('تمت استعادة البيانات بنجاح! 🎉', 'نجاح الاستعادة');
           showAppScreen();
         }
       } else {
-        showMessage('app-msg', 'ملف النسخة الاحتياطية غير صالح أو تنسيقه غير مطابق!', 'error');
+        customAlert('ملف النسخة الاحتياطية غير صالح أو تنسيقه غير مطابق!', 'خطأ في الملف');
       }
     } catch (err) {
-      showMessage('app-msg', 'حدث خطأ أثناء قراءة ملف النسخة الاحتياطية', 'error');
+      customAlert('حدث خطأ أثناء قراءة ملف النسخة الاحتياطية', 'خطأ');
     }
   };
   reader.readAsText(file);
