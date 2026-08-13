@@ -69,7 +69,7 @@ body {
 }
 
 .container {
-  max-width: 1380px;
+  max-width: 1420px;
   margin: auto;
   background: var(--card-bg);
   padding: 22px;
@@ -393,7 +393,7 @@ button.action-btn:hover {
 }
 
 table { width: 100%; border-collapse: collapse; min-width: 950px; }
-th, td { border-bottom: 1px solid #eef2f0; padding: 12px 10px; text-align: center; font-size: 0.88em; }
+th, td { border-bottom: 1px solid #eef2f0; padding: 10px 8px; text-align: center; font-size: 0.88em; }
 
 th {
   background: linear-gradient(180deg, #f4f8f5 0%, #e1ebe5 100%);
@@ -437,6 +437,23 @@ tr:hover { background-color: #f2f8f5; }
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.sheet-input {
+  width: 100%;
+  padding: 6px 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.sheet-num-input {
+  width: 50px;
+  text-align: center;
+  padding: 6px 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-weight: bold;
 }
 
 .classes-cards-grid {
@@ -584,92 +601,76 @@ function handleImgError(el, isWatermark = false) {
     
     <aside class="sidebar-nav">
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي</button>
+        <button class="tab-btn" id="daily-tab-btn" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي (شيت)</button>
         <button class="tab-btn" id="status-tab-btn" onclick="switchTab('status-tab', event)">🔍 حالة إنجاز الرصد</button>
-        <button class="tab-btn hidden" id="attendance-tab-btn" onclick="switchTab('attendance-tab', event)">📋 حضور 20 يوم</button>
-        <button class="tab-btn hidden" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">📊 التقرير الأسبوعي</button>
-        <button class="tab-btn hidden" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">📅 التقرير الشهري</button>
-        <button class="tab-btn hidden" id="manager-tab-btn" onclick="switchTab('manager-tab', event)">👁️ متابعة الصفوف</button>
-        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: var(--warning-color); color: white;" onclick="switchTab('admin-tab', event)">⚙️ لوحة الإدارة</button>
+        <button class="tab-btn" id="attendance-tab-btn" onclick="switchTab('attendance-tab', event)">📋 حضور 20 يوم</button>
+        <button class="tab-btn" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">📊 التقرير الأسبوعي</button>
+        <button class="tab-btn" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">📅 التقرير الشهري</button>
+        <button class="tab-btn" id="manager-tab-btn" onclick="switchTab('manager-tab', event)">👁️ متابعة الصفوف</button>
+        <button class="tab-btn" id="admin-tab-btn" style="background-color: var(--warning-color); color: white;" onclick="switchTab('admin-tab', event)">⚙️ لوحة الإدارة</button>
       </div>
     </aside>
 
     <main class="content-area">
 
-      <!-- 1. تبويب الرصد اليومي -->
-      <div id="daily-tab" class="tab-content active">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>تاريخ الرصد:</label>
-            <input type="date" id="recordDate" onchange="updateDayOfWeek()">
+      <!-- 1. تبويب الرصد اليومي (نظام الشيت الشامل) -->
+      <div id="daily-tab" class="tab-content">
+        <div class="card-view">
+          <h3 class="card-title">📝 شيت الرصد اليومي لجميع طلاب الصف</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>تاريخ الرصد:</label>
+              <input type="date" id="recordDate" onchange="updateDayOfWeek(); renderDailySheetTable();">
+            </div>
+            <div class="form-group">
+              <label>اليوم:</label>
+              <input type="text" id="daySelect" readonly placeholder="تلقائي">
+            </div>
+            <div class="form-group">
+              <label>الصف الدراسي:</label>
+              <select id="classSelect" onchange="renderDailySheetTable();">
+                <option value="أولى - أولاد">أولى - أولاد</option>
+                <option value="أولى - بنات">أولى - بنات</option>
+                <option value="ثانية - أولاد">ثانية - أولاد</option>
+                <option value="ثانية - بنات">ثانية - بنات</option>
+                <option value="ثالثة - أولاد">ثالثة - أولاد</option>
+                <option value="ثالثة - بنات">ثالثة - بنات</option>
+                <option value="رابعة - أولاد">رابعة - أولاد</option>
+                <option value="رابعة - بنات">رابعة - بنات</option>
+                <option value="خامسة - أولاد">خامسة - أولاد</option>
+                <option value="خامسة - بنات">خامسة - بنات</option>
+                <option value="أولى شرعي">أولى شرعي</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label>اليوم:</label>
-            <input type="text" id="daySelect" readonly placeholder="تلقائي">
-          </div>
-          <div class="form-group">
-            <label>الصف الدراسي:</label>
-            <select id="classSelect" onchange="updateStudentListDropdown();">
-              <option value="أولى - أولاد">أولى - أولاد</option>
-              <option value="أولى - بنات">أولى - بنات</option>
-              <option value="ثانية - أولاد">ثانية - أولاد</option>
-              <option value="ثانية - بنات">ثانية - بنات</option>
-              <option value="ثالثة - أولاد">ثالثة - أولاد</option>
-              <option value="ثالثة - بنات">ثالثة - بنات</option>
-              <option value="رابعة - أولاد">رابعة - أولاد</option>
-              <option value="رابعة - بنات">رابعة - بنات</option>
-              <option value="خامسة - أولاد">خامسة - أولاد</option>
-              <option value="خامسة - بنات">خامسة - بنات</option>
-              <option value="أولى شرعي">أولى شرعي</option>
-            </select>
-          </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label>اسم الطالب/الطالبة:</label>
-            <select id="studentNameSelect" style="font-weight: bold; color: var(--primary-dark);">
-            </select>
-          </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label style="color: var(--primary-color);">📖 مقرر التلاوة (اختياري):</label>
-            <input type="text" id="recitationTopic" placeholder="اكتب مقرر التلاوة أو الملاحظة..." style="border-color: var(--primary-color);">
-          </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label>🔁 مقرر الماضي تسميع (اختياري):</label>
-            <input type="text" id="oldTopicText" placeholder="اكتب المقرر أو الملاحظة...">
-          </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label>✨ مقرر الجديد حفظ (اختياري):</label>
-            <input type="text" id="newTopicText" placeholder="اكتب المقرر أو الملاحظة...">
-          </div>
-          <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10"></div>
-        </div>
 
-        <div class="btn-group">
-          <button class="action-btn btn-save" onclick="addGrade()">💾 حفظ الدرجات (من 60)</button>
-          <button class="action-btn btn-export" onclick="exportToExcel('gradesTable', 'الرصد_اليومي')">📊 تصدير إكسل</button>
-        </div>
+          <div class="btn-group">
+            <button class="action-btn btn-save" onclick="saveBulkSheetGrades()">💾 حفظ شيت الدرجات بالكامل بالسحابة</button>
+            <button class="action-btn btn-export" onclick="exportToExcel('dailySheetTable', 'شيت_الرصد_اليومي')">📊 تصدير الشيت إكسل</button>
+          </div>
 
-        <div class="search-box">
-          <input type="text" id="searchDaily" placeholder="🔍 بحث باسم الطالب..." oninput="renderDailyTable()">
-          <input type="date" id="filterDateDaily" title="عرض درجات يوم محدد" onchange="renderDailyTable()" style="flex:1;">
-          <button class="action-btn btn-warning" id="togglePreviousBtn" style="flex: none; padding: 8px 12px;" onclick="togglePreviousRecords()">عرض الأيام السابقة</button>
-        </div>
-
-        <div class="table-responsive">
-          <table id="gradesTable">
-            <thead>
-              <tr>
-                <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
-                <th>مقرر التلاوة</th><th>مقرر الماضي</th><th>مقرر الجديد</th>
-                <th>حضور</th><th>سلوك</th><th>ماضي</th><th>جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div class="table-responsive">
+            <table id="dailySheetTable">
+              <thead>
+                <tr>
+                  <th style="width:35px;">#</th>
+                  <th style="min-width:140px;">اسم الطالب/الطالبة</th>
+                  <th style="min-width:120px;">📖 مقرر التلاوة</th>
+                  <th style="min-width:120px;">🔁 مقرر الماضي</th>
+                  <th style="min-width:120px;">✨ مقرر الجديد</th>
+                  <th>حضور (10)</th>
+                  <th>سلوك (10)</th>
+                  <th>ماضي (10)</th>
+                  <th>جديد (10)</th>
+                  <th>تلاوة (10)</th>
+                  <th>واجب (10)</th>
+                  <th>المجموع</th>
+                  <th style="min-width:80px;">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="dailySheetTbody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -800,8 +801,8 @@ function handleImgError(el, isWatermark = false) {
                   <th>الثلاثاء (60)</th>
                   <th>الأربعاء (60)</th>
                   <th>الخميس (60)</th>
-                  <th>مجموع الأسبوع (من 300)</th>
-                  <th>متوسط الأسبوع (من 60)</th>
+                  <th>مجموع الأسبوع (من 420)</th>
+                  <th>متوسط الأسبوع (قسمة على 7 أيام)</th>
                   <th>نسبة الحضور (%)</th>
                 </tr>
               </thead>
@@ -814,7 +815,7 @@ function handleImgError(el, isWatermark = false) {
       <!-- 5. التقرير الشهري -->
       <div id="reports-tab" class="tab-content">
         <div class="card-view">
-          <h3 class="card-title">📅 التقرير الشهري الشامل (أيام الشهر من الأحد للخميس)</h3>
+          <h3 class="card-title">📅 التقرير الشهري الشامل (أيام الشهر كاملاً)</h3>
           <div class="form-grid">
             <div class="form-group">
               <label>الشهر:</label>
@@ -909,7 +910,7 @@ function handleImgError(el, isWatermark = false) {
           <div class="table-responsive">
             <table id="mgrWeeklyTable">
               <thead>
-                <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع</th><th>متوسط الأسبوع</th><th>نسبة الحضور (%)</th></tr>
+                <tr><th>اسم الطالب</th><th>الأحد</th><th>الاثنين</th><th>الثلاثاء</th><th>الأربعاء</th><th>الخميس</th><th>مجموع الأسبوع</th><th>متوسط الأسبوع (قسمة على 7)</th><th>نسبة الحضور (%)</th></tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -1101,7 +1102,6 @@ let teachersData = [];
 let studentsData = [];
 let dailyRecords = [];
 let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
-let isShowingAllDays = false;
 let currentManagerClass = 'أولى - أولاد';
 
 const nameMapping = {
@@ -1177,9 +1177,6 @@ function initCurrentDate() {
   document.getElementById('attendanceEndDate').value = localISOTime;
   if(document.getElementById('statusDate')) document.getElementById('statusDate').value = localISOTime;
 
-  if(!isShowingAllDays) {
-    document.getElementById('filterDateDaily').value = localISOTime;
-  }
   updateDayOfWeek();
 }
 
@@ -1190,30 +1187,6 @@ function updateDayOfWeek() {
   const days = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
   let dayIdx = d.getDay();
   document.getElementById('daySelect').value = days[dayIdx];
-  if(!isShowingAllDays) {
-    document.getElementById('filterDateDaily').value = dateVal;
-    renderDailyTable();
-  }
-}
-
-function togglePreviousRecords() {
-  isShowingAllDays = !isShowingAllDays;
-  const filterDateInput = document.getElementById('filterDateDaily');
-  const todayDate = document.getElementById('recordDate').value;
-  const btn = document.getElementById('togglePreviousBtn');
-
-  if (isShowingAllDays) {
-    filterDateInput.value = '';
-    btn.innerText = 'إخفاء الأيام السابقة';
-    btn.classList.remove('btn-warning');
-    btn.classList.add('btn-export');
-  } else {
-    filterDateInput.value = todayDate;
-    btn.innerText = 'عرض الأيام السابقة';
-    btn.classList.remove('btn-export');
-    btn.classList.add('btn-warning');
-  }
-  renderDailyTable();
 }
 
 function getWeekKey(dateStr) {
@@ -1254,25 +1227,6 @@ function populateWeeks() {
   }
 }
 
-function updateStudentListDropdown() {
-  const className = document.getElementById('classSelect').value;
-  const studentSelect = document.getElementById('studentNameSelect');
-  studentSelect.innerHTML = '';
-
-  const filteredStudents = studentsData
-    .filter(s => s.className === className)
-    .sort((a, b) => a.name.localeCompare(b.name, 'ar'));
-
-  if (filteredStudents.length === 0) {
-    studentSelect.innerHTML = '<option value="">لا توجد أسماء مسجلة في هذا الصف</option>';
-    return;
-  }
-
-  filteredStudents.forEach(s => {
-    studentSelect.innerHTML += `<option value="${s.name}">${s.name}</option>`;
-  });
-}
-
 function syncDataFromCloud() {
   if (!useFirebase) return;
 
@@ -1295,11 +1249,11 @@ function syncDataFromCloud() {
     snapshot.forEach(doc => cloudStudents.push(applyDataMapping({ id: doc.id, ...doc.data() })));
     studentsData = cloudStudents;
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
-    updateStudentListDropdown();
-    if (currentTeacher && currentTeacher.username === 'admin') {
+    if (currentTeacher && (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل')) {
       renderStudentsTable();
       renderClassCards();
     }
+    renderDailySheetTable();
     renderManagerView();
     renderMonthlyReport();
     renderAttendanceTable();
@@ -1311,7 +1265,7 @@ function syncDataFromCloud() {
     snapshot.forEach(doc => cloudRecords.push(applyDataMapping({ id: doc.id, ...doc.data() })));
     dailyRecords = cloudRecords;
     localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
-    renderDailyTable();
+    renderDailySheetTable();
     populateWeeks();
     renderWeeklyTable();
     renderMonthlyReport();
@@ -1368,24 +1322,21 @@ function showAppScreen() {
   const weeklyClassSelect = document.getElementById('weeklyClassSelect');
   const monthlyClassSelect = document.getElementById('monthlyClassSelect');
   const attendanceClassSelect = document.getElementById('attendanceClassSelect');
-  const adminBtn = document.getElementById('admin-tab-btn');
-  const managerBtn = document.getElementById('manager-tab-btn');
-  const weeklyBtn = document.getElementById('weekly-tab-btn');
-  const reportsBtn = document.getElementById('reports-tab-btn');
-  const attendanceBtn = document.getElementById('attendance-tab-btn');
 
   initCurrentDate();
 
-  const isManager = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
+  const isManagerOrAdmin = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
 
-  attendanceBtn.classList.remove('hidden');
+  if (isManagerOrAdmin) {
+    // تظهر جميع التبويبات للادمن والمدير العام
+    document.getElementById('daily-tab-btn').classList.remove('hidden');
+    document.getElementById('attendance-tab-btn').classList.remove('hidden');
+    document.getElementById('weekly-tab-btn').classList.remove('hidden');
+    document.getElementById('reports-tab-btn').classList.remove('hidden');
+    document.getElementById('manager-tab-btn').classList.remove('hidden');
+    document.getElementById('admin-tab-btn').classList.remove('hidden');
+    document.getElementById('status-tab-btn').classList.remove('hidden');
 
-  if (isManager) {
-    adminBtn.classList.remove('hidden');
-    managerBtn.classList.remove('hidden');
-    weeklyBtn.classList.remove('hidden');
-    reportsBtn.classList.remove('hidden');
-    
     classSelect.disabled = false;
     weeklyClassSelect.disabled = false;
     monthlyClassSelect.disabled = false;
@@ -1394,21 +1345,28 @@ function showAppScreen() {
     renderTeachersTable();
     renderStudentsTable();
     renderClassCards();
+
+    switchTab('daily-tab', { target: document.getElementById('daily-tab-btn') });
   } else {
-    adminBtn.classList.add('hidden');
-    managerBtn.classList.add('hidden');
-    weeklyBtn.classList.add('hidden');
-    reportsBtn.classList.add('hidden');
+    // إخفاء الرصد اليومي والتقارير والحضور 20 يوم للمعلم العادي
+    document.getElementById('daily-tab-btn').classList.add('hidden');
+    document.getElementById('attendance-tab-btn').classList.add('hidden');
+    document.getElementById('weekly-tab-btn').classList.add('hidden');
+    document.getElementById('reports-tab-btn').classList.add('hidden');
+    document.getElementById('manager-tab-btn').classList.add('hidden');
+    document.getElementById('admin-tab-btn').classList.add('hidden');
+    document.getElementById('status-tab-btn').classList.remove('hidden');
 
     classSelect.value = currentTeacher.assignedClass; classSelect.disabled = true;
     weeklyClassSelect.value = currentTeacher.assignedClass; weeklyClassSelect.disabled = true;
     monthlyClassSelect.value = currentTeacher.assignedClass; monthlyClassSelect.disabled = true;
     attendanceClassSelect.value = currentTeacher.assignedClass; attendanceClassSelect.disabled = true;
+
+    switchTab('status-tab', { target: document.getElementById('status-tab-btn') });
   }
 
-  updateStudentListDropdown();
   populateWeeks();
-  renderDailyTable();
+  renderDailySheetTable();
   renderAttendanceTable();
   renderWeeklyTable();
   renderMonthlyReport();
@@ -1420,10 +1378,19 @@ function switchTab(tabId, event) {
   document.querySelectorAll('.sidebar-nav .tab-btn').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-  event.target.classList.add('active');
-  document.getElementById(tabId).classList.add('active');
+  if(event && event.target) {
+    event.target.classList.add('active');
+  } else {
+    const btn = document.getElementById(tabId + '-btn');
+    if(btn) btn.classList.add('active');
+  }
 
-  if (tabId === 'attendance-tab') {
+  const targetTab = document.getElementById(tabId);
+  if(targetTab) targetTab.classList.add('active');
+
+  if (tabId === 'daily-tab') {
+    renderDailySheetTable();
+  } else if (tabId === 'attendance-tab') {
     renderAttendanceTable();
   } else if (tabId === 'status-tab') {
     renderClassStatusTable();
@@ -1453,148 +1420,164 @@ function getDailyTotal(record) {
          (record.newLesson || 0) + (record.recitation || 0) + (record.homework || 0);
 }
 
-async function addGrade() {
-  const className = document.getElementById('classSelect').value;
-  const dateISO = document.getElementById('recordDate').value;
-  const dayName = document.getElementById('daySelect').value;
-  const studentName = document.getElementById('studentNameSelect').value;
-
-  const recitationTopic = document.getElementById('recitationTopic').value.trim() || '-';
-  const oldTopicText = document.getElementById('oldTopicText').value.trim() || '-';
-  const newTopicText = document.getElementById('newTopicText').value.trim() || '-';
-
-  const attVal = document.getElementById('attendance').value;
-  const behVal = document.getElementById('behavior').value;
-  const oldRVal = document.getElementById('oldRevision').value;
-  const newLVal = document.getElementById('newLesson').value;
-  const recVal = document.getElementById('recitation').value;
-  const hwVal = document.getElementById('homework').value;
-
-  if (attVal === '' || behVal === '' || oldRVal === '' || newLVal === '' || recVal === '' || hwVal === '') {
-    return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
-  }
-
-  if (attVal > 10 || behVal > 10 || oldRVal > 10 || newLVal > 10 || recVal > 10 || hwVal > 10) {
-    return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
-  }
-
-  if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
-  if (!dateISO) return showMessage('app-msg', 'يرجى اختيار التاريخ بشكل صحيح', 'error');
-
-  const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
-
-  const record = {
-    id: uniqueId,
-    teacherName: currentTeacher.username,
-    className,
-    dateISO,
-    dayName,
-    studentName,
-    recitationTopic,
-    oldTopicText,
-    newTopicText,
-    attendance: clampGrade(attVal),
-    behavior: clampGrade(behVal),
-    oldRevision: clampGrade(oldRVal),
-    newLesson: clampGrade(newLVal),
-    recitation: clampGrade(recVal),
-    homework: clampGrade(hwVal)
-  };
-
-  if (useFirebase) {
-    await db.collection("dailyRecords").doc(record.id).set(record);
-  } else {
-    const idx = dailyRecords.findIndex(r => r.id === record.id);
-    if(idx > -1) dailyRecords[idx] = record;
-    else dailyRecords.push(record);
-    
-    localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
-    populateWeeks();
-    renderDailyTable();
-    renderAttendanceTable();
-    renderWeeklyTable();
-    renderMonthlyReport();
-    renderManagerView();
-    renderClassStatusTable();
-  }
-
-  showMessage('app-msg', 'تم حفظ الدرجات بنجاح ✨', 'success');
-
-  ['attendance','behavior','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic'].forEach(id => {
-    if (document.getElementById(id)) document.getElementById(id).value = '';
-  });
-}
-
-async function deleteRecord(id) {
-  if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
-    if (useFirebase) {
-      await db.collection("dailyRecords").doc(id.toString()).delete();
-    } else {
-      dailyRecords = dailyRecords.filter(r => r.id.toString() !== id.toString());
-      localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
-      renderDailyTable();
-      renderAttendanceTable();
-      renderWeeklyTable();
-      renderMonthlyReport();
-      renderManagerView();
-      renderClassStatusTable();
-    }
-    showMessage('app-msg', 'تم حذف السجل بنجاح', 'success');
-  }
-}
-
-function renderDailyTable() {
-  const tbody = document.querySelector('#gradesTable tbody');
+/* ================= شيت الرصد اليومي الكامل ================= */
+function renderDailySheetTable() {
+  const tbody = document.getElementById('dailySheetTbody');
+  if(!tbody) return;
   tbody.innerHTML = '';
 
-  const searchKeyword = (document.getElementById('searchDaily')?.value || '').toLowerCase();
-  const filterDate = document.getElementById('filterDateDaily').value;
+  const className = document.getElementById('classSelect').value;
+  const dateISO = document.getElementById('recordDate').value;
 
-  const filteredRecords = dailyRecords.filter(r => {
-    const matchesClass = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل') 
-      ? true : r.className === currentTeacher.assignedClass;
-    const matchesSearch = r.studentName.toLowerCase().includes(searchKeyword);
-    const matchesDate = filterDate ? (r.dateISO === filterDate) : true;
-    return matchesClass && matchesSearch && matchesDate;
-  });
+  const classStudents = studentsData
+    .filter(s => s.className === className)
+    .sort((a,b) => a.name.localeCompare(b.name, 'ar'));
 
-  filteredRecords.sort((a,b) => {
-    let dateDiff = new Date(b.dateISO) - new Date(a.dateISO);
-    if(dateDiff !== 0) return dateDiff;
-    return a.studentName.localeCompare(b.studentName, 'ar');
-  });
-
-  if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="15">لا توجد سجلات مطابقة</td></tr>';
+  if(classStudents.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="13">لا يوجد طلاب مسجلين في صف (${className})</td></tr>`;
     return;
   }
 
-  filteredRecords.forEach(r => {
-    const total = getDailyTotal(r);
-    const deleteBtn = (currentTeacher.username === 'admin' || currentTeacher.username === r.teacherName)
-      ? `<button class="action-btn btn-danger" style="padding:3px 8px; font-size:0.8em; min-width:auto;" onclick="deleteRecord('${r.id}')">حذف</button>` 
-      : '-';
+  classStudents.forEach((student, index) => {
+    let rec = dailyRecords.find(r => r.className === className && r.studentName === student.name && r.dateISO === dateISO);
+
+    let recTopic = rec ? (rec.recitationTopic || '') : '';
+    let oldTopic = rec ? (rec.oldTopicText || '') : '';
+    let newTopic = rec ? (rec.newTopicText || '') : '';
+
+    let att = rec ? rec.attendance : '';
+    let beh = rec ? rec.behavior : '';
+    let oldR = rec ? rec.oldRevision : '';
+    let newL = rec ? rec.newLesson : '';
+    let recV = rec ? rec.recitation : '';
+    let hw = rec ? rec.homework : '';
+
+    let total = rec ? getDailyTotal(rec) : 0;
 
     tbody.innerHTML += `
-      <tr>
-        <td><strong>${r.dayName || '-'}</strong><br><small style="color:#7f8c8d;">${r.dateISO}</small></td>
-        <td>${r.className}</td>
-        <td>${r.teacherName}</td>
-        <td style="font-weight:bold;">${r.studentName}</td>
-        <td style="color:var(--primary-color); font-weight:bold;">${r.recitationTopic || '-'}</td>
-        <td style="color:#27ae60;">${r.oldTopicText || '-'}</td>
-        <td style="color:#e67e22;">${r.newTopicText || '-'}</td>
-        <td>${r.attendance}</td>
-        <td>${r.behavior}</td>
-        <td>${r.oldRevision}</td>
-        <td>${r.newLesson}</td>
-        <td>${r.recitation}</td>
-        <td>${r.homework || 0}</td>
-        <td><strong style="color:var(--primary-dark);">${total}</strong> / 60</td>
-        <td>${deleteBtn}</td>
+      <tr id="sheet-row-${index}">
+        <td>${index + 1}</td>
+        <td style="font-weight:bold; color:var(--primary-dark);" class="sheet-student-name">${student.name}</td>
+        <td><input type="text" class="sheet-input sheet-rec-topic" value="${recTopic}" placeholder="التلاوة"></td>
+        <td><input type="text" class="sheet-input sheet-old-topic" value="${oldTopic}" placeholder="الماضي"></td>
+        <td><input type="text" class="sheet-input sheet-new-topic" value="${newTopic}" placeholder="الجديد"></td>
+        <td><input type="number" class="sheet-num-input sheet-att" min="0" max="10" value="${att}" oninput="updateSheetRowTotal(${index})"></td>
+        <td><input type="number" class="sheet-num-input sheet-beh" min="0" max="10" value="${beh}" oninput="updateSheetRowTotal(${index})"></td>
+        <td><input type="number" class="sheet-num-input sheet-old" min="0" max="10" value="${oldR}" oninput="updateSheetRowTotal(${index})"></td>
+        <td><input type="number" class="sheet-num-input sheet-new" min="0" max="10" value="${newL}" oninput="updateSheetRowTotal(${index})"></td>
+        <td><input type="number" class="sheet-num-input sheet-rec" min="0" max="10" value="${recV}" oninput="updateSheetRowTotal(${index})"></td>
+        <td><input type="number" class="sheet-num-input sheet-hw" min="0" max="10" value="${hw}" oninput="updateSheetRowTotal(${index})"></td>
+        <td><strong class="sheet-total-display" id="sheet-total-${index}">${total}</strong> / 60</td>
+        <td>
+          <button class="action-btn btn-danger" style="padding:2px 8px; font-size:0.75em; min-width:auto;" onclick="markSheetAbsent(${index})">🚫 غائب</button>
+        </td>
       </tr>
     `;
   });
+}
+
+function updateSheetRowTotal(index) {
+  const row = document.getElementById(`sheet-row-${index}`);
+  if(!row) return;
+
+  let att = Number(row.querySelector('.sheet-att').value) || 0;
+  let beh = Number(row.querySelector('.sheet-beh').value) || 0;
+  let oldR = Number(row.querySelector('.sheet-old').value) || 0;
+  let newL = Number(row.querySelector('.sheet-new').value) || 0;
+  let recV = Number(row.querySelector('.sheet-rec').value) || 0;
+  let hw = Number(row.querySelector('.sheet-hw').value) || 0;
+
+  let total = att + beh + oldR + newL + recV + hw;
+  document.getElementById(`sheet-total-${index}`).innerText = total;
+}
+
+function markSheetAbsent(index) {
+  const row = document.getElementById(`sheet-row-${index}`);
+  if(!row) return;
+
+  row.querySelector('.sheet-att').value = 0;
+  row.querySelector('.sheet-beh').value = 0;
+  row.querySelector('.sheet-old').value = 0;
+  row.querySelector('.sheet-new').value = 0;
+  row.querySelector('.sheet-rec').value = 0;
+  row.querySelector('.sheet-hw').value = 0;
+
+  updateSheetRowTotal(index);
+}
+
+async function saveBulkSheetGrades() {
+  const className = document.getElementById('classSelect').value;
+  const dateISO = document.getElementById('recordDate').value;
+  const dayName = document.getElementById('daySelect').value;
+
+  const rows = document.querySelectorAll('#dailySheetTbody tr');
+  if(rows.length === 0) return;
+
+  let savedCount = 0;
+
+  for(let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const studentNameEl = row.querySelector('.sheet-student-name');
+    if(!studentNameEl) continue;
+
+    const studentName = studentNameEl.innerText.trim();
+    const recitationTopic = row.querySelector('.sheet-rec-topic').value.trim() || '-';
+    const oldTopicText = row.querySelector('.sheet-old-topic').value.trim() || '-';
+    const newTopicText = row.querySelector('.sheet-new-topic').value.trim() || '-';
+
+    const attVal = row.querySelector('.sheet-att').value;
+    const behVal = row.querySelector('.sheet-beh').value;
+    const oldRVal = row.querySelector('.sheet-old').value;
+    const newLVal = row.querySelector('.sheet-new').value;
+    const recVal = row.querySelector('.sheet-rec').value;
+    const hwVal = row.querySelector('.sheet-hw').value;
+
+    if (attVal === '' && behVal === '' && oldRVal === '' && newLVal === '' && recVal === '' && hwVal === '') {
+      continue; // تجاهل الصفوف الفارغة بالكامل
+    }
+
+    const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
+
+    const record = {
+      id: uniqueId,
+      teacherName: currentTeacher.username,
+      className,
+      dateISO,
+      dayName,
+      studentName,
+      recitationTopic,
+      oldTopicText,
+      newTopicText,
+      attendance: clampGrade(attVal),
+      behavior: clampGrade(behVal),
+      oldRevision: clampGrade(oldRVal),
+      newLesson: clampGrade(newLVal),
+      recitation: clampGrade(recVal),
+      homework: clampGrade(hwVal)
+    };
+
+    if (useFirebase) {
+      await db.collection("dailyRecords").doc(record.id).set(record);
+    } else {
+      const idx = dailyRecords.findIndex(r => r.id === record.id);
+      if(idx > -1) dailyRecords[idx] = record;
+      else dailyRecords.push(record);
+    }
+    savedCount++;
+  }
+
+  if (!useFirebase) {
+    localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
+  }
+
+  populateWeeks();
+  renderAttendanceTable();
+  renderWeeklyTable();
+  renderMonthlyReport();
+  renderManagerView();
+  renderClassStatusTable();
+
+  showMessage('app-msg', `تم حفظ درجات الشيت بالكامل لـ (${savedCount}) طالب بالسحابة ✨`, 'success');
 }
 
 function renderClassStatusTable() {
@@ -1634,7 +1617,7 @@ function renderClassStatusTable() {
     } else if (unrecorded.length === 0) {
       actionBtn = '<span style="color:var(--success-color); font-weight:bold;">✨ اكتمل الرصد بالكامل</span>';
     } else {
-      actionBtn = `<button class="action-btn btn-warning" style="padding:4px 10px; font-size:0.82em; min-width:auto;" onclick="showUnrecordedStudents('${cName}', '${dateVal}')">عرض الطالب الذي لم يتم تسجيله (${unrecorded.length}) 👁️</button>`;
+      actionBtn = `<button class="action-btn btn-warning" style="padding:4px 10px; font-size:0.82em; min-width:auto;" onclick="showUnrecordedStudents('${cName}', '${dateVal}')">عرض الطلاب (${unrecorded.length}) 👁️</button>`;
     }
 
     tbody.innerHTML += `
@@ -1750,7 +1733,7 @@ function renderAttendanceTable() {
     });
 
     let attPerc = recordedDaysCount > 0 ? ((attendedDaysCount / recordedDaysCount) * 100).toFixed(0) : 0;
-    let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-green' : (parseFloat(attPerc) >= 50 ? 'badge-yellow' : 'badge-yellow');
+    let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-green' : 'badge-yellow';
 
     rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${recordedDaysCount || 20}</td>`;
     rowHtml += `<td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
@@ -1758,6 +1741,7 @@ function renderAttendanceTable() {
   });
 }
 
+/* ================= حساب التقرير الأسبوعي (القسمة على 7 أيام دائماً) ================= */
 function renderWeeklyTable() {
   const tbody = document.querySelector('#weeklyTable tbody');
   if(!tbody) return;
@@ -1798,8 +1782,9 @@ function renderWeeklyTable() {
       }
     });
 
-    let weeklyAverage = (studentTotal / 5).toFixed(1);
-    let attPerc = ((attTotal / 50) * 100).toFixed(1);
+    // التقسيم على 7 أيام الأسبوع كاملاً
+    let weeklyAverage = (studentTotal / 7).toFixed(1);
+    let attPerc = ((attTotal / 70) * 100).toFixed(1);
     let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
     tbody.innerHTML += `
@@ -1810,7 +1795,7 @@ function renderWeeklyTable() {
         <td>${weekDays["الثلاثاء"]}</td>
         <td>${weekDays["الأربعاء"]}</td>
         <td>${weekDays["الخميس"]}</td>
-        <td><strong>${studentTotal}</strong> / 300</td>
+        <td><strong>${studentTotal}</strong> / 420</td>
         <td style="color:var(--primary-color); font-weight:bold;">${weeklyAverage} / 60</td>
         <td><span class="badge ${badgeClass}">${attPerc}%</span></td>
       </tr>
@@ -1840,6 +1825,7 @@ function getMonthWorkingDays(year, month) {
   return workingDays;
 }
 
+/* ================= التقرير الشهري (التقسيم اليوم بيومه على إجمالي أيام الشهر) ================= */
 function renderMonthlyReport() {
   const month = document.getElementById('reportMonth').value;
   const year = document.getElementById('reportYear').value;
@@ -1850,6 +1836,7 @@ function renderMonthlyReport() {
   if(!thead || !tbody) return;
 
   const workingDays = getMonthWorkingDays(year, month);
+  const totalMonthWorkingDays = workingDays.length || 1;
 
   let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
   workingDays.forEach(wd => {
@@ -1857,7 +1844,7 @@ function renderMonthlyReport() {
     let shortDate = `${parts[2]}/${parts[1]}`;
     headerHtml += `<th style="font-size:0.78em; padding:5px 3px; min-width:42px;">${wd.dayName}<br><span style="color:#666;">${shortDate}</span></th>`;
   });
-  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (من 60)</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
+  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (قسمة إجمالي الشهر)</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
   thead.innerHTML = headerHtml;
 
   tbody.innerHTML = '';
@@ -1876,12 +1863,10 @@ function renderMonthlyReport() {
     let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
     let totalScore = 0;
     let attendedDaysCount = 0;
-    let recordedDaysCount = 0;
 
     workingDays.forEach(wd => {
       let rec = dailyRecords.find(r => r.className === selectedClass && r.studentName === student && r.dateISO === wd.dateISO);
       if (rec) {
-        recordedDaysCount++;
         let dailyScore = getDailyTotal(rec);
         totalScore += dailyScore;
         if (rec.attendance > 0) attendedDaysCount++;
@@ -1891,15 +1876,15 @@ function renderMonthlyReport() {
       }
     });
 
-    const maxPossibleScore = recordedDaysCount * 60;
-    const monthlyAverage = recordedDaysCount > 0 ? (totalScore / recordedDaysCount).toFixed(1) : 0;
-    const overallPerc = maxPossibleScore > 0 ? ((totalScore / maxPossibleScore) * 100).toFixed(1) : 0;
-    const attPerc = recordedDaysCount > 0 ? ((attendedDaysCount / recordedDaysCount) * 100).toFixed(1) : 0;
+    // التقسيم اليوم بيومه على إجمالي عدد أيام الشهر كاملاً
+    const monthlyAverage = (totalScore / totalMonthWorkingDays).toFixed(1);
+    const overallPerc = ((totalScore / (totalMonthWorkingDays * 60)) * 100).toFixed(1);
+    const attPerc = ((attendedDaysCount / totalMonthWorkingDays) * 100).toFixed(1);
 
     const badgeOverall = parseFloat(overallPerc) >= 75 ? 'badge-green' : 'badge-yellow';
     const badgeAtt = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
-    rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${recordedDaysCount || workingDays.length}</td>`;
+    rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${totalMonthWorkingDays}</td>`;
     rowHtml += `<td><strong>${totalScore}</strong></td>`;
     rowHtml += `<td style="color:var(--primary-color); font-weight:bold;">${monthlyAverage}</td>`;
     rowHtml += `<td><span class="badge ${badgeAtt}">${attPerc}%</span></td>`;
@@ -1954,10 +1939,10 @@ function renderManagerView() {
           let d=getDailyTotal(r); wd[r.dayName]=d; stTotal+=d; attTotal+=r.attendance;
         }
       });
-      let wAvg = (stTotal / 5).toFixed(1);
-      let attPerc = ((attTotal / 50) * 100).toFixed(1);
+      let wAvg = (stTotal / 7).toFixed(1);
+      let attPerc = ((attTotal / 70) * 100).toFixed(1);
       let badgeClass = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
-      tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong> / 300</td><td><strong>${wAvg}</strong> / 60</td><td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
+      tWeekly.innerHTML += `<tr><td style="font-weight:bold;">${student}</td><td>${wd["الأحد"]}</td><td>${wd["الاثنين"]}</td><td>${wd["الثلاثاء"]}</td><td>${wd["الأربعاء"]}</td><td>${wd["الخميس"]}</td><td><strong>${stTotal}</strong> / 420</td><td><strong>${wAvg}</strong> / 60</td><td><span class="badge ${badgeClass}">${attPerc}%</span></td></tr>`;
     });
   }
 
@@ -1968,6 +1953,7 @@ function renderManagerView() {
   const selYear = document.getElementById('mgrYearSelect').value;
 
   const workingDays = getMonthWorkingDays(selYear, selMonth);
+  const totalDays = workingDays.length || 1;
 
   let headerHtml = '<tr><th style="min-width: 150px; position: sticky; right: 0; background: #f8f9fa; z-index: 2;">اسم الطالب/الطالبة</th>';
   workingDays.forEach(wd => {
@@ -1984,12 +1970,11 @@ function renderManagerView() {
   } else {
     mStds.forEach(st => {
       let rowHtml = `<tr><td style="font-weight:bold; position: sticky; right: 0; background: white; z-index: 1;">${st}</td>`;
-      let tot = 0; let attCnt = 0; let recCnt = 0;
+      let tot = 0; let attCnt = 0;
 
       workingDays.forEach(wd => {
         let rec = dailyRecords.find(r => r.className === currentManagerClass && r.studentName === st && r.dateISO === wd.dateISO);
         if (rec) {
-          recCnt++;
           let dScore = getDailyTotal(rec);
           tot += dScore;
           if (rec.attendance > 0) attCnt++;
@@ -1999,11 +1984,10 @@ function renderManagerView() {
         }
       });
 
-      let maxPossible = recCnt * 60;
-      let mAvg = recCnt > 0 ? (tot / recCnt).toFixed(1) : 0;
-      let perc = maxPossible > 0 ? ((tot / maxPossible) * 100).toFixed(1) : 0;
+      let mAvg = (tot / totalDays).toFixed(1);
+      let perc = ((tot / (totalDays * 60)) * 100).toFixed(1);
 
-      rowHtml += `<td><strong>${attCnt}</strong> / ${recCnt || workingDays.length}</td>`;
+      rowHtml += `<td><strong>${attCnt}</strong> / ${totalDays}</td>`;
       rowHtml += `<td><strong>${tot}</strong></td>`;
       rowHtml += `<td style="color:var(--primary-color); font-weight:bold;">${mAvg}</td>`;
       rowHtml += `<td><span class="badge ${parseFloat(perc)>=75?'badge-green':'badge-yellow'}">${perc}%</span></td></tr>`;
@@ -2043,8 +2027,8 @@ async function addBulkStudents() {
   if (!useFirebase) {
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
     renderStudentsTable();
-    updateStudentListDropdown();
     renderClassCards();
+    renderDailySheetTable();
     renderManagerView();
     renderAttendanceTable();
     renderClassStatusTable();
@@ -2117,8 +2101,8 @@ async function editStudent(id) {
     if (idx > -1) studentsData[idx] = updatedStudent;
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
     renderStudentsTable();
-    updateStudentListDropdown();
     renderClassCards();
+    renderDailySheetTable();
     renderManagerView();
     renderAttendanceTable();
     renderClassStatusTable();
@@ -2174,7 +2158,7 @@ async function deleteStudent(id) {
     else {
       studentsData = studentsData.filter(s => s.id.toString() !== id.toString());
       localStorage.setItem('studentsData', JSON.stringify(studentsData));
-      renderStudentsTable(); updateStudentListDropdown(); renderClassCards(); renderManagerView(); renderAttendanceTable(); renderClassStatusTable();
+      renderStudentsTable(); renderClassCards(); renderDailySheetTable(); renderManagerView(); renderAttendanceTable(); renderClassStatusTable();
     }
     showMessage('app-msg', 'تم الحذف بنجاح', 'success');
   }
@@ -2307,7 +2291,6 @@ function checkWeeklyAutoBackup() {
   }
 }
 
-// دالة استعادة البيانات المكتملة
 function restoreData(event) {
   const file = event.target.files[0];
   if (!file) return;
