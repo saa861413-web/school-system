@@ -896,18 +896,19 @@ function handleImgError(el, isWatermark = false) {
           <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-score-field"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10"></div>
         </div>
 
         <div class="btn-group">
           <button class="action-btn btn-save" onclick="addGrade()">💾 حفظ الدرجات (من 60)</button>
+          <button class="action-btn btn-danger" onclick="markAbsent()">🚫 غياب (صفر في كل الخانات)</button>
           <button class="action-btn btn-export" id="dailyExportBtn" onclick="exportToExcel('gradesTable', 'الرصد_اليومي')">📊 تصدير إكسل</button>
         </div>
 
         <div class="search-box">
           <input type="text" id="searchDaily" placeholder="🔍 بحث باسم الطالب..." oninput="renderDailyTable()">
-          <input type="date" id="filterDateDaily" title="عرض درجات يوم محدد" onchange="renderDailyTable()" style="flex:1;">
+          <input type="date" id="filterDateDaily" title="اكتب أو اختر التاريخ لعرض درجات هذا اليوم" onchange="renderDailyTable()" style="flex:1;">
           <button class="action-btn btn-warning" id="togglePreviousBtn" style="flex: none; padding: 8px 12px;" onclick="togglePreviousRecords()">عرض الأيام السابقة</button>
         </div>
 
@@ -917,7 +918,7 @@ function handleImgError(el, isWatermark = false) {
               <tr>
                 <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
                 <th class="fifth-topic-col">مقرر التلاوة</th><th class="fifth-topic-col">مقرر الماضي</th><th class="fifth-topic-col">مقرر الجديد</th>
-                <th>حضور</th><th>سلوك</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th class="fifth-score-col">تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
+                <th>حضور</th><th>سلوك</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1558,6 +1559,10 @@ function togglePreviousRecords() {
     btn.innerText = 'إخفاء الأيام السابقة';
     btn.classList.remove('btn-warning');
     btn.classList.add('btn-export');
+    filterDateInput.focus();
+    if (typeof filterDateInput.showPicker === 'function') {
+      try { filterDateInput.showPicker(); } catch (e) {}
+    }
   } else {
     filterDateInput.value = todayDate;
     btn.innerText = 'عرض الأيام السابقة';
@@ -1857,7 +1862,7 @@ function isFifthClass(className) {
 }
 
 function getDailyMax(className) {
-  return isFifthClass(className) ? 30 : 60;
+  return isFifthClass(className) ? 40 : 60;
 }
 
 function updateFifthGradeFields(className) {
@@ -1883,10 +1888,21 @@ function clampGrade(val) {
 
 function getDailyTotal(record) {
   if (isFifthClass(record.className)) {
-    return (record.attendance || 0) + (record.behavior || 0) + (record.homework || 0);
+    return (record.attendance || 0) + (record.behavior || 0) + (record.recitation || 0) + (record.homework || 0);
   }
   return (record.attendance || 0) + (record.behavior || 0) + (record.oldRevision || 0) + 
          (record.newLesson || 0) + (record.recitation || 0) + (record.homework || 0);
+}
+
+function markAbsent() {
+  const studentName = document.getElementById('studentNameSelect').value;
+  if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
+
+  ['attendance', 'behavior', 'oldRevision', 'newLesson', 'recitation', 'homework'].forEach(id => {
+    document.getElementById(id).value = 0;
+  });
+
+  addGrade();
 }
 
 async function addGrade() {
@@ -1907,13 +1923,13 @@ async function addGrade() {
   const hwVal = document.getElementById('homework').value;
   const safeOldRVal = isFifthClass(className) ? 0 : oldRVal;
   const safeNewLVal = isFifthClass(className) ? 0 : newLVal;
-  const safeRecVal = isFifthClass(className) ? 0 : recVal;
+  const safeRecVal = recVal;
 
-  if (attVal === '' || behVal === '' || hwVal === '' || (!isFifthClass(className) && (oldRVal === '' || newLVal === '' || recVal === ''))) {
+  if (attVal === '' || behVal === '' || hwVal === '' || recVal === '' || (!isFifthClass(className) && (oldRVal === '' || newLVal === ''))) {
     return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
   }
 
-  if (attVal > 10 || behVal > 10 || hwVal > 10 || (!isFifthClass(className) && (oldRVal > 10 || newLVal > 10 || recVal > 10))) {
+  if (attVal > 10 || behVal > 10 || hwVal > 10 || recVal > 10 || (!isFifthClass(className) && (oldRVal > 10 || newLVal > 10))) {
     return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
   }
 
@@ -2175,7 +2191,7 @@ function renderDailyTable() {
         <td>${r.newLesson}</td>
         <td>${r.recitation}</td>
         <td>${r.homework || 0}</td>
-        <td><strong style="color:var(--primary-dark);">${total}</strong> / 60</td>
+        <td><strong style="color:var(--primary-dark);">${total}</strong> / ${getDailyMax(r.className)}</td>
         <td>${actionBtns}</td>
       </tr>
     `;
