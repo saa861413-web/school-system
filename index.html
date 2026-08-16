@@ -727,6 +727,62 @@ tr:hover { background-color: #f2f8f5; }
   table { min-width: 620px; }
 }
 
+/* ================= شاشة نتائج الطلاب (بالكود) ================= */
+.result-link-btn {
+  width: 100%;
+  margin-top: 12px;
+  background: linear-gradient(135deg, var(--accent-gold-dark) 0%, var(--accent-gold) 100%);
+  border: none;
+}
+
+.result-code-form { display: flex; gap: 8px; margin-bottom: 18px; }
+.result-code-form input {
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 3px;
+  font-size: 1.1em;
+  text-transform: uppercase;
+}
+
+.result-student-title {
+  text-align: center;
+  color: var(--primary-dark);
+  font-family: 'Amiri', serif;
+  font-size: 1.4em;
+  margin: 4px 0 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px dashed var(--accent-gold);
+}
+
+.result-field-card {
+  background: #fff;
+  border: 1px solid var(--accent-gold-light);
+  border-right: 4px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  text-align: right;
+}
+
+.result-field-label { font-weight: 700; color: var(--secondary-color); font-size: 0.88em; margin-bottom: 6px; }
+.result-field-value { font-weight: 800; color: var(--primary-dark); font-size: 1.15em; }
+
+.result-percent-bar-outer {
+  width: 100%;
+  height: 10px;
+  background: #eef2f0;
+  border-radius: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.result-percent-bar-inner {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+}
+
+.results-preview-wrap { max-height: 260px; overflow-y: auto; margin-top: 14px; }
+
 </style>
 </head>
 <body>
@@ -786,6 +842,32 @@ function handleImgError(el, isWatermark = false) {
 
   <button class="action-btn btn-save" style="width: 100%; font-size: 1em; height: 46px;" onclick="handleLogin()">
     دخول للنظام 🔑
+  </button>
+
+  <button class="action-btn result-link-btn" style="height: 44px;" onclick="showResultsScreen()">
+    🎓 عرض نتيجة طالب بالكود
+  </button>
+</div>
+
+<!-- شاشة عرض النتيجة بالكود (بدون تسجيل دخول) -->
+<div id="results-screen" class="login-card hidden">
+  <img src="1000054284_2.jpg" class="login-logo-img" alt="شعار معهد المجد" onerror="handleImgError(this)">
+  <h2 class="login-header-text" style="font-size:1.6em;">نتيجة الطالب</h2>
+  <div class="login-subtitle">أدخل الكود المكوّن من 6 حروف/أرقام لعرض الدرجات</div>
+
+  <div class="islamic-divider"><span>❖ 🕮 ❖</span></div>
+
+  <div id="results-msg" class="toast-msg"></div>
+
+  <div class="result-code-form">
+    <input type="text" id="resultCodeInput" placeholder="اكتب الكود هنا" maxlength="6">
+    <button class="action-btn btn-save" style="min-width: 110px;" onclick="lookupResultByCode()">عرض 🔍</button>
+  </div>
+
+  <div id="resultDisplayArea"></div>
+
+  <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
+    🔙 رجوع لتسجيل الدخول
   </button>
 </div>
 
@@ -1276,6 +1358,21 @@ function handleImgError(el, isWatermark = false) {
           <button class="action-btn btn-save" onclick="addBulkStudents()">+ رفع جميع الأسماء للسحابة</button>
         </div>
 
+        <div style="background: #fdf9f0; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--accent-gold-light); border-top: 4px solid var(--accent-gold);">
+          <h3 style="margin-top: 0; font-size: 1.15em; color: var(--primary-dark); font-family:'Amiri', serif;">🎓 تحويل الدرجات (نتائج الطلاب بالكود)</h3>
+          <p style="font-size: 0.88em; color: #555; margin-bottom: 12px; line-height: 1.8;">
+            ارفع ملف إكسل فيه درجات الطلاب بأي أعمدة تريدها (مثال: الاسم، الصف، المعلم، درجة الشهر — أو: الاسم، درجة التحريري، درجة الشفوي، درجة السرد...). الموقع سيقرأ الأعمدة الموجودة تلقائياً، ويولّد كوداً مكوناً من 6 حروف/أرقام لكل صف (كل طالب)، ثم يجهّز لك ملف إكسل به كل الأعمدة + عمود الكود لتوزيعه على الطلاب. بعدها يقدر أي طالب يكتب كوده في شاشة "عرض نتيجة طالب بالكود" في صفحة الدخول ليشاهد درجاته.
+          </p>
+          <div class="btn-group">
+            <input type="file" id="resultsExcelFile" accept=".xlsx,.xls" style="display:none;" onchange="handleResultsExcelUpload(event)">
+            <button class="action-btn btn-save" onclick="document.getElementById('resultsExcelFile').click()">📤 رفع ملف درجات جديد وتوليد الأكواد</button>
+            <button class="action-btn btn-export" onclick="exportResultsCodesExcel()">⬇️ تحميل ملف الأكواد الحالي</button>
+            <button class="action-btn btn-danger" onclick="deleteAllResults()">🗑️ حذف كل النتائج المخزنة</button>
+          </div>
+          <div id="results-admin-msg" class="toast-msg"></div>
+          <div id="results-admin-summary"></div>
+        </div>
+
         <div style="background: #fff; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--accent-gold-light);">
           <h3 style="margin-top: 0; font-size: 1.15em; color: var(--primary-dark); font-family:'Amiri', serif;">🏫 دليل الفصول المعين (معلمين ومساعدين وطلاب)</h3>
           <div id="class-cards-container" class="classes-cards-grid">
@@ -1453,6 +1550,7 @@ let teachersData = [];
 let studentsData = [];
 let dailyRecords = [];
 let notesData = [];
+let resultsData = [];
 let currentTeacher = JSON.parse(localStorage.getItem('currentTeacher')) || null;
 let isShowingAllDays = false;
 let currentManagerClass = 'أولى - أولاد';
@@ -1477,6 +1575,7 @@ function migrateOldData() {
   let sData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
   let rData = JSON.parse(localStorage.getItem('dailyRecords')) || [];
   let nData = JSON.parse(localStorage.getItem('notesData')) || [];
+  let resData = JSON.parse(localStorage.getItem('resultsData')) || [];
 
   if (!tData.some(t => t.username === 'admin')) {
     tData.unshift({ id: "1", username: "admin", password: "admin123", assignedClass: "الكل", center: "الكل" });
@@ -1489,11 +1588,13 @@ function migrateOldData() {
   studentsData = sData.map(applyDataMapping);
   dailyRecords = rData.map(applyDataMapping);
   notesData = nData.map(applyDataMapping);
+  resultsData = resData;
 
   localStorage.setItem('teachersData', JSON.stringify(teachersData));
   localStorage.setItem('studentsData', JSON.stringify(studentsData));
   localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
   localStorage.setItem('notesData', JSON.stringify(notesData));
+  localStorage.setItem('resultsData', JSON.stringify(resultsData));
 }
 
 window.onload = function() {
@@ -1691,6 +1792,16 @@ function syncDataFromCloud() {
     renderAttendanceTable();
     renderClassStatusTable();
   });
+
+  db.collection("results").onSnapshot((snapshot) => {
+    let cloudResults = [];
+    snapshot.forEach(doc => cloudResults.push({ id: doc.id, ...doc.data() }));
+    resultsData = cloudResults;
+    localStorage.setItem('resultsData', JSON.stringify(resultsData));
+    if (currentTeacher && currentTeacher.username === 'admin') {
+      renderResultsAdminSummary();
+    }
+  });
 }
 
 function showMessage(elementId, msg, type) {
@@ -1725,11 +1836,22 @@ function handleLogout() {
 
 function showLoginScreen() {
   document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('results-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.add('hidden');
+}
+
+function showResultsScreen() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('results-screen').classList.remove('hidden');
+  document.getElementById('resultCodeInput').value = '';
+  document.getElementById('resultDisplayArea').innerHTML = '';
+  document.getElementById('results-msg').style.display = 'none';
 }
 
 function showAppScreen() {
   document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('results-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.remove('hidden');
 
   document.getElementById('teacher-name-display').innerText = currentTeacher.username;
@@ -1859,7 +1981,7 @@ function switchTab(tabId, event) {
   else if (tabId === 'reports-tab') renderMonthlyReport();
   else if (tabId === 'manager-tab') renderManagerView();
   else if (tabId === 'notes-tab') { populateNotesClasses(); updateNotesStudentList(); renderNotesTable(); }
-  else if (tabId === 'admin-tab') { renderClassCards(); renderStudentsTable(); renderTeachersTable(); }
+  else if (tabId === 'admin-tab') { renderClassCards(); renderStudentsTable(); renderTeachersTable(); renderResultsAdminSummary(); }
 }
 
 
@@ -3181,6 +3303,187 @@ function mapRowsToObjects(rows, headerMap) {
     });
     return obj;
   });
+}
+
+/* ============================================================
+   نظام "تحويل الدرجات" — رفع إكسل بأي أعمدة وتوليد أكواد نتائج
+   ============================================================ */
+const RESULT_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // بدون أحرف/أرقام ملتبسة (O,0,I,1,L)
+
+function generateResultCode(existingCodes) {
+  let code;
+  do {
+    code = '';
+    for (let i = 0; i < 6; i++) {
+      code += RESULT_CODE_CHARS.charAt(Math.floor(Math.random() * RESULT_CODE_CHARS.length));
+    }
+  } while (existingCodes.has(code));
+  existingCodes.add(code);
+  return code;
+}
+
+async function handleResultsExcelUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const rows = await readExcelFile(file);
+    if (!rows.length) {
+      showMessage('results-admin-msg', 'الملف فارغ أو غير صالح', 'error');
+      event.target.value = '';
+      return;
+    }
+
+    if (resultsData.length) {
+      const confirmed = await siteConfirm(
+        '🎓 استيراد نتائج جديدة',
+        `سيتم استبدال كل النتائج والأكواد الحالية (${resultsData.length}) بعدد ${rows.length} نتيجة جديدة من الملف. الأكواد القديمة لن تعمل بعد ذلك. هل تريد المتابعة؟`,
+        'استبدال وتوليد الأكواد',
+        true
+      );
+      if (!confirmed) { event.target.value = ''; return; }
+    }
+
+    const existingCodes = new Set();
+    const newResults = rows.map((row, idx) => {
+      // إزالة أي أعمدة فارغة تماماً من اسم العمود (احتياط)
+      const fields = {};
+      Object.keys(row).forEach(header => {
+        if (header && String(header).trim() !== '') fields[header] = row[header];
+      });
+      return {
+        id: 'r_' + Date.now().toString() + '_' + idx,
+        code: generateResultCode(existingCodes),
+        fields
+      };
+    });
+
+    resultsData = newResults;
+    localStorage.setItem('resultsData', JSON.stringify(resultsData));
+
+    if (useFirebase) {
+      // حذف الأكواد القديمة من السحابة أولاً
+      const oldSnap = await db.collection("results").get();
+      const batchDeletes = oldSnap.docs.map(d => d.ref.delete());
+      await Promise.all(batchDeletes);
+      for (let r of resultsData) {
+        await db.collection("results").doc(r.id).set({ code: r.code, fields: r.fields });
+      }
+    }
+
+    renderResultsAdminSummary();
+    exportResultsCodesExcel();
+    showMessage('results-admin-msg', `تم استيراد ${newResults.length} نتيجة وتوليد الأكواد وتحميل ملف الأكواد بنجاح 🎉`, 'success');
+  } catch (err) {
+    console.error(err);
+    showMessage('results-admin-msg', 'حدث خطأ أثناء قراءة ملف الإكسل، تأكد من صيغة الملف', 'error');
+  }
+  event.target.value = '';
+}
+
+function exportResultsCodesExcel() {
+  if (!resultsData.length) return showMessage('results-admin-msg', 'لا توجد نتائج مستوردة لتصديرها', 'error');
+
+  const rows = resultsData.map(r => {
+    const row = { ...r.fields };
+    row['الكود'] = r.code;
+    return row;
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "الأكواد والنتائج");
+  XLSX.writeFile(wb, `أكواد_النتائج_${new Date().toISOString().slice(0, 10)}.xlsx`);
+}
+
+async function deleteAllResults() {
+  if (!resultsData.length) return showMessage('results-admin-msg', 'لا توجد نتائج مخزنة أصلاً', 'error');
+
+  const confirmed = await siteConfirm(
+    '🗑️ حذف كل النتائج',
+    `سيتم حذف كل النتائج (${resultsData.length}) وكل الأكواد المرتبطة بها نهائياً. هل تريد المتابعة؟`,
+    'حذف الكل',
+    true
+  );
+  if (!confirmed) return;
+
+  resultsData = [];
+  localStorage.setItem('resultsData', JSON.stringify(resultsData));
+
+  if (useFirebase) {
+    const snap = await db.collection("results").get();
+    await Promise.all(snap.docs.map(d => d.ref.delete()));
+  }
+
+  renderResultsAdminSummary();
+  showMessage('results-admin-msg', 'تم حذف كل النتائج بنجاح', 'success');
+}
+
+function renderResultsAdminSummary() {
+  const container = document.getElementById('results-admin-summary');
+  if (!container) return;
+
+  if (!resultsData.length) {
+    container.innerHTML = '<p style="font-size:0.85em;color:#888;margin-top:10px;">لا توجد نتائج مستوردة حالياً.</p>';
+    return;
+  }
+
+  const sampleFields = Object.keys(resultsData[0].fields);
+  const previewRows = resultsData.slice(0, 8);
+
+  let html = `<p style="font-size:0.88em; color:#555; margin-top:12px;">📌 عدد النتائج المخزنة حالياً: <strong>${resultsData.length}</strong> — الأعمدة: ${sampleFields.join('، ')}</p>`;
+  html += `<div class="table-responsive results-preview-wrap"><table><thead><tr><th>الكود</th>`;
+  sampleFields.forEach(f => { html += `<th>${f}</th>`; });
+  html += `</tr></thead><tbody>`;
+  previewRows.forEach(r => {
+    html += `<tr><td><span class="badge badge-blue">${r.code}</span></td>`;
+    sampleFields.forEach(f => { html += `<td>${r.fields[f] ?? ''}</td>`; });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div>`;
+  if (resultsData.length > previewRows.length) {
+    html += `<p style="font-size:0.8em;color:#888;">...وعدد ${resultsData.length - previewRows.length} نتيجة أخرى (حمّل ملف الأكواد لرؤية الكل)</p>`;
+  }
+
+  container.innerHTML = html;
+}
+
+function lookupResultByCode() {
+  const input = document.getElementById('resultCodeInput');
+  const code = input.value.trim().toUpperCase();
+  const displayArea = document.getElementById('resultDisplayArea');
+  displayArea.innerHTML = '';
+
+  if (!code) return showMessage('results-msg', 'من فضلك اكتب الكود أولاً', 'error');
+
+  const result = resultsData.find(r => r.code === code);
+  if (!result) {
+    return showMessage('results-msg', 'الكود غير صحيح أو غير موجود، تأكد من كتابته بشكل صحيح', 'error');
+  }
+
+  const fieldNames = Object.keys(result.fields);
+  // نحاول تحديد اسم الطالب من أول عمود يحتوي "اسم" في عنوانه، وإلا نستخدم أول عمود
+  const nameField = fieldNames.find(f => f.includes('اسم')) || fieldNames[0];
+  let html = `<div class="result-student-title">${result.fields[nameField] ?? 'نتيجة الطالب'}</div>`;
+
+  fieldNames.forEach(field => {
+    if (field === nameField) return;
+    const value = result.fields[field];
+    const numericValue = parseFloat(value);
+    const isNumeric = value !== '' && !isNaN(numericValue);
+
+    html += `<div class="result-field-card">
+      <div class="result-field-label">${field}</div>
+      <div class="result-field-value">${value}${isNumeric ? '%' : ''}</div>`;
+    if (isNumeric) {
+      const pct = Math.max(0, Math.min(100, numericValue));
+      html += `<div class="result-percent-bar-outer"><div class="result-percent-bar-inner" style="width:${pct}%;"></div></div>`;
+    }
+    html += `</div>`;
+  });
+
+  displayArea.innerHTML = html;
+  showMessage('results-msg', 'تم العثور على النتيجة بنجاح ✅', 'success');
 }
 
 /* -------- 1) نسخة درجات الرصد اليومي (كل السنين) -------- */
