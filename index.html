@@ -917,7 +917,7 @@ function handleImgError(el, isWatermark = false) {
             <thead>
               <tr>
                 <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
-                <th class="fifth-topic-col">مقرر التلاوة</th><th class="fifth-topic-col">مقرر الماضي</th><th class="fifth-topic-col">مقرر الجديد</th>
+                <th>مقرر التلاوة</th><th class="fifth-topic-col">مقرر الماضي</th><th class="fifth-topic-col">مقرر الجديد</th>
                 <th>حضور</th><th>سلوك</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
               </tr>
             </thead>
@@ -1748,11 +1748,18 @@ function showAppScreen() {
   const notesClassSelect = document.getElementById('notesClassSelect');
   const reportsMenuWrap = document.getElementById('reports-menu-wrap');
 
+  const isManager = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
+
+  if (!isManager) {
+    classSelect.value = currentTeacher.assignedClass; classSelect.disabled = true;
+    weeklyClassSelect.value = currentTeacher.assignedClass; weeklyClassSelect.disabled = true;
+    monthlyClassSelect.value = currentTeacher.assignedClass; monthlyClassSelect.disabled = true;
+    attendanceClassSelect.value = currentTeacher.assignedClass; attendanceClassSelect.disabled = true;
+  }
+
   initCurrentDate();
   if (document.getElementById('noteDate')) document.getElementById('noteDate').value = document.getElementById('recordDate').value;
   updateFifthGradeFields(classSelect.value);
-
-  const isManager = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
 
   if (isManager) {
     adminBtn.classList.remove('hidden');
@@ -1785,11 +1792,6 @@ function showAppScreen() {
     statusBtn.classList.add('hidden');
     dailyExportBtn.classList.add('hidden');
     notesExportBtn.classList.add('hidden');
-
-    classSelect.value = currentTeacher.assignedClass; classSelect.disabled = true;
-    weeklyClassSelect.value = currentTeacher.assignedClass; weeklyClassSelect.disabled = true;
-    monthlyClassSelect.value = currentTeacher.assignedClass; monthlyClassSelect.disabled = true;
-    attendanceClassSelect.value = currentTeacher.assignedClass; attendanceClassSelect.disabled = true;
   }
 
   updateStudentListDropdown();
@@ -1867,16 +1869,11 @@ function getDailyMax(className) {
 
 function updateFifthGradeFields(className) {
   const fifth = isFifthClass(className);
-  document.querySelectorAll('.fifth-topic-field,.fifth-score-field,.fifth-topic-col,.fifth-score-col').forEach(el => {
+  document.querySelectorAll('.fifth-topic-field,.fifth-score-field').forEach(el => {
     el.classList.toggle('fifth-hidden', fifth);
   });
   const saveBtn = document.querySelector('#daily-tab .btn-save');
   if (saveBtn) saveBtn.innerText = `💾 حفظ الدرجات (من ${getDailyMax(className)})`;
-  const table = document.getElementById('gradesTable');
-  if (table) {
-    const totalHead = table.querySelector('thead th:nth-last-child(2)');
-    if (totalHead) totalHead.innerText = `المجموع (من ${getDailyMax(className)})`;
-  }
 }
 
 function clampGrade(val) {
@@ -2163,8 +2160,14 @@ function renderDailyTable() {
 
   if (filteredRecords.length === 0) {
     tbody.innerHTML = '<tr><td colspan="15">لا توجد سجلات مطابقة</td></tr>';
+    document.querySelectorAll('#gradesTable thead th.fifth-topic-col, #gradesTable thead th.fifth-score-col')
+      .forEach(th => th.classList.remove('fifth-hidden'));
     return;
   }
+
+  const hideOldNewCols = filteredRecords.every(r => isFifthClass(r.className));
+  document.querySelectorAll('#gradesTable thead th.fifth-topic-col, #gradesTable thead th.fifth-score-col')
+    .forEach(th => th.classList.toggle('fifth-hidden', hideOldNewCols));
 
   filteredRecords.forEach(r => {
     const total = getDailyTotal(r);
@@ -2176,6 +2179,8 @@ function renderDailyTable() {
          </div>`
       : '-';
 
+    const hiddenCls = hideOldNewCols ? ' fifth-hidden' : '';
+
     tbody.innerHTML += `
       <tr>
         <td><strong>${r.dayName || '-'}</strong><br><small style="color:#7f8c8d;">${r.dateISO}</small></td>
@@ -2183,12 +2188,12 @@ function renderDailyTable() {
         <td>${r.teacherName}</td>
         <td style="font-weight:bold;">${r.studentName}</td>
         <td style="color:var(--primary-color); font-weight:bold;">${r.recitationTopic || '-'}</td>
-        <td style="color:#27ae60;">${r.oldTopicText || '-'}</td>
-        <td style="color:#e67e22;">${r.newTopicText || '-'}</td>
+        <td class="${hiddenCls}" style="color:#27ae60;">${r.oldTopicText || '-'}</td>
+        <td class="${hiddenCls}" style="color:#e67e22;">${r.newTopicText || '-'}</td>
         <td>${r.attendance}</td>
         <td>${r.behavior}</td>
-        <td>${r.oldRevision}</td>
-        <td>${r.newLesson}</td>
+        <td class="${hiddenCls}">${r.oldRevision}</td>
+        <td class="${hiddenCls}">${r.newLesson}</td>
         <td>${r.recitation}</td>
         <td>${r.homework || 0}</td>
         <td><strong style="color:var(--primary-dark);">${total}</strong> / ${getDailyMax(r.className)}</td>
@@ -2206,6 +2211,8 @@ async function editRecord(id) {
   const allowed = currentTeacher.username === 'admin' || currentTeacher.username === record.teacherName;
   if (!allowed) return showMessage('app-msg', 'ليس لديك صلاحية تعديل هذا السجل', 'error');
 
+  const fifth = isFifthClass(record.className);
+
   showSiteModal(
     '✏️ تعديل درجات الطالب',
     `<div class="modal-grid">
@@ -2221,6 +2228,7 @@ async function editRecord(id) {
         <label>مقرر التلاوة:</label>
         <input id="modalRecitationTopic" value="${String(record.recitationTopic || '').replace(/"/g,'&quot;')}">
       </div>
+      ${fifth ? '' : `
       <div class="form-group full">
         <label>مقرر الماضي:</label>
         <input id="modalOldTopicText" value="${String(record.oldTopicText || '').replace(/"/g,'&quot;')}">
@@ -2228,11 +2236,12 @@ async function editRecord(id) {
       <div class="form-group full">
         <label>مقرر الجديد:</label>
         <input id="modalNewTopicText" value="${String(record.newTopicText || '').replace(/"/g,'&quot;')}">
-      </div>
+      </div>`}
       <div class="form-group"><label>الحضور (10):</label><input type="number" id="modalAttendance" min="0" max="10" value="${record.attendance ?? 0}"></div>
       <div class="form-group"><label>السلوك (10):</label><input type="number" id="modalBehavior" min="0" max="10" value="${record.behavior ?? 0}"></div>
+      ${fifth ? '' : `
       <div class="form-group"><label>الماضي (10):</label><input type="number" id="modalOldRevision" min="0" max="10" value="${record.oldRevision ?? 0}"></div>
-      <div class="form-group"><label>الجديد (10):</label><input type="number" id="modalNewLesson" min="0" max="10" value="${record.newLesson ?? 0}"></div>
+      <div class="form-group"><label>الجديد (10):</label><input type="number" id="modalNewLesson" min="0" max="10" value="${record.newLesson ?? 0}"></div>`}
       <div class="form-group"><label>التلاوة (10):</label><input type="number" id="modalRecitation" min="0" max="10" value="${record.recitation ?? 0}"></div>
       <div class="form-group"><label>الواجب (10):</label><input type="number" id="modalHomework" min="0" max="10" value="${record.homework ?? 0}"></div>
     </div>`,
@@ -2242,10 +2251,11 @@ async function editRecord(id) {
 
   document.getElementById('saveRecordEditBtn').onclick = async () => {
     const dateISO = document.getElementById('modalRecordDate').value;
+    const getVal = id => document.getElementById(id)?.value ?? '0';
     const values = ['modalAttendance','modalBehavior','modalOldRevision','modalNewLesson','modalRecitation','modalHomework']
-      .map(id => document.getElementById(id).value);
+      .map(getVal);
 
-    if (!dateISO || values.some(v => v === '')) {
+    if (!dateISO || values.some((v, i) => v === '' && !(fifth && (i === 2 || i === 3)))) {
       return showSiteError('يرجى إدخال التاريخ وجميع الدرجات.');
     }
     if (values.some(v => Number(v) < 0 || Number(v) > 10)) {
@@ -2258,12 +2268,12 @@ async function editRecord(id) {
       dateISO,
       dayName: dayNames[new Date(dateISO + 'T00:00:00').getDay()],
       recitationTopic: document.getElementById('modalRecitationTopic').value.trim() || '-',
-      oldTopicText: document.getElementById('modalOldTopicText').value.trim() || '-',
-      newTopicText: document.getElementById('modalNewTopicText').value.trim() || '-',
+      oldTopicText: fifth ? (record.oldTopicText || '-') : (document.getElementById('modalOldTopicText').value.trim() || '-'),
+      newTopicText: fifth ? (record.newTopicText || '-') : (document.getElementById('modalNewTopicText').value.trim() || '-'),
       attendance: clampGrade(values[0]),
       behavior: clampGrade(values[1]),
-      oldRevision: clampGrade(values[2]),
-      newLesson: clampGrade(values[3]),
+      oldRevision: fifth ? 0 : clampGrade(values[2]),
+      newLesson: fifth ? 0 : clampGrade(values[3]),
       recitation: clampGrade(values[4]),
       homework: clampGrade(values[5])
     };
