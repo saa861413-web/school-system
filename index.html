@@ -896,8 +896,12 @@ function handleImgError(el, isWatermark = false) {
           <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group fifth-score-field"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group fifth-score-field"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group fifth-only-field"><label>تلاوة 1 (10):</label><input type="number" id="recitation1" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group fifth-only-field"><label>تلاوة 2 (10):</label><input type="number" id="recitation2" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group fifth-only-field"><label>تلاوة 3 (10):</label><input type="number" id="recitation3" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group fifth-only-field"><label>تلاوة 4 (10):</label><input type="number" id="recitation4" min="0" max="10" placeholder="0-10"></div>
         </div>
 
         <div class="btn-group">
@@ -918,7 +922,7 @@ function handleImgError(el, isWatermark = false) {
               <tr>
                 <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
                 <th>مقرر التلاوة</th><th class="fifth-topic-col">مقرر الماضي</th><th class="fifth-topic-col">مقرر الجديد</th>
-                <th>حضور</th><th>سلوك</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th><th>إجراء</th>
+                <th>حضور</th><th>سلوك</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th><th>إجراء</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1144,7 +1148,7 @@ function handleImgError(el, isWatermark = false) {
           <div class="table-responsive">
             <table id="mgrDailyTable">
               <thead>
-                <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب</th><th>م. التلاوة</th><th>ماضي</th><th>جديد</th><th>حضور</th><th>سلوك</th><th>م.ماضي</th><th>م.جديد</th><th>تلاوة</th><th>واجب</th><th>المجموع</th></tr>
+                <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب</th><th>م. التلاوة</th><th class="fifth-topic-col">ماضي</th><th class="fifth-topic-col">جديد</th><th>حضور</th><th>سلوك</th><th class="fifth-score-col">م.ماضي</th><th class="fifth-score-col">م.جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th></tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -1864,13 +1868,16 @@ function isFifthClass(className) {
 }
 
 function getDailyMax(className) {
-  return isFifthClass(className) ? 40 : 60;
+  return 60;
 }
 
 function updateFifthGradeFields(className) {
   const fifth = isFifthClass(className);
   document.querySelectorAll('.fifth-topic-field,.fifth-score-field').forEach(el => {
     el.classList.toggle('fifth-hidden', fifth);
+  });
+  document.querySelectorAll('.fifth-only-field').forEach(el => {
+    el.classList.toggle('fifth-hidden', !fifth);
   });
   const saveBtn = document.querySelector('#daily-tab .btn-save');
   if (saveBtn) saveBtn.innerText = `💾 حفظ الدرجات (من ${getDailyMax(className)})`;
@@ -1885,7 +1892,8 @@ function clampGrade(val) {
 
 function getDailyTotal(record) {
   if (isFifthClass(record.className)) {
-    return (record.attendance || 0) + (record.behavior || 0) + (record.recitation || 0) + (record.homework || 0);
+    return (record.attendance || 0) + (record.behavior || 0) + (record.recitation1 || 0) +
+           (record.recitation2 || 0) + (record.recitation3 || 0) + (record.recitation4 || 0);
   }
   return (record.attendance || 0) + (record.behavior || 0) + (record.oldRevision || 0) + 
          (record.newLesson || 0) + (record.recitation || 0) + (record.homework || 0);
@@ -1895,7 +1903,7 @@ function markAbsent() {
   const studentName = document.getElementById('studentNameSelect').value;
   if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
 
-  ['attendance', 'behavior', 'oldRevision', 'newLesson', 'recitation', 'homework'].forEach(id => {
+  ['attendance', 'behavior', 'oldRevision', 'newLesson', 'recitation', 'homework', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
     document.getElementById(id).value = 0;
   });
 
@@ -1907,6 +1915,7 @@ async function addGrade() {
   const dateISO = document.getElementById('recordDate').value;
   const dayName = document.getElementById('daySelect').value;
   const studentName = document.getElementById('studentNameSelect').value;
+  const fifth = isFifthClass(className);
 
   const recitationTopic = document.getElementById('recitationTopic').value.trim() || '-';
   const oldTopicText = document.getElementById('oldTopicText').value.trim() || '-';
@@ -1918,22 +1927,41 @@ async function addGrade() {
   const newLVal = document.getElementById('newLesson').value;
   const recVal = document.getElementById('recitation').value;
   const hwVal = document.getElementById('homework').value;
-  const safeOldRVal = isFifthClass(className) ? 0 : oldRVal;
-  const safeNewLVal = isFifthClass(className) ? 0 : newLVal;
-  const safeRecVal = recVal;
+  const rec1Val = document.getElementById('recitation1').value;
+  const rec2Val = document.getElementById('recitation2').value;
+  const rec3Val = document.getElementById('recitation3').value;
+  const rec4Val = document.getElementById('recitation4').value;
 
-  if (attVal === '' || behVal === '' || hwVal === '' || recVal === '' || (!isFifthClass(className) && (oldRVal === '' || newLVal === ''))) {
-    return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
-  }
+  const safeOldRVal = fifth ? 0 : oldRVal;
+  const safeNewLVal = fifth ? 0 : newLVal;
+  const safeRecVal = fifth ? 0 : recVal;
+  const safeHwVal = fifth ? 0 : hwVal;
 
-  if (attVal > 10 || behVal > 10 || hwVal > 10 || recVal > 10 || (!isFifthClass(className) && (oldRVal > 10 || newLVal > 10))) {
-    return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
+  if (fifth) {
+    if (attVal === '' || behVal === '' || rec1Val === '' || rec2Val === '' || rec3Val === '' || rec4Val === '') {
+      return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
+    }
+    if (attVal > 10 || behVal > 10 || rec1Val > 10 || rec2Val > 10 || rec3Val > 10 || rec4Val > 10) {
+      return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
+    }
+  } else {
+    if (attVal === '' || behVal === '' || hwVal === '' || recVal === '' || oldRVal === '' || newLVal === '') {
+      return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
+    }
+    if (attVal > 10 || behVal > 10 || hwVal > 10 || recVal > 10 || oldRVal > 10 || newLVal > 10) {
+      return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
+    }
   }
 
   if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
   if (!dateISO) return showMessage('app-msg', 'يرجى اختيار التاريخ بشكل صحيح', 'error');
 
   const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
+
+  const recitation1 = fifth ? clampGrade(rec1Val) : 0;
+  const recitation2 = fifth ? clampGrade(rec2Val) : 0;
+  const recitation3 = fifth ? clampGrade(rec3Val) : 0;
+  const recitation4 = fifth ? clampGrade(rec4Val) : 0;
 
   const record = {
     id: uniqueId,
@@ -1949,8 +1977,12 @@ async function addGrade() {
     behavior: clampGrade(behVal),
     oldRevision: clampGrade(safeOldRVal),
     newLesson: clampGrade(safeNewLVal),
-    recitation: clampGrade(safeRecVal),
-    homework: clampGrade(hwVal)
+    recitation: fifth ? (recitation1 + recitation2 + recitation3 + recitation4) : clampGrade(safeRecVal),
+    recitation1,
+    recitation2,
+    recitation3,
+    recitation4,
+    homework: clampGrade(safeHwVal)
   };
 
   if (useFirebase) {
@@ -1972,7 +2004,7 @@ async function addGrade() {
 
   showMessage('app-msg', 'تم حفظ الدرجات بنجاح ✨', 'success');
 
-  ['attendance','behavior','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic'].forEach(id => {
+  ['attendance','behavior','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
     if (document.getElementById(id)) document.getElementById(id).value = '';
   });
 }
@@ -2159,15 +2191,19 @@ function renderDailyTable() {
   });
 
   if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="15">لا توجد سجلات مطابقة</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="19">لا توجد سجلات مطابقة</td></tr>';
     document.querySelectorAll('#gradesTable thead th.fifth-topic-col, #gradesTable thead th.fifth-score-col')
       .forEach(th => th.classList.remove('fifth-hidden'));
+    document.querySelectorAll('#gradesTable thead th.fifth-only-col')
+      .forEach(th => th.classList.add('fifth-hidden'));
     return;
   }
 
   const hideOldNewCols = filteredRecords.every(r => isFifthClass(r.className));
   document.querySelectorAll('#gradesTable thead th.fifth-topic-col, #gradesTable thead th.fifth-score-col')
     .forEach(th => th.classList.toggle('fifth-hidden', hideOldNewCols));
+  document.querySelectorAll('#gradesTable thead th.fifth-only-col')
+    .forEach(th => th.classList.toggle('fifth-hidden', !hideOldNewCols));
 
   filteredRecords.forEach(r => {
     const total = getDailyTotal(r);
@@ -2180,6 +2216,8 @@ function renderDailyTable() {
       : '-';
 
     const hiddenCls = hideOldNewCols ? ' fifth-hidden' : '';
+    const onlyHiddenCls = hideOldNewCols ? '' : ' fifth-hidden';
+    const fifthRow = isFifthClass(r.className);
 
     tbody.innerHTML += `
       <tr>
@@ -2194,8 +2232,12 @@ function renderDailyTable() {
         <td>${r.behavior}</td>
         <td class="${hiddenCls}">${r.oldRevision}</td>
         <td class="${hiddenCls}">${r.newLesson}</td>
-        <td>${r.recitation}</td>
-        <td>${r.homework || 0}</td>
+        <td class="${hiddenCls}">${r.recitation}</td>
+        <td class="${hiddenCls}">${r.homework || 0}</td>
+        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation1 || 0) : '-'}</td>
+        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation2 || 0) : '-'}</td>
+        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation3 || 0) : '-'}</td>
+        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation4 || 0) : '-'}</td>
         <td><strong style="color:var(--primary-dark);">${total}</strong> / ${getDailyMax(r.className)}</td>
         <td>${actionBtns}</td>
       </tr>
@@ -2239,11 +2281,15 @@ async function editRecord(id) {
       </div>`}
       <div class="form-group"><label>الحضور (10):</label><input type="number" id="modalAttendance" min="0" max="10" value="${record.attendance ?? 0}"></div>
       <div class="form-group"><label>السلوك (10):</label><input type="number" id="modalBehavior" min="0" max="10" value="${record.behavior ?? 0}"></div>
-      ${fifth ? '' : `
+      ${fifth ? `
+      <div class="form-group"><label>تلاوة 1 (10):</label><input type="number" id="modalRecitation1" min="0" max="10" value="${record.recitation1 ?? 0}"></div>
+      <div class="form-group"><label>تلاوة 2 (10):</label><input type="number" id="modalRecitation2" min="0" max="10" value="${record.recitation2 ?? 0}"></div>
+      <div class="form-group"><label>تلاوة 3 (10):</label><input type="number" id="modalRecitation3" min="0" max="10" value="${record.recitation3 ?? 0}"></div>
+      <div class="form-group"><label>تلاوة 4 (10):</label><input type="number" id="modalRecitation4" min="0" max="10" value="${record.recitation4 ?? 0}"></div>` : `
       <div class="form-group"><label>الماضي (10):</label><input type="number" id="modalOldRevision" min="0" max="10" value="${record.oldRevision ?? 0}"></div>
-      <div class="form-group"><label>الجديد (10):</label><input type="number" id="modalNewLesson" min="0" max="10" value="${record.newLesson ?? 0}"></div>`}
+      <div class="form-group"><label>الجديد (10):</label><input type="number" id="modalNewLesson" min="0" max="10" value="${record.newLesson ?? 0}"></div>
       <div class="form-group"><label>التلاوة (10):</label><input type="number" id="modalRecitation" min="0" max="10" value="${record.recitation ?? 0}"></div>
-      <div class="form-group"><label>الواجب (10):</label><input type="number" id="modalHomework" min="0" max="10" value="${record.homework ?? 0}"></div>
+      <div class="form-group"><label>الواجب (10):</label><input type="number" id="modalHomework" min="0" max="10" value="${record.homework ?? 0}"></div>`}
     </div>`,
     `<button class="action-btn modal-success" id="saveRecordEditBtn">💾 حفظ التعديل</button>
      <button class="action-btn modal-cancel" id="cancelRecordEditBtn">إلغاء</button>`
@@ -2251,11 +2297,13 @@ async function editRecord(id) {
 
   document.getElementById('saveRecordEditBtn').onclick = async () => {
     const dateISO = document.getElementById('modalRecordDate').value;
-    const getVal = id => document.getElementById(id)?.value ?? '0';
-    const values = ['modalAttendance','modalBehavior','modalOldRevision','modalNewLesson','modalRecitation','modalHomework']
-      .map(getVal);
+    const getVal = id => document.getElementById(id)?.value ?? '';
+    const fieldIds = fifth
+      ? ['modalAttendance','modalBehavior','modalRecitation1','modalRecitation2','modalRecitation3','modalRecitation4']
+      : ['modalAttendance','modalBehavior','modalOldRevision','modalNewLesson','modalRecitation','modalHomework'];
+    const values = fieldIds.map(getVal);
 
-    if (!dateISO || values.some((v, i) => v === '' && !(fifth && (i === 2 || i === 3)))) {
+    if (!dateISO || values.some(v => v === '')) {
       return showSiteError('يرجى إدخال التاريخ وجميع الدرجات.');
     }
     if (values.some(v => Number(v) < 0 || Number(v) > 10)) {
@@ -2274,8 +2322,12 @@ async function editRecord(id) {
       behavior: clampGrade(values[1]),
       oldRevision: fifth ? 0 : clampGrade(values[2]),
       newLesson: fifth ? 0 : clampGrade(values[3]),
-      recitation: clampGrade(values[4]),
-      homework: clampGrade(values[5])
+      recitation: fifth ? (clampGrade(values[2]) + clampGrade(values[3]) + clampGrade(values[4]) + clampGrade(values[5])) : clampGrade(values[4]),
+      recitation1: fifth ? clampGrade(values[2]) : 0,
+      recitation2: fifth ? clampGrade(values[3]) : 0,
+      recitation3: fifth ? clampGrade(values[4]) : 0,
+      recitation4: fifth ? clampGrade(values[5]) : 0,
+      homework: fifth ? 0 : clampGrade(values[5])
     };
 
     // لأن المعرّف القديم مبني على الطالب + التاريخ، نحتاج نقل المستند إذا تغيّر التاريخ.
@@ -2654,12 +2706,17 @@ function renderManagerView() {
                                   .sort((a,b) => a.studentName.localeCompare(b.studentName, 'ar'));
 
   if(dailyClassRecs.length === 0) {
-    tDaily.innerHTML = '<tr><td colspan="13">لا توجد درجات مسجلة لهذا الصف اليوم.</td></tr>';
+    tDaily.innerHTML = '<tr><td colspan="17">لا توجد درجات مسجلة لهذا الصف اليوم.</td></tr>';
   } else {
+    const mgrFifth = isFifthClass(currentManagerClass);
     dailyClassRecs.forEach(r => {
-      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td style="color:#27ae60;">${r.oldTopicText||'-'}</td><td style="color:#e67e22;">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td>${r.oldRevision}</td><td>${r.newLesson}</td><td>${r.recitation}</td><td>${r.homework||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
+      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td class="fifth-topic-col">${r.oldTopicText||'-'}</td><td class="fifth-topic-col">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td class="fifth-score-col">${r.oldRevision}</td><td class="fifth-score-col">${r.newLesson}</td><td class="fifth-score-col">${r.recitation}</td><td class="fifth-score-col">${r.homework||0}</td><td class="fifth-only-col">${r.recitation1||0}</td><td class="fifth-only-col">${r.recitation2||0}</td><td class="fifth-only-col">${r.recitation3||0}</td><td class="fifth-only-col">${r.recitation4||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
     });
   }
+  document.querySelectorAll('#mgrDailyTable th.fifth-topic-col, #mgrDailyTable th.fifth-score-col, #mgrDailyTable td.fifth-topic-col, #mgrDailyTable td.fifth-score-col')
+    .forEach(el => el.classList.toggle('fifth-hidden', isFifthClass(currentManagerClass)));
+  document.querySelectorAll('#mgrDailyTable th.fifth-only-col, #mgrDailyTable td.fifth-only-col')
+    .forEach(el => el.classList.toggle('fifth-hidden', !isFifthClass(currentManagerClass)));
 
   const tWeekly = document.querySelector('#mgrWeeklyTable tbody');
   tWeekly.innerHTML = '';
@@ -3131,7 +3188,8 @@ const gradesHeaderMap = [
   ['المعرف', 'id'], ['المدرس', 'teacherName'], ['الصف', 'className'], ['التاريخ', 'dateISO'], ['اليوم', 'dayName'],
   ['اسم الطالب', 'studentName'], ['موضوع التلاوة', 'recitationTopic'], ['الماضي (نص)', 'oldTopicText'], ['الجديد (نص)', 'newTopicText'],
   ['الحضور', 'attendance'], ['السلوك', 'behavior'], ['درجة الماضي', 'oldRevision'], ['درجة الجديد', 'newLesson'],
-  ['درجة التلاوة', 'recitation'], ['الواجب', 'homework']
+  ['درجة التلاوة', 'recitation'], ['الواجب', 'homework'],
+  ['تلاوة 1', 'recitation1'], ['تلاوة 2', 'recitation2'], ['تلاوة 3', 'recitation3'], ['تلاوة 4', 'recitation4']
 ];
 
 function exportAllGradesToExcel() {
@@ -3156,6 +3214,10 @@ async function importGradesFromExcel(event) {
       newLesson: r.newLesson === '' ? 0 : Number(r.newLesson),
       recitation: r.recitation === '' ? 0 : Number(r.recitation),
       homework: r.homework === '' ? 0 : Number(r.homework),
+      recitation1: r.recitation1 === '' || r.recitation1 == null ? 0 : Number(r.recitation1),
+      recitation2: r.recitation2 === '' || r.recitation2 == null ? 0 : Number(r.recitation2),
+      recitation3: r.recitation3 === '' || r.recitation3 == null ? 0 : Number(r.recitation3),
+      recitation4: r.recitation4 === '' || r.recitation4 == null ? 0 : Number(r.recitation4),
       id: r.id || `rec_${r.studentName}_${r.dateISO}`.replace(/\s+/g, '_')
     }));
 
