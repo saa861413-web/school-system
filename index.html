@@ -984,6 +984,51 @@ img, svg, video, canvas, iframe {
   max-width: 100%;
 }
 
+
+/* ===== تثبيت قائمة القوائم أعلى أقصى اليمين ===== */
+.main-menu-handle {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: auto !important;
+  z-index: 1001 !important;
+  border-top: none !important;
+  border-right: none !important;
+  border-radius: 0 0 0 14px !important;
+}
+
+.main-menu-handle.open {
+  right: min(260px, 82vw) !important;
+  top: 0 !important;
+}
+
+@media (max-width: 850px) {
+  .main-menu-handle {
+    top: 8px !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: auto !important;
+    min-width: 48px !important;
+    height: 48px !important;
+    padding: 0 13px !important;
+    border-radius: 12px !important;
+  }
+
+  .main-menu-handle span:last-child {
+    display: inline !important;
+    font-size: 0.8em;
+  }
+
+  .main-menu-handle.open {
+    right: min(280px, 88vw) !important;
+    top: 8px !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+
 </style>
 </head>
 <body>
