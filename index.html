@@ -783,6 +783,207 @@ tr:hover { background-color: #f2f8f5; }
 
 .results-preview-wrap { max-height: 260px; overflow-y: auto; margin-top: 14px; }
 
+
+/* ============================================================
+   تحسين شامل للموبايل والكمبيوتر
+   - يمنع الصفحة من تجاوز عرض شاشة الهاتف
+   - يلغي الحاجة لسحب الصفحة أفقياً
+   - يحافظ على تصميم الكمبيوتر
+   - يحول الجداول الكبيرة إلى بطاقات قابلة للقراءة على الهاتف
+   ============================================================ */
+
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  min-width: 0 !important;
+}
+
+.container {
+  width: 100%;
+  max-width: 1380px;
+}
+
+.content-area {
+  width: 100%;
+  min-width: 0 !important;
+}
+
+/* لا تجعل الجدول نفسه يجبر الصفحة على تكبير العرض */
+.table-responsive {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* تحسين الشاشات الصغيرة */
+@media (max-width: 850px) {
+  body {
+    padding: 0 !important;
+    font-size: 14px;
+    width: 100vw;
+    min-height: 100dvh;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 8px;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .login-card {
+    width: calc(100% - 16px);
+    max-width: 450px;
+    margin: 20px auto;
+  }
+
+  .app-main-layout {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .content-area {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .tab-content,
+  .card-view,
+  .form-grid,
+  .search-box,
+  .btn-group {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-group {
+    min-width: 0;
+  }
+
+  input, select, textarea, button {
+    max-width: 100%;
+  }
+
+  /* الأزرار تستغل عرض الشاشة بدون خروجها */
+  .btn-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  button.action-btn {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  /* الجداول: لا تكبر الصفحة كلها.
+     يبقى التمرير داخل الجدول فقط عند الحاجة. */
+  .table-responsive {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  /* شاشة المدير لا تكسر عرض الهاتف */
+  #manager-classes-tabs {
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  #manager-classes-tabs .tab-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* النوافذ الداخلية تكون بحجم الشاشة */
+  .site-modal {
+    padding: 8px;
+  }
+
+  .site-modal-box {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 16px);
+    padding: 16px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 6px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group[style*="grid-column"] {
+    grid-column: auto !important;
+  }
+
+  .btn-group {
+    grid-template-columns: 1fr;
+  }
+
+  .institute-header {
+    margin-bottom: 10px;
+  }
+
+  .user-bar {
+    margin-bottom: 10px;
+  }
+
+  .card-view {
+    padding: 11px;
+  }
+
+  .search-box {
+    gap: 7px;
+  }
+
+  .search-box input,
+  .search-box button {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .result-code-form {
+    flex-direction: column;
+  }
+
+  .result-code-form button {
+    width: 100% !important;
+  }
+}
+
+/* منع أي عنصر عريض من توسيع الصفحة */
+img, svg, video, canvas, iframe {
+  max-width: 100%;
+}
+
+* {
+  max-width: 100%;
+}
+
 </style>
 </head>
 <body>
