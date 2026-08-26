@@ -3271,7 +3271,7 @@ function renderWeeklyTable() {
         <td>${weekDays["الخميس"]}</td>
         <td><strong>${studentTotal}</strong> / ${dailyMax * 5}</td>
         <td style="color:var(--primary-color); font-weight:bold;">${weeklyAverage} / ${dailyMax}</td>
-        <td class="tajweed-cell"><strong>${sRecords.reduce((sum,r)=>sum+Number(r.tajweed||0),0)}</strong> / ${10 * 5}${sRecords.some(r=>Number(r.tajweed||0)>=9) ? ' ⭐' : ''}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td>
+        <td class="tajweed-cell"><strong>${sRecords.reduce((sum,r)=>sum+Number(r.tajweed||0),0)}</strong> / ${10 * 5}${((sRecords.reduce((sum,r)=>sum+Number(r.tajweed||0),0) / (10 * 5)) * 100) > 70 ? ' ⭐' : ''}</td>
         <td><span class="badge ${badgeClass}">${attPerc}%</span></td>
       </tr>
     `;
@@ -3379,11 +3379,11 @@ function renderMonthlyReport() {
     const tajweedRecords = dailyRecords.filter(r => r.className === selectedClass && r.studentName === student && workingDays.some(w => w.dateISO === r.dateISO));
     const tajweedTotal = tajweedRecords.reduce((sum,r)=>sum+Number(r.tajweed||0),0);
     const tajweedMax = workingDays.length * 10;
-    const tajweedStar = tajweedRecords.some(r => Number(r.tajweed||0) >= 9) ? ' ⭐' : '';
+    const tajweedStar = tajweedMax > 0 && ((tajweedTotal / tajweedMax) * 100) > 70 ? ' ⭐' : '';
     rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${workingDays.length}</td>`;
     rowHtml += `<td><strong>${totalScore}</strong></td>`;
     rowHtml += `<td style="color:var(--primary-color); font-weight:bold;">${monthlyAverage}</td>`;
-    rowHtml += `<td class="tajweed-cell"><strong>${tajweedTotal}</strong> / ${tajweedMax}${tajweedStar}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td>`;
+    rowHtml += `<td class="tajweed-cell"><strong>${tajweedTotal}</strong> / ${tajweedMax}${tajweedStar}</td>`;
     rowHtml += `<td><span class="badge ${badgeAtt}">${attPerc}%</span></td>`;
     rowHtml += `<td><span class="badge ${badgeOverall}">${overallPerc}%</span></td></tr>`;
 
@@ -3423,7 +3423,7 @@ function renderManagerView() {
   } else {
     const mgrFifth = isFifthClass(currentManagerClass);
     dailyClassRecs.forEach(r => {
-      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td class="fifth-topic-col">${r.oldTopicText||'-'}</td><td class="fifth-topic-col">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` ★` : ""}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td><td class="fifth-score-col">${r.oldRevision}</td><td class="fifth-score-col">${r.newLesson}</td><td class="fifth-score-col">${r.recitation}</td><td class="fifth-score-col">${r.homework||0}</td><td class="fifth-only-col">${r.recitation1||0}</td><td class="fifth-only-col">${r.recitation2||0}</td><td class="fifth-only-col">${r.recitation3||0}</td><td class="fifth-only-col">${r.recitation4||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
+      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td class="fifth-topic-col">${r.oldTopicText||'-'}</td><td class="fifth-topic-col">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` ★` : ""}</td><td class="fifth-score-col">${r.oldRevision}</td><td class="fifth-score-col">${r.newLesson}</td><td class="fifth-score-col">${r.recitation}</td><td class="fifth-score-col">${r.homework||0}</td><td class="fifth-only-col">${r.recitation1||0}</td><td class="fifth-only-col">${r.recitation2||0}</td><td class="fifth-only-col">${r.recitation3||0}</td><td class="fifth-only-col">${r.recitation4||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
     });
   }
   document.querySelectorAll('#mgrDailyTable th.fifth-topic-col, #mgrDailyTable th.fifth-score-col, #mgrDailyTable td.fifth-topic-col, #mgrDailyTable td.fifth-score-col')
@@ -4265,7 +4265,7 @@ function studentLogin() {
         <div class="result-field-value">${stats.weekAverage} / ${stats.dailyMax}</div>
       </div>
       <div class="table-responsive student-report-table"><table><thead><tr><th>اليوم</th><th>الدرجة</th><th>التجويد</th><th>المجموع</th></tr></thead><tbody>
-        ${["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"].map(day => { const rec=stats.weekRecords.find(r=>r.dayName===day); return `<tr><td>${day}</td><td>${rec ? getDailyTotal(rec) : '-'}</td><td>${rec ? (rec.tajweed ?? 0) : '-'}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td><td>${rec ? `${getDailyTotal(rec)} / ${stats.dailyMax}` : '-'}</td></tr>`; }).join('')}
+        ${["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"].map(day => { const rec=stats.weekRecords.find(r=>r.dayName===day); return `<tr><td>${day}</td><td>${rec ? getDailyTotal(rec) : '-'}</td><td>${rec ? (rec.tajweed ?? 0) : '-'}</td><td>${rec ? `${getDailyTotal(rec)} / ${stats.dailyMax}` : '-'}</td></tr>`; }).join('')}
       </tbody></table></div>
       <div style="margin-top:10px;">
         <canvas id="studentWeekChart" height="180"></canvas>
@@ -4287,7 +4287,7 @@ function studentLogin() {
         <div class="result-field-value">${stats.monthAverage} / ${stats.dailyMax}</div>
       </div>
       <div class="table-responsive student-report-table"><table><thead><tr><th>التاريخ</th><th>الدرجة</th><th>التجويد</th><th>المجموع</th></tr></thead><tbody>
-        ${[...stats.monthRecords].sort((a,b)=>a.dateISO.localeCompare(b.dateISO)).map(rec => `<tr><td>${formatStudentDate(rec.dateISO)}</td><td>${getDailyTotal(rec)}</td><td>${rec.tajweed ?? 0}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td><td>${getDailyTotal(rec)} / ${stats.dailyMax}</td></tr>`).join('')}
+        ${[...stats.monthRecords].sort((a,b)=>a.dateISO.localeCompare(b.dateISO)).map(rec => `<tr><td>${formatStudentDate(rec.dateISO)}</td><td>${getDailyTotal(rec)}</td><td>${rec.tajweed ?? 0}</td><td>${getDailyTotal(rec)} / ${stats.dailyMax}</td></tr>`).join('')}
       </tbody></table></div>
       <div style="margin-top:10px;">
         <canvas id="studentMonthChart" height="180"></canvas>
@@ -4665,17 +4665,16 @@ function tajweedStar(type, tajweed, totalDays) {
   return (score / (total * 10)) >= 0.70 ? ' ⭐' : '';
 }
 </script>
-</body>
-</html>
 <script>
-// حماية أزرار التسجيل
 document.addEventListener('click', function(e) {
   const btn = e.target.closest('button, input[type="button"], input[type="submit"]');
   if (!btn) return;
-  const label = ((btn.innerText || btn.value || btn.getAttribute('aria-label') || '') + '').trim();
-  if (/تسجيل|حفظ التسجيل|تسجيل الدخول|تسجيل الطالب/i.test(label)) {
+  const label = String(btn.innerText || btn.value || btn.getAttribute('aria-label') || '').trim();
+  if (/تسجيل|حفظ التسجيل|تسجيل الدخول|تسجيل الطالب/.test(label)) {
     btn.style.pointerEvents = 'auto';
     btn.removeAttribute('disabled');
   }
 }, true);
 </script>
+</body>
+</html>
