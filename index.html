@@ -735,6 +735,74 @@ tr:hover { background-color: #f2f8f5; }
   border: none;
 }
 
+.student-login-link-btn {
+  width: 100%;
+  margin-top: 10px;
+  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+  border: 1px solid var(--accent-gold);
+}
+
+.student-portal-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.student-portal-stat {
+  background: #f7faf8;
+  border: 1px solid var(--accent-gold-light);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.student-portal-stat .label { color: #566573; font-size: .78em; font-weight: 700; margin-bottom: 5px; }
+.student-portal-stat .value { color: var(--primary-dark); font-size: 1.18em; font-weight: 800; }
+.student-portal-section {
+  margin-top: 14px;
+  background: #fff;
+  border: 1px solid var(--accent-gold-light);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: right;
+}
+.student-portal-section h4 {
+  margin: 0 0 10px;
+  color: var(--primary-dark);
+  font-family: 'Amiri', serif;
+  border-bottom: 1px dashed var(--accent-gold);
+  padding-bottom: 7px;
+}
+.student-readonly-note {
+  background: #eef7f2;
+  border-right: 4px solid var(--primary-color);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: .82em;
+  color: #3f5f52;
+  margin-bottom: 10px;
+}
+.student-attendance-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: 6px;
+}
+.student-attendance-day {
+  border: 1px solid #e4ece7;
+  border-radius: 8px;
+  padding: 7px 3px;
+  text-align: center;
+  font-size: .74em;
+  background: #fafcfb;
+}
+.student-attendance-day.present { background: #e8f8f1; color: var(--success-color); }
+.student-attendance-day.absent { background: #fadbd8; color: var(--danger-color); }
+.student-attendance-day.pending { color: #999; }
+@media (max-width: 430px) {
+  .student-portal-summary { grid-template-columns: 1fr; }
+  .student-attendance-grid { grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+
 .result-code-form { display: flex; gap: 8px; margin-bottom: 18px; }
 .result-code-form input {
   text-align: center;
@@ -1093,6 +1161,10 @@ function handleImgError(el, isWatermark = false) {
   <button class="action-btn result-link-btn" style="height: 44px;" onclick="showResultsScreen()">
     🎓 عرض نتيجة طالب بالكود
   </button>
+
+  <button class="action-btn student-login-link-btn" style="height: 44px;" onclick="showStudentLoginScreen()">
+    👩‍🎓 تسجيل دخول الطالب
+  </button>
 </div>
 
 <!-- شاشة عرض النتيجة بالكود (بدون تسجيل دخول) -->
@@ -1114,6 +1186,28 @@ function handleImgError(el, isWatermark = false) {
 
   <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
     🔙 رجوع لتسجيل الدخول
+  </button>
+</div>
+
+<!-- شاشة تسجيل دخول الطالب/الطالبة بالكود -->
+<div id="student-login-screen" class="login-card hidden">
+  <img src="1000054284_2.jpg" class="login-logo-img" alt="شعار معهد المجد" onerror="handleImgError(this)">
+  <h2 class="login-header-text" style="font-size:1.55em;">تسجيل دخول الطالب</h2>
+  <div class="login-subtitle">اكتب كود التسجيل الخاص بك لعرض بياناتك فقط</div>
+
+  <div class="islamic-divider"><span>❖ 🕮 ❖</span></div>
+
+  <div id="student-login-msg" class="toast-msg"></div>
+
+  <div class="result-code-form">
+    <input type="text" id="studentLoginCode" placeholder="اكتب كود التسجيل" maxlength="6" autocomplete="off">
+    <button class="action-btn btn-save" style="min-width: 110px;" onclick="studentLogin()">دخول 🔐</button>
+  </div>
+
+  <div id="studentPortalArea"></div>
+
+  <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
+    🔙 رجوع
   </button>
 </div>
 
@@ -1685,7 +1779,28 @@ function handleImgError(el, isWatermark = false) {
           </table>
         </div>
 
-        <h3 style="color: var(--primary-dark); font-family:'Amiri', serif;">جدول جميع الطلاب المسجلين</h3>
+        <div class="card-view" style="border-top:4px solid var(--accent-gold);">
+          <h3 class="card-title">🔐 أكواد تسجيل دخول الطالبة</h3>
+          <p style="font-size:.88em;color:#666;line-height:1.8;margin-top:-6px;">
+            لكل طالب/طالبة كود عشوائي خاص به. الطالب يدخل بالكود من شاشة «تسجيل دخول الطالب» ويشاهد بياناته فقط بدون أي إمكانية للتعديل.
+          </p>
+          <div id="studentCodesClassFilter" class="btn-group" style="margin-top:12px; flex-wrap:wrap;"></div>
+          <div class="btn-group" style="margin-top:10px;">
+            <button class="action-btn btn-save" onclick="generateMissingStudentCodes()">🔄 توليد أكواد الصف المحدد</button>
+            <button class="action-btn btn-export" onclick="exportStudentLoginCodes()">⬇️ تحميل الأكواد إكسل</button>
+          </div>
+          <div id="student-codes-msg" class="toast-msg"></div>
+          <div class="table-responsive">
+            <table id="studentCodesTable">
+              <thead>
+                <tr><th>الاسم</th><th>الصف</th><th>كود تسجيل الدخول</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary-dark); font-family:'Amiri', serif; margin-top:22px;">جدول جميع الطلاب المسجلين</h3>
         <div class="table-responsive">
           <table id="studentsTable">
             <thead>
@@ -1816,6 +1931,34 @@ function applyDataMapping(item) {
   return item;
 }
 
+const STUDENT_LOGIN_CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+function generateStudentLoginCode(existingCodes = new Set()) {
+  let code = '';
+  do {
+    code = '';
+    for (let i = 0; i < 6; i++) {
+      code += STUDENT_LOGIN_CODE_CHARS.charAt(Math.floor(Math.random() * STUDENT_LOGIN_CODE_CHARS.length));
+    }
+  } while (existingCodes.has(code));
+  existingCodes.add(code);
+  return code;
+}
+
+function ensureStudentLoginCodes(list) {
+  const used = new Set();
+  return list.map(s => {
+    let code = String(s.loginCode || '').trim().toUpperCase();
+    if (!code || used.has(code)) {
+      code = generateStudentLoginCode(used);
+    } else {
+      used.add(code);
+    }
+    s.loginCode = code;
+    return s;
+  });
+}
+
 function migrateOldData() {
   let tData = JSON.parse(localStorage.getItem('teachersData')) || defaultTeachers;
   let sData = JSON.parse(localStorage.getItem('studentsData')) || defaultStudents;
@@ -1831,7 +1974,7 @@ function migrateOldData() {
   }
 
   teachersData = tData.map(applyDataMapping);
-  studentsData = sData.map(applyDataMapping);
+  studentsData = ensureStudentLoginCodes(sData.map(applyDataMapping));
   dailyRecords = rData.map(applyDataMapping);
   notesData = nData.map(applyDataMapping);
   resultsData = resData;
@@ -2001,6 +2144,20 @@ function syncDataFromCloud() {
     let cloudStudents = [];
     snapshot.forEach(doc => cloudStudents.push(applyDataMapping({ id: doc.id, ...doc.data() })));
     studentsData = cloudStudents;
+    // الأكواد القديمة التي لا يوجد لها كود تُستكمل تلقائياً من حساب المدير.
+    if (currentTeacher && currentTeacher.username === 'admin') {
+      const before = JSON.stringify(studentsData.map(s => s.loginCode || ''));
+      studentsData = ensureStudentLoginCodes(studentsData);
+      const changed = before !== JSON.stringify(studentsData.map(s => s.loginCode || ''));
+      if (changed) {
+        studentsData.forEach(s => {
+          if (s.loginCode) {
+            db.collection("students").doc(s.id.toString()).set({ loginCode: s.loginCode }, { merge: true })
+              .catch(err => console.error('تعذر حفظ كود الطالب:', err));
+          }
+        });
+      }
+    }
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
     populateNotesClasses();
   updateStudentListDropdown();
@@ -2083,11 +2240,24 @@ function handleLogout() {
 function showLoginScreen() {
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('student-login-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.add('hidden');
+}
+
+function showStudentLoginScreen() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('student-login-screen').classList.remove('hidden');
+  document.getElementById('studentLoginCode').value = '';
+  document.getElementById('studentPortalArea').innerHTML = '';
+  document.getElementById('student-login-msg').style.display = 'none';
+  setTimeout(() => document.getElementById('studentLoginCode').focus(), 50);
 }
 
 function showResultsScreen() {
   document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('student-login-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.add('hidden');
   document.getElementById('results-screen').classList.remove('hidden');
   document.getElementById('resultCodeInput').value = '';
@@ -2098,6 +2268,7 @@ function showResultsScreen() {
 function showAppScreen() {
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('results-screen').classList.add('hidden');
+  document.getElementById('student-login-screen').classList.add('hidden');
   document.getElementById('app-screen').classList.remove('hidden');
 
   document.getElementById('teacher-name-display').innerText = currentTeacher.username;
@@ -2151,6 +2322,8 @@ function showAppScreen() {
     attendanceClassSelect.disabled = false;
 
     renderTeachersTable();
+    studentsData = ensureStudentLoginCodes(studentsData);
+    localStorage.setItem('studentsData', JSON.stringify(studentsData));
     renderStudentsTable();
     renderClassCards();
   } else {
@@ -3177,10 +3350,12 @@ async function addBulkStudents() {
 
   let addedCount = 0;
   for (let name of namesList) {
+    const usedCodes = new Set(studentsData.map(s => String(s.loginCode || '').trim().toUpperCase()).filter(Boolean));
     const newStudent = {
       id: 's_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       name: name,
-      className: className
+      className: className,
+      loginCode: generateStudentLoginCode(usedCodes)
     };
 
     if (useFirebase) {
@@ -3352,6 +3527,93 @@ function renderStudentsTable() {
   sortedStudents.forEach(s => {
     tbody.innerHTML += `<tr> <td style="font-weight:bold;">${s.name}</td> <td>${s.className}</td> <td> <button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </td> </tr>`;
   });
+  renderStudentCodesTable();
+}
+
+let studentCodesClassFilter = 'الكل';
+
+function renderStudentCodesClassFilter() {
+  const wrap = document.getElementById('studentCodesClassFilter');
+  if (!wrap) return;
+  const classesInUse = ALL_CLASSES.filter(c => studentsData.some(s => s.className === c));
+  const options = ['الكل', ...classesInUse];
+  wrap.innerHTML = options.map(c => {
+    const active = c === studentCodesClassFilter;
+    return `<button type="button" class="action-btn ${active ? 'btn-save' : 'btn-edit'}" style="padding:5px 12px; min-width:auto; font-size:.85em;" onclick="filterStudentCodesByClass('${c.replace(/'/g, "\\'")}')">${c}</button>`;
+  }).join('');
+}
+
+function filterStudentCodesByClass(className) {
+  studentCodesClassFilter = className;
+  renderStudentCodesTable();
+}
+
+function renderStudentCodesTable() {
+  const tbody = document.querySelector('#studentCodesTable tbody');
+  if (!tbody) return;
+  renderStudentCodesClassFilter();
+  tbody.innerHTML = '';
+  const filtered = studentCodesClassFilter === 'الكل'
+    ? studentsData
+    : studentsData.filter(s => s.className === studentCodesClassFilter);
+  const sortedStudents = [...filtered].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
+  if (!sortedStudents.length) {
+    tbody.innerHTML = '<tr><td colspan="3">لا يوجد طلاب مسجلون في هذا الصف حالياً</td></tr>';
+    return;
+  }
+  sortedStudents.forEach(s => {
+    tbody.innerHTML += `<tr>
+      <td style="font-weight:bold;">${s.name}</td>
+      <td>${s.className}</td>
+      <td><span class="badge badge-blue" style="font-size:.95em;letter-spacing:2px;">${s.loginCode || '—'}</span></td>
+    </tr>`;
+  });
+}
+
+async function generateMissingStudentCodes() {
+  if (!currentTeacher || currentTeacher.username !== 'admin') return;
+
+  const scopeClass = studentCodesClassFilter;
+  const pool = scopeClass === 'الكل' ? studentsData : studentsData.filter(s => s.className === scopeClass);
+
+  if (!pool.length) {
+    return showMessage('student-codes-msg', 'لا يوجد طلاب في هذا الصف', 'error');
+  }
+
+  const used = new Set(studentsData.map(s => String(s.loginCode || '').trim().toUpperCase()).filter(Boolean));
+  const missing = pool.filter(s => !s.loginCode);
+  if (!missing.length) {
+    renderStudentCodesTable();
+    const scopeLabel = scopeClass === 'الكل' ? '' : ` في صف ${scopeClass}`;
+    return showMessage('student-codes-msg', `كل الطلاب${scopeLabel} لديهم أكواد بالفعل ✅`, 'info');
+  }
+
+  try {
+    for (const student of missing) {
+      student.loginCode = generateStudentLoginCode(used);
+      if (useFirebase) {
+        await db.collection("students").doc(student.id.toString()).set(student, { merge: true });
+      }
+    }
+    localStorage.setItem('studentsData', JSON.stringify(studentsData));
+    renderStudentCodesTable();
+    const scopeLabel = scopeClass === 'الكل' ? '' : ` (صف ${scopeClass})`;
+    showMessage('student-codes-msg', `تم توليد ${missing.length} كود تسجيل عشوائي ورفعه على السحابة بنجاح ✅${scopeLabel}`, 'success');
+  } catch (e) {
+    console.error(e);
+    showMessage('student-codes-msg', 'تعذر حفظ الأكواد على السحابة', 'error');
+  }
+}
+
+function exportStudentLoginCodes() {
+  if (!studentsData.length) return showMessage('student-codes-msg', 'لا يوجد طلاب لتصدير الأكواد', 'error');
+  const rows = [...studentsData]
+    .sort((a,b) => a.name.localeCompare(b.name, 'ar'))
+    .map(s => ({ 'اسم الطالب/الطالبة': s.name, 'الصف': s.className, 'كود تسجيل الدخول': s.loginCode || '' }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'أكواد تسجيل الدخول');
+  XLSX.writeFile(wb, `أكواد_تسجيل_الطلاب_${new Date().toISOString().slice(0,10)}.xlsx`);
 }
 
 async function addTeacher() {
@@ -3694,6 +3956,166 @@ function renderResultsAdminSummary() {
   container.innerHTML = html;
 }
 
+function getStudentByLoginCode(code) {
+  const normalized = String(code || '').trim().toUpperCase();
+  return studentsData.find(s => String(s.loginCode || '').trim().toUpperCase() === normalized);
+}
+
+function formatStudentDate(iso) {
+  if (!iso) return '';
+  const parts = String(iso).split('-');
+  return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : iso;
+}
+
+function getCurrentLocalISODate() {
+  const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+  return new Date(Date.now() - tzoffset).toISOString().slice(0,10);
+}
+
+function getStudentPortalStats(student) {
+  const today = getCurrentLocalISODate();
+  const className = student.className;
+  const dailyMax = getDailyMax(className);
+  const todayRec = dailyRecords.find(r =>
+    r.className === className && r.studentName === student.name && r.dateISO === today
+  );
+
+  const weekKey = getWeekKey(today);
+  const weekRecords = dailyRecords.filter(r =>
+    r.className === className && r.studentName === student.name && r.dateISO && getWeekKey(r.dateISO) === weekKey
+  );
+  const weekTotal = weekRecords.reduce((sum, r) => sum + getDailyTotal(r), 0);
+  const weekAverage = weekRecords.length ? (weekTotal / weekRecords.length).toFixed(1) : '0';
+
+  const d = new Date(today + 'T00:00:00');
+  const month = d.getMonth();
+  const year = d.getFullYear();
+  const monthRecords = dailyRecords.filter(r => {
+    if (r.className !== className || r.studentName !== student.name || !r.dateISO) return false;
+    const rd = new Date(r.dateISO + 'T00:00:00');
+    return rd.getMonth() === month && rd.getFullYear() === year;
+  });
+  const monthTotal = monthRecords.reduce((sum, r) => sum + getDailyTotal(r), 0);
+  const monthAverage = monthRecords.length ? (monthTotal / monthRecords.length).toFixed(1) : '0';
+
+  const attendanceDays = [];
+  for (let i = 19; i >= 0; i--) {
+    const dd = new Date(today + 'T00:00:00');
+    dd.setDate(dd.getDate() - i);
+    const tzoffset = dd.getTimezoneOffset() * 60000;
+    const iso = new Date(dd.getTime() - tzoffset).toISOString().slice(0,10);
+    const rec = dailyRecords.find(r =>
+      r.className === className && r.studentName === student.name && r.dateISO === iso
+    );
+    attendanceDays.push({
+      iso,
+      rec,
+      status: !rec ? 'pending' : Number(rec.attendance) > 0 ? 'present' : 'absent'
+    });
+  }
+
+  return { today, dailyMax, todayRec, weekRecords, weekTotal, weekAverage, monthRecords, monthTotal, monthAverage, attendanceDays };
+}
+
+function studentLogin() {
+  const input = document.getElementById('studentLoginCode');
+  const code = input.value.trim().toUpperCase();
+  const area = document.getElementById('studentPortalArea');
+  area.innerHTML = '';
+
+  if (!code) return showMessage('student-login-msg', 'اكتب كود تسجيل الدخول أولاً', 'error');
+
+  const student = getStudentByLoginCode(code);
+  if (!student) {
+    return showMessage('student-login-msg', 'الكود غير صحيح أو غير موجود، تأكد من الكود الذي أعطته لك الإدارة', 'error');
+  }
+
+  const stats = getStudentPortalStats(student);
+  const todayValue = stats.todayRec ? `${getDailyTotal(stats.todayRec)} / ${stats.dailyMax}` : 'لم تُرصد بعد';
+  const todayAttendance = stats.todayRec ? (Number(stats.todayRec.attendance) > 0 ? 'حاضر' : 'غائب') : '—';
+
+  let html = `
+    <div class="result-student-title">${student.name}</div>
+    <div class="student-readonly-note">🔒 هذه صفحة عرض فقط — لا يمكن للطالب تعديل أو حذف أي درجة أو حضور.</div>
+
+    <div style="text-align:center;font-size:.85em;color:#666;margin-bottom:10px;">
+      الصف: <strong style="color:var(--primary-dark);">${student.className}</strong>
+    </div>
+
+    <div class="student-portal-summary">
+      <div class="student-portal-stat"><div class="label">درجة اليوم</div><div class="value">${todayValue}</div></div>
+      <div class="student-portal-stat"><div class="label">متوسط الأسبوع</div><div class="value">${stats.weekAverage} / ${stats.dailyMax}</div></div>
+      <div class="student-portal-stat"><div class="label">متوسط الشهر</div><div class="value">${stats.monthAverage} / ${stats.dailyMax}</div></div>
+    </div>
+
+    <div class="student-portal-section">
+      <h4>📝 تفاصيل اليوم — ${formatStudentDate(stats.today)}</h4>
+      <div class="result-field-card">
+        <div class="result-field-label">الحضور</div>
+        <div class="result-field-value">${todayAttendance}</div>
+      </div>
+      ${stats.todayRec ? `
+      <div class="result-field-card">
+        <div class="result-field-label">السلوك</div>
+        <div class="result-field-value">${stats.todayRec.behavior ?? 0} / 10</div>
+      </div>
+      <div class="result-field-card">
+        <div class="result-field-label">إجمالي اليوم</div>
+        <div class="result-field-value">${getDailyTotal(stats.todayRec)} / ${stats.dailyMax}</div>
+      </div>` : '<p style="text-align:center;color:#888;">لا توجد درجة مسجلة لهذا اليوم حتى الآن.</p>'}
+    </div>
+
+    <div class="student-portal-section">
+      <h4>📊 الأسبوع الحالي</h4>
+      <div class="result-field-card">
+        <div class="result-field-label">عدد أيام الرصد</div>
+        <div class="result-field-value">${stats.weekRecords.length}</div>
+      </div>
+      <div class="result-field-card">
+        <div class="result-field-label">مجموع الأسبوع</div>
+        <div class="result-field-value">${stats.weekTotal}</div>
+      </div>
+      <div class="result-field-card">
+        <div class="result-field-label">متوسط الأسبوع</div>
+        <div class="result-field-value">${stats.weekAverage} / ${stats.dailyMax}</div>
+      </div>
+    </div>
+
+    <div class="student-portal-section">
+      <h4>📅 الشهر الحالي</h4>
+      <div class="result-field-card">
+        <div class="result-field-label">عدد أيام الرصد</div>
+        <div class="result-field-value">${stats.monthRecords.length}</div>
+      </div>
+      <div class="result-field-card">
+        <div class="result-field-label">مجموع الشهر</div>
+        <div class="result-field-value">${stats.monthTotal}</div>
+      </div>
+      <div class="result-field-card">
+        <div class="result-field-label">متوسط الشهر</div>
+        <div class="result-field-value">${stats.monthAverage} / ${stats.dailyMax}</div>
+      </div>
+    </div>
+
+    <div class="student-portal-section">
+      <h4>📋 الحضور والغياب — آخر 20 يوم</h4>
+      <div class="student-attendance-grid">
+        ${stats.attendanceDays.map(day => {
+          const statusText = day.status === 'present' ? 'حاضر ✓' : day.status === 'absent' ? 'غائب ✗' : '—';
+          const cls = day.status;
+          return `<div class="student-attendance-day ${cls}">
+            <div>${formatStudentDate(day.iso).slice(0,5)}</div>
+            <strong>${statusText}</strong>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  area.innerHTML = html;
+  showMessage('student-login-msg', 'تم تسجيل الدخول بنجاح، هذه بياناتك فقط ✅', 'success');
+}
+
 function lookupResultByCode() {
   const input = document.getElementById('resultCodeInput');
   const code = input.value.trim().toUpperCase();
@@ -3851,7 +4273,7 @@ async function importTeachersFromExcel(event) {
 
 /* -------- 3) نسخة بيانات الطلاب -------- */
 const studentsHeaderMap = [
-  ['المعرف', 'id'], ['اسم الطالب', 'name'], ['الصف', 'className']
+  ['المعرف', 'id'], ['اسم الطالب', 'name'], ['الصف', 'className'], ['كود تسجيل الدخول', 'loginCode']
 ];
 
 function exportStudentsToExcel() {
@@ -3881,7 +4303,7 @@ async function importStudentsFromExcel(event) {
     );
     if (!confirmed) { event.target.value = ''; return; }
 
-    studentsData = imported;
+    studentsData = ensureStudentLoginCodes(imported);
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
 
     if (useFirebase) {
@@ -3986,7 +4408,7 @@ function restoreData(event) {
         ).then(async (confirmed) => {
           if (!confirmed) return;
           teachersData = data.teachersData;
-          studentsData = data.studentsData;
+          studentsData = ensureStudentLoginCodes(data.studentsData || []);
           dailyRecords = data.dailyRecords;
           notesData = data.notesData || [];
 
