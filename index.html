@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <!-- مكتبة تصدير الإكسل SheetJS -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <!-- مكتبات Firebase للمزامنة السحابية عبر جميع الموبايلات -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -576,6 +577,12 @@ tr:hover { background-color: #f2f8f5; }
 
 .notes-table textarea { min-width:220px; }
 .fifth-hidden { display:none !important; }
+/* ================= التجويد: درجة مستقلة عن المجموع ================= */
+.tajweed-star { color: #d4a017; font-size: 1.15em; font-weight: 900; cursor: pointer; display:inline-block; margin-right:4px; }
+.tajweed-cell { font-weight:800; color:var(--accent-gold-dark); }
+.student-report-table { margin-top:10px; }
+.student-report-table table { min-width:620px; }
+
 
 /* ================= واجهة النوافذ الداخلية ================= */
 .site-modal {
@@ -1316,6 +1323,7 @@ function handleImgError(el, isWatermark = false) {
           </div>
           <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group"><label>📖 التجويد (10) — خارج المجموع:</label><input type="number" id="tajweed" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10"></div>
           <div class="form-group fifth-score-field"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
@@ -1344,7 +1352,7 @@ function handleImgError(el, isWatermark = false) {
               <tr>
                 <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
                 <th>مقرر التلاوة</th><th class="fifth-topic-col">مقرر الماضي</th><th class="fifth-topic-col">مقرر الجديد</th>
-                <th>حضور</th><th>سلوك</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th><th>إجراء</th>
+                <th>حضور</th><th>سلوك</th><th>تجويد (خارج المجموع)</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th><th>إجراء</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1481,11 +1489,16 @@ function handleImgError(el, isWatermark = false) {
                   <th>الخميس (60)</th>
                   <th>مجموع الأسبوع (من 300)</th>
                   <th>متوسط الأسبوع (من 60)</th>
+                  <th>مجموع التجويد (خارج المجموع)</th>
                   <th>نسبة الحضور (%)</th>
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
+          </div>
+          <div class="chart-wrap" style="margin-top:18px; background:#fff; border-radius:12px; padding:14px;">
+            <h4 style="color:var(--primary-dark); margin:0 0 10px;">📈 رسم بياني لمتوسط الأسبوع لكل طالب</h4>
+            <canvas id="weeklyReportChart" height="220"></canvas>
           </div>
         </div>
       </div>
@@ -1536,9 +1549,12 @@ function handleImgError(el, isWatermark = false) {
               <tbody></tbody>
             </table>
           </div>
+          <div class="chart-wrap" style="margin-top:18px; background:#fff; border-radius:12px; padding:14px;">
+            <h4 style="color:var(--primary-dark); margin:0 0 10px;">📈 رسم بياني لمتوسط الشهر لكل طالب</h4>
+            <canvas id="monthlyReportChart" height="220"></canvas>
+          </div>
         </div>
       </div>
-
       <!-- 6. تبويب متابعة الصفوف -->
       <div id="manager-tab" class="tab-content">
         <div class="tabs" id="manager-classes-tabs" style="border-bottom: 2px solid var(--manager-color); padding-bottom: 10px; flex-direction: row; overflow-x: auto;">
@@ -1570,7 +1586,7 @@ function handleImgError(el, isWatermark = false) {
           <div class="table-responsive">
             <table id="mgrDailyTable">
               <thead>
-                <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب</th><th>م. التلاوة</th><th class="fifth-topic-col">ماضي</th><th class="fifth-topic-col">جديد</th><th>حضور</th><th>سلوك</th><th class="fifth-score-col">م.ماضي</th><th class="fifth-score-col">م.جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th></tr>
+                <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب</th><th>م. التلاوة</th><th class="fifth-topic-col">ماضي</th><th class="fifth-topic-col">جديد</th><th>حضور</th><th>سلوك</th><th>تجويد</th><th class="fifth-score-col">م.ماضي</th><th class="fifth-score-col">م.جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th></tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -1945,16 +1961,59 @@ function generateStudentLoginCode(existingCodes = new Set()) {
   return code;
 }
 
+// كود الطالب يتغير مرة واحدة فقط مع بداية كل شهر، ويظل ثابتاً طوال الشهر.
+// نستخدم مفتاح الطالب + الشهر لتوليد نفس الكود على كل الأجهزة، حتى لا يتغير
+// الكود بسبب فتح الموقع أو المزامنة أكثر من مرة.
+function getCurrentLoginCodeMonth() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function deterministicStudentLoginCode(student, monthKey) {
+  const seed = `${student.id || ''}|${student.name || ''}|${student.className || ''}|${monthKey}`;
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    h += 0x6D2B79F5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    const rnd = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    code += STUDENT_LOGIN_CODE_CHARS.charAt(Math.floor(rnd * STUDENT_LOGIN_CODE_CHARS.length));
+  }
+  return code;
+}
+
 function ensureStudentLoginCodes(list) {
+  const monthKey = getCurrentLoginCodeMonth();
   const used = new Set();
   return list.map(s => {
-    let code = String(s.loginCode || '').trim().toUpperCase();
-    if (!code || used.has(code)) {
-      code = generateStudentLoginCode(used);
+    const storedMonth = String(s.loginCodeMonth || '').trim();
+    // الأكواد القديمة التي لا تحمل تاريخاً: نحافظ عليها لأول شهر فقط، ثم يبدأ النظام
+    // نظام التغيير الشهري من الشهر التالي.
+    if (!storedMonth) {
+      s.loginCode = String(s.loginCode || '').trim().toUpperCase() || deterministicStudentLoginCode(s, monthKey);
+      s.loginCodeMonth = monthKey;
+    } else if (storedMonth !== monthKey) {
+      s.loginCode = deterministicStudentLoginCode(s, monthKey);
+      s.loginCodeMonth = monthKey;
     } else {
-      used.add(code);
+      s.loginCode = String(s.loginCode || '').trim().toUpperCase() || deterministicStudentLoginCode(s, monthKey);
     }
-    s.loginCode = code;
+
+    // منع التكرار داخل نفس الشهر بشكل حتمي قدر الإمكان.
+    let candidate = s.loginCode;
+    let attempt = 0;
+    while (used.has(candidate) && attempt < 20) {
+      candidate = deterministicStudentLoginCode({ ...s, id: `${s.id || s.name}-${attempt + 1}` }, monthKey);
+      attempt++;
+    }
+    s.loginCode = candidate;
+    used.add(candidate);
     return s;
   });
 }
@@ -2146,13 +2205,13 @@ function syncDataFromCloud() {
     studentsData = cloudStudents;
     // الأكواد القديمة التي لا يوجد لها كود تُستكمل تلقائياً من حساب المدير.
     if (currentTeacher && currentTeacher.username === 'admin') {
-      const before = JSON.stringify(studentsData.map(s => s.loginCode || ''));
+      const before = JSON.stringify(studentsData.map(s => ({code:s.loginCode || '', month:s.loginCodeMonth || ''})));
       studentsData = ensureStudentLoginCodes(studentsData);
-      const changed = before !== JSON.stringify(studentsData.map(s => s.loginCode || ''));
+      const changed = before !== JSON.stringify(studentsData.map(s => ({code:s.loginCode || '', month:s.loginCodeMonth || ''})));
       if (changed) {
         studentsData.forEach(s => {
           if (s.loginCode) {
-            db.collection("students").doc(s.id.toString()).set({ loginCode: s.loginCode }, { merge: true })
+            db.collection("students").doc(s.id.toString()).set({ loginCode: s.loginCode, loginCodeMonth: s.loginCodeMonth }, { merge: true })
               .catch(err => console.error('تعذر حفظ كود الطالب:', err));
           }
         });
@@ -2444,7 +2503,7 @@ function markAbsent() {
   const studentName = document.getElementById('studentNameSelect').value;
   if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
 
-  ['attendance', 'behavior', 'oldRevision', 'newLesson', 'recitation', 'homework', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
+  ['attendance', 'behavior', 'tajweed', 'oldRevision', 'newLesson', 'recitation', 'homework', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
     document.getElementById(id).value = 0;
   });
 
@@ -2464,6 +2523,7 @@ async function addGrade() {
 
   const attVal = document.getElementById('attendance').value;
   const behVal = document.getElementById('behavior').value;
+  const tajweedVal = document.getElementById('tajweed').value;
   const oldRVal = document.getElementById('oldRevision').value;
   const newLVal = document.getElementById('newLesson').value;
   const recVal = document.getElementById('recitation').value;
@@ -2479,17 +2539,17 @@ async function addGrade() {
   const safeHwVal = fifth ? 0 : hwVal;
 
   if (fifth) {
-    if (attVal === '' || behVal === '' || rec1Val === '' || rec2Val === '' || rec3Val === '' || rec4Val === '') {
+    if (attVal === '' || behVal === '' || tajweedVal === '' || rec1Val === '' || rec2Val === '' || rec3Val === '' || rec4Val === '') {
       return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
     }
-    if (attVal > 10 || behVal > 10 || rec1Val > 10 || rec2Val > 10 || rec3Val > 10 || rec4Val > 10) {
+    if (attVal > 10 || behVal > 10 || tajweedVal > 10 || rec1Val > 10 || rec2Val > 10 || rec3Val > 10 || rec4Val > 10) {
       return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
     }
   } else {
-    if (attVal === '' || behVal === '' || hwVal === '' || recVal === '' || oldRVal === '' || newLVal === '') {
+    if (attVal === '' || behVal === '' || tajweedVal === '' || hwVal === '' || recVal === '' || oldRVal === '' || newLVal === '') {
       return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
     }
-    if (attVal > 10 || behVal > 10 || hwVal > 10 || recVal > 10 || oldRVal > 10 || newLVal > 10) {
+    if (attVal > 10 || behVal > 10 || tajweedVal > 10 || hwVal > 10 || recVal > 10 || oldRVal > 10 || newLVal > 10) {
       return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
     }
   }
@@ -2516,6 +2576,7 @@ async function addGrade() {
     newTopicText,
     attendance: clampGrade(attVal),
     behavior: clampGrade(behVal),
+    tajweed: clampGrade(tajweedVal),
     oldRevision: clampGrade(safeOldRVal),
     newLesson: clampGrade(safeNewLVal),
     recitation: fifth ? (recitation1 + recitation2 + recitation3 + recitation4) : clampGrade(safeRecVal),
@@ -2545,7 +2606,7 @@ async function addGrade() {
 
   showMessage('app-msg', 'تم حفظ الدرجات بنجاح ✨', 'success');
 
-  ['attendance','behavior','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
+  ['attendance','behavior','tajweed','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
     if (document.getElementById(id)) document.getElementById(id).value = '';
   });
 }
@@ -2771,6 +2832,7 @@ function renderDailyTable() {
         <td class="${hiddenCls}" style="color:#e67e22;">${r.newTopicText || '-'}</td>
         <td>${r.attendance}</td>
         <td>${r.behavior}</td>
+        <td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` <span class="tajweed-star" title="درجة عالية في التجويد" onclick="showTajweedHigh('${String(r.studentName).replace(/'/g, "\\'")}', ${r.tajweed})">★</span>` : ''}</td>
         <td class="${hiddenCls}">${r.oldRevision}</td>
         <td class="${hiddenCls}">${r.newLesson}</td>
         <td class="${hiddenCls}">${r.recitation}</td>
@@ -2822,6 +2884,7 @@ async function editRecord(id) {
       </div>`}
       <div class="form-group"><label>الحضور (10):</label><input type="number" id="modalAttendance" min="0" max="10" value="${record.attendance ?? 0}"></div>
       <div class="form-group"><label>السلوك (10):</label><input type="number" id="modalBehavior" min="0" max="10" value="${record.behavior ?? 0}"></div>
+      <div class="form-group"><label>📖 التجويد (10) — خارج المجموع:</label><input type="number" id="modalTajweed" min="0" max="10" value="${record.tajweed ?? 0}"></div>
       ${fifth ? `
       <div class="form-group"><label>تلاوة 1 (10):</label><input type="number" id="modalRecitation1" min="0" max="10" value="${record.recitation1 ?? 0}"></div>
       <div class="form-group"><label>تلاوة 2 (10):</label><input type="number" id="modalRecitation2" min="0" max="10" value="${record.recitation2 ?? 0}"></div>
@@ -2840,8 +2903,8 @@ async function editRecord(id) {
     const dateISO = document.getElementById('modalRecordDate').value;
     const getVal = id => document.getElementById(id)?.value ?? '';
     const fieldIds = fifth
-      ? ['modalAttendance','modalBehavior','modalRecitation1','modalRecitation2','modalRecitation3','modalRecitation4']
-      : ['modalAttendance','modalBehavior','modalOldRevision','modalNewLesson','modalRecitation','modalHomework'];
+      ? ['modalAttendance','modalBehavior','modalTajweed','modalRecitation1','modalRecitation2','modalRecitation3','modalRecitation4']
+      : ['modalAttendance','modalBehavior','modalTajweed','modalOldRevision','modalNewLesson','modalRecitation','modalHomework'];
     const values = fieldIds.map(getVal);
 
     if (!dateISO || values.some(v => v === '')) {
@@ -2861,14 +2924,15 @@ async function editRecord(id) {
       newTopicText: fifth ? (record.newTopicText || '-') : (document.getElementById('modalNewTopicText').value.trim() || '-'),
       attendance: clampGrade(values[0]),
       behavior: clampGrade(values[1]),
-      oldRevision: fifth ? 0 : clampGrade(values[2]),
-      newLesson: fifth ? 0 : clampGrade(values[3]),
-      recitation: fifth ? (clampGrade(values[2]) + clampGrade(values[3]) + clampGrade(values[4]) + clampGrade(values[5])) : clampGrade(values[4]),
-      recitation1: fifth ? clampGrade(values[2]) : 0,
-      recitation2: fifth ? clampGrade(values[3]) : 0,
-      recitation3: fifth ? clampGrade(values[4]) : 0,
-      recitation4: fifth ? clampGrade(values[5]) : 0,
-      homework: fifth ? 0 : clampGrade(values[5])
+      tajweed: clampGrade(values[2]),
+      oldRevision: fifth ? 0 : clampGrade(values[3]),
+      newLesson: fifth ? 0 : clampGrade(values[4]),
+      recitation: fifth ? (clampGrade(values[3]) + clampGrade(values[4]) + clampGrade(values[5]) + clampGrade(values[6])) : clampGrade(values[5]),
+      recitation1: fifth ? clampGrade(values[3]) : 0,
+      recitation2: fifth ? clampGrade(values[4]) : 0,
+      recitation3: fifth ? clampGrade(values[5]) : 0,
+      recitation4: fifth ? clampGrade(values[6]) : 0,
+      homework: fifth ? 0 : clampGrade(values[6])
     };
 
     // لأن المعرّف القديم مبني على الطالب + التاريخ، نحتاج نقل المستند إذا تغيّر التاريخ.
@@ -3040,7 +3104,7 @@ function renderAttendanceTable() {
   }
 
   classStudents.forEach(student => {
-    let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
+    let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;"><button type="button" onclick='showStudentReportChart(${JSON.stringify(student)}, "monthly")' style="border:0;background:none;color:var(--primary-dark);font:inherit;font-weight:800;cursor:pointer;text-decoration:underline;text-decoration-color:var(--accent-gold);">${student}</button></td>`;
     let attendedDaysCount = 0;
 
     dates.forEach(dStr => {
@@ -3075,6 +3139,76 @@ function renderAttendanceTable() {
   });
 }
 
+let weeklyReportChartInstance = null;
+let monthlyReportChartInstance = null;
+let studentWeekChartInstance = null;
+let studentMonthChartInstance = null;
+
+function renderBarChart(canvasId, instanceSetter, instanceGetter, labels, data, label, color) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || typeof Chart === 'undefined') return;
+  const existing = instanceGetter();
+  if (existing) existing.destroy();
+  const lineColor = color || 'rgba(19, 104, 77, 1)';
+  const chart = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label, data, borderColor: lineColor, backgroundColor: lineColor, borderWidth: 3,
+        tension: 0.35, fill: false, pointRadius: 5, pointHoverRadius: 7,
+        pointBackgroundColor: lineColor, pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true, interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { enabled: true } },
+      scales: { x: { ticks: { font: { size: 10 } } }, y: { beginAtZero: true, min: 0, max: 60, ticks: { stepSize: 10 } } }
+    }
+  });
+  instanceSetter(chart);
+}
+
+function showStudentReportChart(studentName, reportType) {
+  const selectedClass = reportType === 'weekly'
+    ? document.getElementById('weeklyClassSelect').value
+    : document.getElementById('monthlyClassSelect').value;
+
+  let labels = [], data = [], title = '';
+  if (reportType === 'weekly') {
+    const weekKey = document.getElementById('weekSelect').value;
+    const records = dailyRecords.filter(r => r.className === selectedClass && r.studentName === studentName && r.dateISO && getWeekKey(r.dateISO) === weekKey);
+    const order = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+    labels = order;
+    data = order.map(day => { const r = records.find(x => x.dayName === day); return r ? getDailyTotal(r) : 0; });
+    title = `📈 الرسم البياني الأسبوعي — ${studentName}`;
+  } else {
+    const month = Number(document.getElementById('reportMonth').value);
+    const year = Number(document.getElementById('reportYear').value);
+    const workingDays = getMonthWorkingDays(year, month);
+    const records = dailyRecords.filter(r => r.className === selectedClass && r.studentName === studentName && workingDays.some(w => w.dateISO === r.dateISO)).sort((a,b) => a.dateISO.localeCompare(b.dateISO));
+    labels = records.map(r => formatStudentDate(r.dateISO).slice(0,5));
+    data = records.map(r => getDailyTotal(r));
+    title = `📈 الرسم البياني الشهري — ${studentName}`;
+  }
+
+  showSiteModal(title, `<div style="background:#fff;border-radius:12px;padding:8px 4px;"><canvas id="studentReportChartModal" height="250"></canvas></div>`, `<button class="action-btn modal-cancel" onclick="closeSiteModal()">إغلاق</button>`);
+  setTimeout(() => {
+    renderBarChart('studentReportChartModal',
+      (c) => window.studentReportModalChartInstance = c,
+      () => window.studentReportModalChartInstance,
+      labels, data, 'الدرجة اليومية');
+    const chart = window.studentReportModalChartInstance;
+    if (chart) {
+      chart.options.scales = chart.options.scales || {};
+      chart.options.scales.y = chart.options.scales.y || {};
+      chart.options.scales.y.min = 0;
+      chart.options.scales.y.max = 60;
+      chart.update();
+    }
+  }, 0);
+}
+
 function renderWeeklyTable() {
   const tbody = document.querySelector('#weeklyTable tbody');
   if(!tbody) return;
@@ -3084,7 +3218,7 @@ function renderWeeklyTable() {
   const selectedClass = document.getElementById('weeklyClassSelect').value;
 
   if(!selectedWeekKey) {
-    tbody.innerHTML = '<tr><td colspan="9">لا توجد بيانات متاحة</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10">لا توجد بيانات متاحة</td></tr>';
     return;
   }
 
@@ -3096,9 +3230,16 @@ function renderWeeklyTable() {
     .sort((a,b) => a.localeCompare(b, 'ar'));
 
   if(classStudents.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9">لا يوجد طلاب مسجلين في هذا الصف</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10">لا يوجد طلاب مسجلين في هذا الصف</td></tr>';
+    renderBarChart('weeklyReportChart',
+      (c) => weeklyReportChartInstance = c,
+      () => weeklyReportChartInstance,
+      [], [], 'متوسط الأسبوع');
     return;
   }
+
+  const chartLabels = [];
+  const chartData = [];
 
   classStudents.forEach(student => {
     let sRecords = weekRecords.filter(r => r.studentName === student);
@@ -3122,7 +3263,7 @@ function renderWeeklyTable() {
 
     tbody.innerHTML += `
       <tr>
-        <td style="font-weight:bold;">${student}</td>
+        <td style="font-weight:bold;"><button type="button" onclick='showStudentReportChart(${JSON.stringify(student)}, "weekly")' style="border:0;background:none;color:var(--primary-dark);font:inherit;font-weight:800;cursor:pointer;text-decoration:underline;text-decoration-color:var(--accent-gold);">${student}</button></td>
         <td>${weekDays["الأحد"]}</td>
         <td>${weekDays["الاثنين"]}</td>
         <td>${weekDays["الثلاثاء"]}</td>
@@ -3130,10 +3271,19 @@ function renderWeeklyTable() {
         <td>${weekDays["الخميس"]}</td>
         <td><strong>${studentTotal}</strong> / ${dailyMax * 5}</td>
         <td style="color:var(--primary-color); font-weight:bold;">${weeklyAverage} / ${dailyMax}</td>
+        <td class="tajweed-cell"><strong>${sRecords.reduce((sum,r)=>sum+Number(r.tajweed||0),0)}</strong> / ${10 * 5}${sRecords.some(r=>Number(r.tajweed||0)>=9) ? ' ⭐' : ''}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td>
         <td><span class="badge ${badgeClass}">${attPerc}%</span></td>
       </tr>
     `;
+
+    chartLabels.push(student);
+    chartData.push(parseFloat(weeklyAverage));
   });
+
+  renderBarChart('weeklyReportChart',
+    (c) => weeklyReportChartInstance = c,
+    () => weeklyReportChartInstance,
+    chartLabels, chartData, 'متوسط الأسبوع (على 5 أيام)');
 }
 
 function getMonthWorkingDays(year, month) {
@@ -3175,7 +3325,7 @@ function renderMonthlyReport() {
     let shortDate = `${parts[2]}/${parts[1]}`;
     headerHtml += `<th style="font-size:0.78em; padding:5px 3px; min-width:42px;">${wd.dayName}<br><span style="color:#666;">${shortDate}</span></th>`;
   });
-  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر (من ${dailyMax})</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
+  headerHtml += '<th>أيام الحضور</th><th>مجموع الشهر</th><th>متوسط الشهر</th><th>مجموع التجويد</th><th>نسبة الحضور</th><th>نسبة التقييم</th></tr>';
   thead.innerHTML = headerHtml;
 
   tbody.innerHTML = '';
@@ -3186,12 +3336,19 @@ function renderMonthlyReport() {
     .sort((a,b) => a.localeCompare(b, 'ar'));
 
   if(classStudents.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="${workingDays.length + 6}">لا يوجد طلاب مسجلين في هذا الصف</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${workingDays.length + 7}">لا يوجد طلاب مسجلين في هذا الصف</td></tr>`;
+    renderBarChart('monthlyReportChart',
+      (c) => monthlyReportChartInstance = c,
+      () => monthlyReportChartInstance,
+      [], [], 'متوسط الشهر');
     return;
   }
 
+  const chartLabels = [];
+  const chartData = [];
+
   classStudents.forEach(student => {
-    let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;">${student}</td>`;
+    let rowHtml = `<tr><td style="font-weight:bold; text-align:right; position: sticky; right: 0; background: white; z-index: 1;"><button type="button" onclick='showStudentReportChart(${JSON.stringify(student)}, "monthly")' style="border:0;background:none;color:var(--primary-dark);font:inherit;font-weight:800;cursor:pointer;text-decoration:underline;text-decoration-color:var(--accent-gold);">${student}</button></td>`;
     let totalScore = 0;
     let attendedDaysCount = 0;
     let recordedDaysCount = 0;
@@ -3209,22 +3366,37 @@ function renderMonthlyReport() {
       }
     });
 
-    const maxPossibleScore = recordedDaysCount * dailyMax;
-    const monthlyAverage = recordedDaysCount > 0 ? (totalScore / recordedDaysCount).toFixed(1) : 0;
+    const dailyMax = getDailyMax(selectedClass);
+    // المتوسط الشهري يُحسب على جميع أيام العمل في الشهر، حتى لو تم تسجيل يوم واحد فقط.
+    const maxPossibleScore = workingDays.length * dailyMax;
+    const monthlyAverage = workingDays.length > 0 ? (totalScore / workingDays.length).toFixed(1) : 0;
     const overallPerc = maxPossibleScore > 0 ? ((totalScore / maxPossibleScore) * 100).toFixed(1) : 0;
-    const attPerc = recordedDaysCount > 0 ? ((attendedDaysCount / recordedDaysCount) * 100).toFixed(1) : 0;
+    const attPerc = workingDays.length > 0 ? ((attendedDaysCount / workingDays.length) * 100).toFixed(1) : 0;
 
     const badgeOverall = parseFloat(overallPerc) >= 75 ? 'badge-green' : 'badge-yellow';
     const badgeAtt = parseFloat(attPerc) >= 75 ? 'badge-blue' : 'badge-yellow';
 
-    rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${recordedDaysCount || workingDays.length}</td>`;
+    const tajweedRecords = dailyRecords.filter(r => r.className === selectedClass && r.studentName === student && workingDays.some(w => w.dateISO === r.dateISO));
+    const tajweedTotal = tajweedRecords.reduce((sum,r)=>sum+Number(r.tajweed||0),0);
+    const tajweedMax = workingDays.length * 10;
+    const tajweedStar = tajweedRecords.some(r => Number(r.tajweed||0) >= 9) ? ' ⭐' : '';
+    rowHtml += `<td><strong>${attendedDaysCount}</strong> / ${workingDays.length}</td>`;
     rowHtml += `<td><strong>${totalScore}</strong></td>`;
     rowHtml += `<td style="color:var(--primary-color); font-weight:bold;">${monthlyAverage}</td>`;
+    rowHtml += `<td class="tajweed-cell"><strong>${tajweedTotal}</strong> / ${tajweedMax}${tajweedStar}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td>`;
     rowHtml += `<td><span class="badge ${badgeAtt}">${attPerc}%</span></td>`;
     rowHtml += `<td><span class="badge ${badgeOverall}">${overallPerc}%</span></td></tr>`;
 
     tbody.innerHTML += rowHtml;
+
+    chartLabels.push(student);
+    chartData.push(parseFloat(monthlyAverage));
   });
+
+  renderBarChart('monthlyReportChart',
+    (c) => monthlyReportChartInstance = c,
+    () => monthlyReportChartInstance,
+    chartLabels, chartData, 'متوسط الشهر (على جميع أيام العمل)', 'rgba(21, 101, 192, 0.65)');
 }
 
 function switchManagerClass(className, event) {
@@ -3251,7 +3423,7 @@ function renderManagerView() {
   } else {
     const mgrFifth = isFifthClass(currentManagerClass);
     dailyClassRecs.forEach(r => {
-      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td class="fifth-topic-col">${r.oldTopicText||'-'}</td><td class="fifth-topic-col">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td class="fifth-score-col">${r.oldRevision}</td><td class="fifth-score-col">${r.newLesson}</td><td class="fifth-score-col">${r.recitation}</td><td class="fifth-score-col">${r.homework||0}</td><td class="fifth-only-col">${r.recitation1||0}</td><td class="fifth-only-col">${r.recitation2||0}</td><td class="fifth-only-col">${r.recitation3||0}</td><td class="fifth-only-col">${r.recitation4||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
+      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td class="fifth-topic-col">${r.oldTopicText||'-'}</td><td class="fifth-topic-col">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` ★` : ""}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td><td class="fifth-score-col">${r.oldRevision}</td><td class="fifth-score-col">${r.newLesson}</td><td class="fifth-score-col">${r.recitation}</td><td class="fifth-score-col">${r.homework||0}</td><td class="fifth-only-col">${r.recitation1||0}</td><td class="fifth-only-col">${r.recitation2||0}</td><td class="fifth-only-col">${r.recitation3||0}</td><td class="fifth-only-col">${r.recitation4||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
     });
   }
   document.querySelectorAll('#mgrDailyTable th.fifth-topic-col, #mgrDailyTable th.fifth-score-col, #mgrDailyTable td.fifth-topic-col, #mgrDailyTable td.fifth-score-col')
@@ -3580,7 +3752,7 @@ async function generateMissingStudentCodes() {
     return showMessage('student-codes-msg', 'لا يوجد طلاب في هذا الصف', 'error');
   }
 
-  const used = new Set(studentsData.map(s => String(s.loginCode || '').trim().toUpperCase()).filter(Boolean));
+  const monthKey = getCurrentLoginCodeMonth();
   const missing = pool.filter(s => !s.loginCode);
   if (!missing.length) {
     renderStudentCodesTable();
@@ -3590,7 +3762,8 @@ async function generateMissingStudentCodes() {
 
   try {
     for (const student of missing) {
-      student.loginCode = generateStudentLoginCode(used);
+      student.loginCode = deterministicStudentLoginCode(student, monthKey);
+      student.loginCodeMonth = monthKey;
       if (useFirebase) {
         await db.collection("students").doc(student.id.toString()).set(student, { merge: true });
       }
@@ -3985,7 +4158,7 @@ function getStudentPortalStats(student) {
     r.className === className && r.studentName === student.name && r.dateISO && getWeekKey(r.dateISO) === weekKey
   );
   const weekTotal = weekRecords.reduce((sum, r) => sum + getDailyTotal(r), 0);
-  const weekAverage = weekRecords.length ? (weekTotal / weekRecords.length).toFixed(1) : '0';
+  const weekAverage = (weekTotal / 5).toFixed(1);
 
   const d = new Date(today + 'T00:00:00');
   const month = d.getMonth();
@@ -3996,7 +4169,11 @@ function getStudentPortalStats(student) {
     return rd.getMonth() === month && rd.getFullYear() === year;
   });
   const monthTotal = monthRecords.reduce((sum, r) => sum + getDailyTotal(r), 0);
-  const monthAverage = monthRecords.length ? (monthTotal / monthRecords.length).toFixed(1) : '0';
+  // متوسط الشهر يُحسب على جميع أيام الدراسة في الشهر (الأحد إلى الخميس)،
+  // وليس على عدد الأيام التي تم تسجيلها فقط. مثال: تسجيل يوم واحد فقط
+  // بدرجة 60 في شهر به 20 يوم دراسة = 3 / 60.
+  const monthWorkingDays = getMonthWorkingDays(year, month);
+  const monthAverage = monthWorkingDays.length ? (monthTotal / monthWorkingDays.length).toFixed(1) : '0';
 
   const attendanceDays = [];
   for (let i = 19; i >= 0; i--) {
@@ -4015,6 +4192,10 @@ function getStudentPortalStats(student) {
   }
 
   return { today, dailyMax, todayRec, weekRecords, weekTotal, weekAverage, monthRecords, monthTotal, monthAverage, attendanceDays };
+}
+
+function showTajweedHigh(studentName, score) {
+  showSiteModal('⭐ تميّز في التجويد', `<div style="text-align:center;font-size:1.05em;line-height:2;"><strong>${studentName}</strong><br>حصل على درجة عالية في التجويد: <strong style="color:var(--accent-gold-dark);">${score} / 10</strong> ⭐</div>`, '<button class="action-btn btn-save" onclick="closeSiteModal()">حسناً</button>');
 }
 
 function studentLogin() {
@@ -4060,6 +4241,10 @@ function studentLogin() {
         <div class="result-field-value">${stats.todayRec.behavior ?? 0} / 10</div>
       </div>
       <div class="result-field-card">
+        <div class="result-field-label">📖 التجويد — خارج المجموع</div>
+        <div class="result-field-value">${stats.todayRec.tajweed ?? 0} / 10 ${Number(stats.todayRec.tajweed || 0) >= 9 ? '★' : ''}</div>
+      </div>
+      <div class="result-field-card">
         <div class="result-field-label">إجمالي اليوم</div>
         <div class="result-field-value">${getDailyTotal(stats.todayRec)} / ${stats.dailyMax}</div>
       </div>` : '<p style="text-align:center;color:#888;">لا توجد درجة مسجلة لهذا اليوم حتى الآن.</p>'}
@@ -4079,6 +4264,12 @@ function studentLogin() {
         <div class="result-field-label">متوسط الأسبوع</div>
         <div class="result-field-value">${stats.weekAverage} / ${stats.dailyMax}</div>
       </div>
+      <div class="table-responsive student-report-table"><table><thead><tr><th>اليوم</th><th>الدرجة</th><th>التجويد</th><th>المجموع</th></tr></thead><tbody>
+        ${["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس"].map(day => { const rec=stats.weekRecords.find(r=>r.dayName===day); return `<tr><td>${day}</td><td>${rec ? getDailyTotal(rec) : '-'}</td><td>${rec ? (rec.tajweed ?? 0) : '-'}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td><td>${rec ? `${getDailyTotal(rec)} / ${stats.dailyMax}` : '-'}</td></tr>`; }).join('')}
+      </tbody></table></div>
+      <div style="margin-top:10px;">
+        <canvas id="studentWeekChart" height="180"></canvas>
+      </div>
     </div>
 
     <div class="student-portal-section">
@@ -4094,6 +4285,12 @@ function studentLogin() {
       <div class="result-field-card">
         <div class="result-field-label">متوسط الشهر</div>
         <div class="result-field-value">${stats.monthAverage} / ${stats.dailyMax}</div>
+      </div>
+      <div class="table-responsive student-report-table"><table><thead><tr><th>التاريخ</th><th>الدرجة</th><th>التجويد</th><th>المجموع</th></tr></thead><tbody>
+        ${[...stats.monthRecords].sort((a,b)=>a.dateISO.localeCompare(b.dateISO)).map(rec => `<tr><td>${formatStudentDate(rec.dateISO)}</td><td>${getDailyTotal(rec)}</td><td>${rec.tajweed ?? 0}${tajweedStar(\'daily\', tajweed, 1)}${tajweedStar(\'weekly\', tajweedTotal, reportDays)}${tajweedStar(\'monthly\', tajweedTotal, reportDays)}</td><td>${getDailyTotal(rec)} / ${stats.dailyMax}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div style="margin-top:10px;">
+        <canvas id="studentMonthChart" height="180"></canvas>
       </div>
     </div>
 
@@ -4113,6 +4310,25 @@ function studentLogin() {
   `;
 
   area.innerHTML = html;
+
+  const weekDayOrder = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"];
+  const weekDayScores = weekDayOrder.map(dayName => {
+    const rec = stats.weekRecords.find(r => r.dayName === dayName);
+    return rec ? getDailyTotal(rec) : 0;
+  });
+  renderBarChart('studentWeekChart',
+    (c) => studentWeekChartInstance = c,
+    () => studentWeekChartInstance,
+    weekDayOrder, weekDayScores, 'الدرجة اليومية');
+
+  const sortedMonthRecords = [...stats.monthRecords].sort((a,b) => a.dateISO.localeCompare(b.dateISO));
+  const monthLabels = sortedMonthRecords.map(r => formatStudentDate(r.dateISO).slice(0,5));
+  const monthScores = sortedMonthRecords.map(r => getDailyTotal(r));
+  renderBarChart('studentMonthChart',
+    (c) => studentMonthChartInstance = c,
+    () => studentMonthChartInstance,
+    monthLabels, monthScores, 'الدرجة اليومية', 'rgba(21, 101, 192, 0.65)');
+
   showMessage('student-login-msg', 'تم تسجيل الدخول بنجاح، هذه بياناتك فقط ✅', 'success');
 }
 
@@ -4158,7 +4374,7 @@ function lookupResultByCode() {
 const gradesHeaderMap = [
   ['المعرف', 'id'], ['المدرس', 'teacherName'], ['الصف', 'className'], ['التاريخ', 'dateISO'], ['اليوم', 'dayName'],
   ['اسم الطالب', 'studentName'], ['موضوع التلاوة', 'recitationTopic'], ['الماضي (نص)', 'oldTopicText'], ['الجديد (نص)', 'newTopicText'],
-  ['الحضور', 'attendance'], ['السلوك', 'behavior'], ['درجة الماضي', 'oldRevision'], ['درجة الجديد', 'newLesson'],
+  ['الحضور', 'attendance'], ['السلوك', 'behavior'], ['التجويد', 'tajweed'], ['درجة الماضي', 'oldRevision'], ['درجة الجديد', 'newLesson'],
   ['درجة التلاوة', 'recitation'], ['الواجب', 'homework'],
   ['تلاوة 1', 'recitation1'], ['تلاوة 2', 'recitation2'], ['تلاوة 3', 'recitation3'], ['تلاوة 4', 'recitation4']
 ];
@@ -4181,6 +4397,7 @@ async function importGradesFromExcel(event) {
       ...r,
       attendance: r.attendance === '' ? 0 : Number(r.attendance),
       behavior: r.behavior === '' ? 0 : Number(r.behavior),
+      tajweed: r.tajweed === '' || r.tajweed == null ? 0 : Number(r.tajweed),
       oldRevision: r.oldRevision === '' ? 0 : Number(r.oldRevision),
       newLesson: r.newLesson === '' ? 0 : Number(r.newLesson),
       recitation: r.recitation === '' ? 0 : Number(r.recitation),
@@ -4439,6 +4656,26 @@ function restoreData(event) {
   };
   reader.readAsText(file);
 }
+
+function tajweedStar(type, tajweed, totalDays) {
+  const score = Number(tajweed || 0);
+  if (type === 'daily') return score > 8 ? ' ⭐' : '';
+  const total = Number(totalDays || 0);
+  if (total <= 0) return '';
+  return (score / (total * 10)) >= 0.70 ? ' ⭐' : '';
+}
 </script>
 </body>
 </html>
+<script>
+// حماية أزرار التسجيل
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('button, input[type="button"], input[type="submit"]');
+  if (!btn) return;
+  const label = ((btn.innerText || btn.value || btn.getAttribute('aria-label') || '') + '').trim();
+  if (/تسجيل|حفظ التسجيل|تسجيل الدخول|تسجيل الطالب/i.test(label)) {
+    btn.style.pointerEvents = 'auto';
+    btn.removeAttribute('disabled');
+  }
+}, true);
+</script>
