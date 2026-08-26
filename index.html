@@ -583,6 +583,86 @@ tr:hover { background-color: #f2f8f5; }
 .student-report-table { margin-top:10px; }
 .student-report-table table { min-width:620px; }
 
+.top-students-switcher {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:12px 0 16px;
+}
+.top-period-btn {
+  border:1px solid var(--accent-gold-light);
+  background:#fff;
+  color:var(--primary-dark);
+  border-radius:10px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-family:inherit;
+  font-weight:800;
+}
+.top-period-btn.active {
+  background:var(--primary-color);
+  color:#fff;
+}
+.top-period-title {
+  text-align:center;
+  font-weight:800;
+  color:var(--primary-dark);
+  margin:8px 0 14px;
+}
+
+.top-student-card {
+  background:#fff;
+  border:1px solid var(--accent-gold-light);
+  border-top:4px solid var(--accent-gold);
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 4px 14px rgba(19,104,77,.07);
+}
+.top-student-card h4 {
+  margin:0 0 10px;
+  color:var(--primary-dark);
+  font-family:'Amiri',serif;
+  font-size:1.2em;
+  border-bottom:1px dashed var(--accent-gold);
+  padding-bottom:8px;
+}
+.top-student-row {
+  display:grid;
+  grid-template-columns:42px 1fr auto;
+  gap:8px;
+  align-items:center;
+  padding:9px 4px;
+  border-bottom:1px solid #eef2f0;
+}
+.top-student-row:last-child { border-bottom:0; }
+.top-student-rank {
+  font-weight:900;
+  color:var(--accent-gold-dark);
+  text-align:center;
+  font-size:1.1em;
+}
+.top-student-name {
+  color:var(--primary-dark);
+  font-weight:800;
+}
+.top-student-meta {
+  font-size:.76em;
+  color:#68757d;
+  margin-top:2px;
+}
+.top-student-score {
+  text-align:center;
+  font-weight:900;
+  color:var(--primary-color);
+  white-space:nowrap;
+}
+.top-student-empty {
+  color:#888;
+  text-align:center;
+  padding:16px 8px;
+}
+
+
 
 /* ================= واجهة النوافذ الداخلية ================= */
 .site-modal {
@@ -1269,6 +1349,7 @@ function handleImgError(el, isWatermark = false) {
           </div>
         </div>
 
+        <button class="tab-btn" id="top-students-tab-btn" onclick="switchTab('top-students-tab', event)">🏆 الأوائل</button>
         <button class="tab-btn" id="notes-tab-btn" onclick="switchTab('notes-tab', event)">🗒️ الملاحظات</button>
         <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: var(--warning-color); color: white;" onclick="switchTab('admin-tab', event)">⚙️ لوحة الإدارة</button>
         <button class="tab-btn hidden" id="backup-tab-btn" style="background-color: var(--primary-dark); color: white;" onclick="switchTab('backup-tab', event)">💾 النسخة الاحتياطية</button>
@@ -1634,6 +1715,62 @@ function handleImgError(el, isWatermark = false) {
         </div>
       </div>
 
+
+      <!-- تبويب الأوائل -->
+      <div id="top-students-tab" class="tab-content">
+        <div class="card-view">
+          <h3 class="card-title">🏆 الأوائل</h3>
+
+          <div class="top-students-switcher">
+            <button class="top-period-btn active" onclick="switchTopPeriod('day', event)">📅 أوائل اليوم</button>
+            <button class="top-period-btn" onclick="switchTopPeriod('week', event)">📆 أوائل الأسبوع</button>
+            <button class="top-period-btn" onclick="switchTopPeriod('month', event)">🗓️ أوائل الشهر</button>
+          </div>
+
+          <div id="top-period-day" class="top-period-panel">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>التاريخ:</label>
+                <input type="date" id="topStudentsDayDate" onchange="renderTopStudents()">
+              </div>
+            </div>
+          </div>
+
+          <div id="top-period-week" class="top-period-panel hidden">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>الأسبوع:</label>
+                <input type="date" id="topStudentsWeekDate" onchange="renderTopStudents()">
+              </div>
+            </div>
+          </div>
+
+          <div id="top-period-month" class="top-period-panel hidden">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>الشهر:</label>
+                <select id="topStudentsMonth" onchange="renderTopStudents()">
+                  <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
+                  <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
+                  <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
+                  <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>السنة:</label>
+                <input type="number" id="topStudentsYear" value="2026" onchange="renderTopStudents()">
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="action-btn btn-save" onclick="renderTopStudents()">🔄 تحديث الأوائل</button>
+          </div>
+
+          <div id="topStudentsPeriodTitle" class="top-period-title"></div>
+          <div id="topStudentsClasses" class="classes-cards-grid"></div>
+        </div>
+      </div>
 
       <!-- 7. تبويب الملاحظات -->
       <div id="notes-tab" class="tab-content">
@@ -2063,6 +2200,15 @@ window.onload = function() {
 
   document.getElementById('reportMonth').value = new Date().getMonth();
   document.getElementById('reportYear').value = new Date().getFullYear();
+  if (document.getElementById('topStudentsMonth')) {
+    const now = new Date();
+    const todayISO = getISODateOnly(now);
+    document.getElementById('topStudentsDayDate').value = todayISO;
+    document.getElementById('topStudentsWeekDate').value = todayISO;
+    document.getElementById('topStudentsMonth').value = now.getMonth();
+    document.getElementById('topStudentsYear').value = now.getFullYear();
+  }
+  renderTopStudents();
   document.getElementById('mgrMonthSelect').value = new Date().getMonth();
   document.getElementById('mgrYearSelect').value = new Date().getFullYear();
 
@@ -2228,6 +2374,7 @@ function syncDataFromCloud() {
     }
     renderManagerView();
     renderMonthlyReport();
+    renderTopStudents();
     renderAttendanceTable();
     renderClassStatusTable();
   });
@@ -2250,6 +2397,7 @@ function syncDataFromCloud() {
     populateWeeks();
     renderWeeklyTable();
     renderMonthlyReport();
+    renderTopStudents();
     renderManagerView();
     renderAttendanceTable();
     renderClassStatusTable();
@@ -2367,6 +2515,7 @@ function showAppScreen() {
     adminBtn.classList.remove('hidden');
     backupBtn.classList.remove('hidden');
     managerBtn.classList.remove('hidden');
+    document.getElementById('top-students-tab-btn').classList.remove('hidden');
     weeklyBtn.classList.remove('hidden');
     reportsBtn.classList.remove('hidden');
     reportsMenuWrap.classList.remove('hidden');
@@ -2458,6 +2607,7 @@ function switchTab(tabId, event) {
   else if (tabId === 'weekly-tab') { populateWeeks(); renderWeeklyTable(); }
   else if (tabId === 'reports-tab') renderMonthlyReport();
   else if (tabId === 'manager-tab') renderManagerView();
+  else if (tabId === 'top-students-tab') renderTopStudents();
   else if (tabId === 'notes-tab') { populateNotesClasses(); updateNotesStudentList(); renderNotesTable(); }
   else if (tabId === 'admin-tab') { renderClassCards(); renderStudentsTable(); renderTeachersTable(); renderResultsAdminSummary(); }
 }
@@ -3397,6 +3547,163 @@ function renderMonthlyReport() {
     (c) => monthlyReportChartInstance = c,
     () => monthlyReportChartInstance,
     chartLabels, chartData, 'متوسط الشهر (على جميع أيام العمل)', 'rgba(21, 101, 192, 0.65)');
+}
+
+
+
+  const topStudentsTabBtn = document.getElementById('top-students-tab-btn');
+  if (topStudentsTabBtn) topStudentsTabBtn.classList.remove('hidden');
+
+function switchTopPeriod(period, event) {
+  document.querySelectorAll('#top-students-tab .top-period-btn').forEach(btn => btn.classList.remove('active'));
+  if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+  document.querySelectorAll('#top-students-tab .top-period-panel').forEach(panel => panel.classList.add('hidden'));
+  const panel = document.getElementById(`top-period-${period}`);
+  if (panel) panel.classList.remove('hidden');
+
+  renderTopStudents();
+}
+
+function getTopStudentsPeriod() {
+  const active = document.querySelector('#top-students-tab .top-period-btn.active');
+  if (!active) return 'day';
+  if (active.textContent.includes('الأسبوع')) return 'week';
+  if (active.textContent.includes('الشهر')) return 'month';
+  return 'day';
+}
+
+function getISODateOnly(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function getTopPeriodDates() {
+  const period = getTopStudentsPeriod();
+  const dayEl = document.getElementById('topStudentsDayDate');
+  const weekEl = document.getElementById('topStudentsWeekDate');
+  const monthEl = document.getElementById('topStudentsMonth');
+  const yearEl = document.getElementById('topStudentsYear');
+
+  if (period === 'day') {
+    const dateISO = dayEl?.value || getISODateOnly(new Date());
+    return { period, dates: [dateISO], title: `أوائل يوم ${dateISO}` };
+  }
+
+  if (period === 'week') {
+    const selectedISO = weekEl?.value || getISODateOnly(new Date());
+    const selected = new Date(selectedISO + 'T00:00:00');
+    const day = selected.getDay(); // الأحد = 0
+    const start = new Date(selected);
+    start.setDate(selected.getDate() - day);
+
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      dates.push(getISODateOnly(d));
+    }
+
+    return {
+      period,
+      dates,
+      title: `أوائل الأسبوع (${dates[0]} إلى ${dates[6]})`
+    };
+  }
+
+  const month = Number(monthEl?.value ?? new Date().getMonth());
+  const year = Number(yearEl?.value ?? new Date().getFullYear());
+  const workingDays = getMonthWorkingDays(year, month) || [];
+  const dates = workingDays.map(w => w.dateISO);
+
+  const monthName = monthEl?.options[monthEl.selectedIndex]?.text || '';
+  return {
+    period,
+    dates,
+    title: `أوائل شهر ${monthName} ${year}`
+  };
+}
+
+function renderTopStudents() {
+  const container = document.getElementById('topStudentsClasses');
+  const titleEl = document.getElementById('topStudentsPeriodTitle');
+  if (!container) return;
+
+  const { period, dates, title } = getTopPeriodDates();
+  if (titleEl) titleEl.textContent = title;
+
+  if (!dates.length) {
+    container.innerHTML = '<div class="card-view"><div class="top-student-empty">لا توجد أيام مسجلة في الفترة المحددة.</div></div>';
+    return;
+  }
+
+  const periodRecords = dailyRecords.filter(r => r.dateISO && dates.includes(r.dateISO));
+  container.innerHTML = '';
+
+  ALL_CLASSES.forEach(className => {
+    const classStudents = studentsData.filter(s => s.className === className);
+
+    const studentsRanked = classStudents.map(student => {
+      const records = periodRecords.filter(r =>
+        r.className === className && r.studentName === student.name
+      );
+
+      const totalScore = records.reduce((sum, r) => sum + getDailyTotal(r), 0);
+
+      // المقارنة تكون على متوسط الدرجات في الفترة حتى لا يحصل طالب لديه
+      // أيام مسجلة أكثر على أفضلية غير عادلة.
+      const average = dates.length ? totalScore / dates.length : 0;
+
+      // التجويد يستخدم ككاسر تعادل فقط.
+      const tajweedTotal = records.reduce((sum, r) => sum + Number(r.tajweed || 0), 0);
+      const tajweedAverage = dates.length ? tajweedTotal / dates.length : 0;
+
+      return {
+        name: student.name,
+        average,
+        tajweedAverage,
+        recordsCount: records.length
+      };
+    }).sort((a, b) => {
+      const scoreDiff = b.average - a.average;
+      if (Math.abs(scoreDiff) > 0.000001) return scoreDiff;
+
+      const tajweedDiff = b.tajweedAverage - a.tajweedAverage;
+      if (Math.abs(tajweedDiff) > 0.000001) return tajweedDiff;
+
+      return a.name.localeCompare(b.name, 'ar');
+    });
+
+    const topThree = studentsRanked.slice(0, 3);
+
+    const rows = topThree.length ? topThree.map((student, index) => {
+      const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+      const tajweedPercent = ((student.tajweedAverage / 10) * 100).toFixed(1);
+
+      return `
+        <div class="top-student-row">
+          <div class="top-student-rank">${rankIcon}</div>
+          <div>
+            <div class="top-student-name">${student.name}</div>
+            <div class="top-student-meta">
+              متوسط الدرجات: ${student.average.toFixed(1)} / ${getDailyMax(className)}
+              — التجويد: ${student.tajweedAverage.toFixed(1)} / 10 (${tajweedPercent}%)
+            </div>
+          </div>
+          <div class="top-student-score">${student.average.toFixed(1)}</div>
+        </div>
+      `;
+    }).join('') : '<div class="top-student-empty">لا يوجد طلاب مسجلون في هذا الفصل.</div>';
+
+    container.innerHTML += `
+      <div class="top-student-card">
+        <h4>📚 ${className}</h4>
+        ${rows}
+      </div>
+    `;
+  });
 }
 
 function switchManagerClass(className, event) {
