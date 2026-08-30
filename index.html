@@ -610,6 +610,23 @@ tr:hover { background-color: #f2f8f5; }
   margin:8px 0 14px;
 }
 
+
+.student-grade-box.grade-red {
+  background:#f8d7da !important;
+  color:#842029 !important;
+  border-color:#f1aeb5 !important;
+}
+.student-grade-box.grade-yellow {
+  background:#fff3cd !important;
+  color:#664d03 !important;
+  border-color:#ffda6a !important;
+}
+.student-grade-box.grade-green {
+  background:#d1e7dd !important;
+  color:#0f5132 !important;
+  border-color:#a3cfbb !important;
+}
+
 .top-student-card {
   background:#fff;
   border:1px solid var(--accent-gold-light);
@@ -1184,6 +1201,8 @@ img, svg, video, canvas, iframe {
   }
 }
 
+.fifth-hide-on-class { }
+body.fifth-selected .fifth-hide-on-class { display: none !important; }
 </style>
 </head>
 <body>
@@ -1390,29 +1409,19 @@ function handleImgError(el, isWatermark = false) {
             <select id="studentNameSelect" style="font-weight: bold; color: var(--primary-dark);">
             </select>
           </div>
-          <div class="form-group" style="grid-column: span 2;">
-            <label style="color: var(--primary-color);">📖 مقرر التلاوة (اختياري):</label>
-            <input type="text" id="recitationTopic" placeholder="اكتب مقرر التلاوة أو الملاحظة..." style="border-color: var(--primary-color);">
-          </div>
-          <div class="form-group fifth-topic-field" style="grid-column: span 2;">
-            <label>🔁 مقرر الماضي تسميع (اختياري):</label>
-            <input type="text" id="oldTopicText" placeholder="اكتب المقرر أو الملاحظة...">
-          </div>
-          <div class="form-group fifth-topic-field" style="grid-column: span 2;">
-            <label>✨ مقرر الجديد حفظ (اختياري):</label>
-            <input type="text" id="newTopicText" placeholder="اكتب المقرر أو الملاحظة...">
-          </div>
-          <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group"><label>📖 التجويد (10) — خارج المجموع:</label><input type="number" id="tajweed" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-score-field"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-score-field"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-score-field"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-score-field"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-only-field"><label>تلاوة 1 (10):</label><input type="number" id="recitation1" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-only-field"><label>تلاوة 2 (10):</label><input type="number" id="recitation2" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-only-field"><label>تلاوة 3 (10):</label><input type="number" id="recitation3" min="0" max="10" placeholder="0-10"></div>
-          <div class="form-group fifth-only-field"><label>تلاوة 4 (10):</label><input type="number" id="recitation4" min="0" max="10" placeholder="0-10"></div>
+          <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10" placeholder="0-10" required></div>
+          <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10" required></div>
+          <div class="form-group fifth-hide-on-class"><label>الجديد (10):</label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10" required></div>
+          <div class="form-group fifth-hide-on-class"><label>مقرر الجديد اليوم <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="newTopicToday" placeholder="اكتب مقرر الجديد اليوم..." required></div>
+          <div class="form-group fifth-hide-on-class"><label>مقرر الجديد الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="newTopicRecited" placeholder="اكتب مقرر الجديد الذي تم تسميعه..." required></div>
+          <div class="form-group fifth-hide-on-class"><label>الماضي (10):</label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10" required></div>
+          <div class="form-group fifth-hide-on-class"><label>مقرر الماضي اليوم <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="oldTopicToday" placeholder="اكتب مقرر الماضي اليوم..." required></div>
+          <div class="form-group fifth-hide-on-class"><label>مقرر الماضي الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="oldTopicRecited" placeholder="اكتب مقرر الماضي الذي تم تسميعه..." required></div>
+          <div class="form-group"><label>التلاوة (10):</label><input type="number" id="recitation" min="0" max="10" placeholder="0-10" required></div>
+          <div class="form-group"><label>مقرر التلاوة اليوم <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="recitationTopicToday" placeholder="اكتب مقرر التلاوة اليوم..." style="border-color:var(--primary-color);" required></div>
+          <div class="form-group"><label>مقرر التلاوة الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="recitationTopicRecited" placeholder="اكتب مقرر التلاوة الذي تم تسميعه..." style="border-color:var(--primary-color);" required></div>
+          <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10" required></div>
+          <div class="form-group"><label>📖 التجويد (10) — خارج المجموع:</label><input type="number" id="tajweed" min="0" max="10" placeholder="0-10" required></div>
         </div>
 
         <div class="btn-group">
@@ -1431,10 +1440,9 @@ function handleImgError(el, isWatermark = false) {
           <table id="gradesTable">
             <thead>
               <tr>
-                <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
-                <th>مقرر التلاوة</th><th class="fifth-topic-col">مقرر الماضي</th><th class="fifth-topic-col">مقرر الجديد</th>
-                <th>حضور</th><th>سلوك</th><th>تجويد (خارج المجموع)</th><th class="fifth-score-col">ماضي</th><th class="fifth-score-col">جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th><th>إجراء</th>
-              </tr>
+                 <th>التاريخ واليوم</th><th>الصف</th><th>المعلم/المعلمة</th><th>اسم الطالب</th>
+                 <th>الحضور</th><th>السلوك</th><th class="fifth-hide-on-class">الجديد</th><th class="fifth-hide-on-class">مقرر الجديد اليوم</th><th class="fifth-hide-on-class">مقرر الجديد الذي تم تسميعه</th><th class="fifth-hide-on-class">الماضي</th><th class="fifth-hide-on-class">مقرر الماضي اليوم</th><th class="fifth-hide-on-class">مقرر الماضي الذي تم تسميعه</th><th>التلاوة</th><th>مقرر التلاوة اليوم</th><th>مقرر التلاوة الذي تم تسميعه</th><th>الواجب</th><th>التجويد (خارج المجموع)</th><th>المجموع</th><th>إجراء</th>
+                </tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -1667,7 +1675,7 @@ function handleImgError(el, isWatermark = false) {
           <div class="table-responsive">
             <table id="mgrDailyTable">
               <thead>
-                <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب</th><th>م. التلاوة</th><th class="fifth-topic-col">ماضي</th><th class="fifth-topic-col">جديد</th><th>حضور</th><th>سلوك</th><th>تجويد</th><th class="fifth-score-col">م.ماضي</th><th class="fifth-score-col">م.جديد</th><th class="fifth-score-col">تلاوة</th><th class="fifth-score-col">واجب</th><th class="fifth-only-col">تلاوة 1</th><th class="fifth-only-col">تلاوة 2</th><th class="fifth-only-col">تلاوة 3</th><th class="fifth-only-col">تلاوة 4</th><th>المجموع</th></tr>
+                <tr><th>التاريخ</th><th>المعلم/المعلمة</th><th>اسم الطالب</th><th>حضور</th><th>سلوك</th><th>جديد</th><th>م. الجديد</th><th>ماضي</th><th>م. الماضي</th><th>تلاوة</th><th>م. التلاوة</th><th>واجب</th><th>تجويد</th><th>المجموع</th></tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -2171,7 +2179,15 @@ function migrateOldData() {
 
   teachersData = tData.map(applyDataMapping);
   studentsData = ensureStudentLoginCodes(sData.map(applyDataMapping));
-  dailyRecords = rData.map(applyDataMapping);
+  dailyRecords = rData.map(applyDataMapping).map(r => {
+    // تحويل سجلات الصف الخامس القديمة من تلاوة 1-4 إلى خانة تلاوة واحدة.
+    if (isFifthClass(r.className)) {
+      const legacySum = Number(r.recitation1 || 0) + Number(r.recitation2 || 0) + Number(r.recitation3 || 0) + Number(r.recitation4 || 0);
+      if ((!Number(r.recitation) || Number(r.recitation) === 0) && legacySum > 0) r.recitation = Math.min(10, legacySum);
+      r.recitation1 = 0; r.recitation2 = 0; r.recitation3 = 0; r.recitation4 = 0;
+    }
+    return r;
+  });
   notesData = nData.map(applyDataMapping);
   resultsData = resData;
 
@@ -2623,12 +2639,7 @@ function getDailyMax(className) {
 
 function updateFifthGradeFields(className) {
   const fifth = isFifthClass(className);
-  document.querySelectorAll('.fifth-topic-field,.fifth-score-field').forEach(el => {
-    el.classList.toggle('fifth-hidden', fifth);
-  });
-  document.querySelectorAll('.fifth-only-field').forEach(el => {
-    el.classList.toggle('fifth-hidden', !fifth);
-  });
+  document.body.classList.toggle('fifth-selected', fifth);
   const saveBtn = document.querySelector('#daily-tab .btn-save');
   if (saveBtn) saveBtn.innerText = `💾 حفظ الدرجات (من ${getDailyMax(className)})`;
 }
@@ -2641,22 +2652,19 @@ function clampGrade(val) {
 }
 
 function getDailyTotal(record) {
-  if (isFifthClass(record.className)) {
-    return (record.attendance || 0) + (record.behavior || 0) + (record.recitation1 || 0) +
-           (record.recitation2 || 0) + (record.recitation3 || 0) + (record.recitation4 || 0);
-  }
-  return (record.attendance || 0) + (record.behavior || 0) + (record.oldRevision || 0) + 
-         (record.newLesson || 0) + (record.recitation || 0) + (record.homework || 0);
+  return (record.attendance || 0) + (record.behavior || 0) + (record.newLesson || 0) +
+         (record.oldRevision || 0) + (record.recitation || 0) + (record.homework || 0);
 }
 
 function markAbsent() {
   const studentName = document.getElementById('studentNameSelect').value;
   if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
 
-  ['attendance', 'behavior', 'tajweed', 'oldRevision', 'newLesson', 'recitation', 'homework', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
+  ['attendance','behavior','tajweed','oldRevision','newLesson','recitation','homework'].forEach(id => {
     document.getElementById(id).value = 0;
   });
-
+  // الغياب لا يحتاج مقررات، لكن addGrade يشترطها؛ نضع علامة واضحة بدلاً من تركها فارغة.
+  ['newTopicToday','newTopicRecited','oldTopicToday','oldTopicRecited','recitationTopicToday','recitationTopicRecited'].forEach(id => { if (document.getElementById(id)) document.getElementById(id).value = '-'; });
   addGrade();
 }
 
@@ -2665,11 +2673,13 @@ async function addGrade() {
   const dateISO = document.getElementById('recordDate').value;
   const dayName = document.getElementById('daySelect').value;
   const studentName = document.getElementById('studentNameSelect').value;
-  const fifth = isFifthClass(className);
 
-  const recitationTopic = document.getElementById('recitationTopic').value.trim() || '-';
-  const oldTopicText = document.getElementById('oldTopicText').value.trim() || '-';
-  const newTopicText = document.getElementById('newTopicText').value.trim() || '-';
+  const newTopicToday = document.getElementById('newTopicToday').value.trim();
+  const newTopicRecited = document.getElementById('newTopicRecited').value.trim();
+  const oldTopicToday = document.getElementById('oldTopicToday').value.trim();
+  const oldTopicRecited = document.getElementById('oldTopicRecited').value.trim();
+  const recitationTopicToday = document.getElementById('recitationTopicToday').value.trim();
+  const recitationTopicRecited = document.getElementById('recitationTopicRecited').value.trim();
 
   const attVal = document.getElementById('attendance').value;
   const behVal = document.getElementById('behavior').value;
@@ -2678,41 +2688,24 @@ async function addGrade() {
   const newLVal = document.getElementById('newLesson').value;
   const recVal = document.getElementById('recitation').value;
   const hwVal = document.getElementById('homework').value;
-  const rec1Val = document.getElementById('recitation1').value;
-  const rec2Val = document.getElementById('recitation2').value;
-  const rec3Val = document.getElementById('recitation3').value;
-  const rec4Val = document.getElementById('recitation4').value;
-
-  const safeOldRVal = fifth ? 0 : oldRVal;
-  const safeNewLVal = fifth ? 0 : newLVal;
-  const safeRecVal = fifth ? 0 : recVal;
-  const safeHwVal = fifth ? 0 : hwVal;
-
-  if (fifth) {
-    if (attVal === '' || behVal === '' || tajweedVal === '' || rec1Val === '' || rec2Val === '' || rec3Val === '' || rec4Val === '') {
-      return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
-    }
-    if (attVal > 10 || behVal > 10 || tajweedVal > 10 || rec1Val > 10 || rec2Val > 10 || rec3Val > 10 || rec4Val > 10) {
-      return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
-    }
-  } else {
-    if (attVal === '' || behVal === '' || tajweedVal === '' || hwVal === '' || recVal === '' || oldRVal === '' || newLVal === '') {
-      return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
-    }
-    if (attVal > 10 || behVal > 10 || tajweedVal > 10 || hwVal > 10 || recVal > 10 || oldRVal > 10 || newLVal > 10) {
-      return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
-    }
-  }
 
   if (!studentName) return showMessage('app-msg', 'يرجى اختيار الاسم بشكل صحيح', 'error');
   if (!dateISO) return showMessage('app-msg', 'يرجى اختيار التاريخ بشكل صحيح', 'error');
 
-  const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
+  const fifth = isFifthClass(className);
+  if (!recitationTopicToday || !recitationTopicRecited || (!fifth && (!oldTopicToday || !oldTopicRecited || !newTopicToday || !newTopicRecited))) {
+    return showMessage('app-msg', fifth ? 'عذراً، يجب إدخال مقرر التلاوة اليوم ومقرر التلاوة الذي تم تسميعه!' : 'عذراً، يجب إدخال مقرري الجديد والماضي (اليوم والتسميع) ومقرري التلاوة (اليوم والتسميع)!', 'error');
+  }
 
-  const recitation1 = fifth ? clampGrade(rec1Val) : 0;
-  const recitation2 = fifth ? clampGrade(rec2Val) : 0;
-  const recitation3 = fifth ? clampGrade(rec3Val) : 0;
-  const recitation4 = fifth ? clampGrade(rec4Val) : 0;
+  const values = fifth ? [attVal, behVal, tajweedVal, recVal, hwVal] : [attVal, behVal, tajweedVal, oldRVal, newLVal, recVal, hwVal];
+  if (values.some(v => v === '')) {
+    return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
+  }
+  if (values.some(v => Number(v) < 0 || Number(v) > 10)) {
+    return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
+  }
+
+  const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
 
   const record = {
     id: uniqueId,
@@ -2721,20 +2714,27 @@ async function addGrade() {
     dateISO,
     dayName,
     studentName,
-    recitationTopic,
-    oldTopicText,
-    newTopicText,
+    recitationTopicToday,
+    recitationTopicRecited,
+    // الحقول القديمة محفوظة للتوافق مع السجلات السابقة
+    recitationTopic: recitationTopicToday,
+    oldTopicToday: fifth ? '' : oldTopicToday,
+    oldTopicRecited: fifth ? '' : oldTopicRecited,
+    newTopicToday: fifth ? '' : newTopicToday,
+    newTopicRecited: fifth ? '' : newTopicRecited,
+    oldTopicText: fifth ? '' : oldTopicToday,
+    newTopicText: fifth ? '' : newTopicToday,
     attendance: clampGrade(attVal),
     behavior: clampGrade(behVal),
     tajweed: clampGrade(tajweedVal),
-    oldRevision: clampGrade(safeOldRVal),
-    newLesson: clampGrade(safeNewLVal),
-    recitation: fifth ? (recitation1 + recitation2 + recitation3 + recitation4) : clampGrade(safeRecVal),
-    recitation1,
-    recitation2,
-    recitation3,
-    recitation4,
-    homework: clampGrade(safeHwVal)
+    oldRevision: fifth ? 0 : clampGrade(oldRVal),
+    newLesson: fifth ? 0 : clampGrade(newLVal),
+    recitation: clampGrade(recVal),
+    homework: clampGrade(hwVal),
+    recitation1: 0,
+    recitation2: 0,
+    recitation3: 0,
+    recitation4: 0
   };
 
   if (useFirebase) {
@@ -2743,7 +2743,6 @@ async function addGrade() {
     const idx = dailyRecords.findIndex(r => r.id === record.id);
     if(idx > -1) dailyRecords[idx] = record;
     else dailyRecords.push(record);
-    
     localStorage.setItem('dailyRecords', JSON.stringify(dailyRecords));
     populateWeeks();
     renderDailyTable();
@@ -2756,11 +2755,10 @@ async function addGrade() {
 
   showMessage('app-msg', 'تم حفظ الدرجات بنجاح ✨', 'success');
 
-  ['attendance','behavior','tajweed','oldRevision','newLesson','recitation', 'homework', 'oldTopicText', 'newTopicText', 'recitationTopic', 'recitation1', 'recitation2', 'recitation3', 'recitation4'].forEach(id => {
+  ['attendance','behavior','tajweed','oldRevision','newLesson','recitation','homework','oldTopicText','newTopicText','recitationTopic','newTopicToday','newTopicRecited','oldTopicToday','oldTopicRecited','recitationTopicToday','recitationTopicRecited'].forEach(id => {
     if (document.getElementById(id)) document.getElementById(id).value = '';
   });
 }
-
 
 /* ================= أدوات واجهة الموقع الداخلية ================= */
 function closeSiteModal() {
@@ -2923,39 +2921,30 @@ async function deleteRecord(id) {
 
 function renderDailyTable() {
   const tbody = document.querySelector('#gradesTable tbody');
+  if (!tbody) return;
   tbody.innerHTML = '';
 
   const searchKeyword = (document.getElementById('searchDaily')?.value || '').toLowerCase();
   const filterDate = document.getElementById('filterDateDaily').value;
 
   const filteredRecords = dailyRecords.filter(r => {
-    const matchesClass = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل') 
+    const matchesClass = (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل')
       ? true : r.className === currentTeacher.assignedClass;
-    const matchesSearch = r.studentName.toLowerCase().includes(searchKeyword);
+    const matchesSearch = String(r.studentName || '').toLowerCase().includes(searchKeyword);
     const matchesDate = filterDate ? (r.dateISO === filterDate) : true;
     return matchesClass && matchesSearch && matchesDate;
   });
 
   filteredRecords.sort((a,b) => {
-    let dateDiff = new Date(b.dateISO) - new Date(a.dateISO);
+    const dateDiff = new Date(b.dateISO) - new Date(a.dateISO);
     if(dateDiff !== 0) return dateDiff;
-    return a.studentName.localeCompare(b.studentName, 'ar');
+    return String(a.studentName || '').localeCompare(String(b.studentName || ''), 'ar');
   });
 
   if (filteredRecords.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="19">لا توجد سجلات مطابقة</td></tr>';
-    document.querySelectorAll('#gradesTable thead th.fifth-topic-col, #gradesTable thead th.fifth-score-col')
-      .forEach(th => th.classList.remove('fifth-hidden'));
-    document.querySelectorAll('#gradesTable thead th.fifth-only-col')
-      .forEach(th => th.classList.add('fifth-hidden'));
+    tbody.innerHTML = '<tr><td colspan="16">لا توجد سجلات مطابقة</td></tr>';
     return;
   }
-
-  const hideOldNewCols = filteredRecords.every(r => isFifthClass(r.className));
-  document.querySelectorAll('#gradesTable thead th.fifth-topic-col, #gradesTable thead th.fifth-score-col')
-    .forEach(th => th.classList.toggle('fifth-hidden', hideOldNewCols));
-  document.querySelectorAll('#gradesTable thead th.fifth-only-col')
-    .forEach(th => th.classList.toggle('fifth-hidden', !hideOldNewCols));
 
   filteredRecords.forEach(r => {
     const total = getDailyTotal(r);
@@ -2967,30 +2956,25 @@ function renderDailyTable() {
          </div>`
       : '-';
 
-    const hiddenCls = hideOldNewCols ? ' fifth-hidden' : '';
-    const onlyHiddenCls = hideOldNewCols ? '' : ' fifth-hidden';
-    const fifthRow = isFifthClass(r.className);
-
     tbody.innerHTML += `
       <tr>
         <td><strong>${r.dayName || '-'}</strong><br><small style="color:#7f8c8d;">${r.dateISO}</small></td>
         <td>${r.className}</td>
         <td>${r.teacherName}</td>
         <td style="font-weight:bold;">${r.studentName}</td>
-        <td style="color:var(--primary-color); font-weight:bold;">${r.recitationTopic || '-'}</td>
-        <td class="${hiddenCls}" style="color:#27ae60;">${r.oldTopicText || '-'}</td>
-        <td class="${hiddenCls}" style="color:#e67e22;">${r.newTopicText || '-'}</td>
-        <td>${r.attendance}</td>
-        <td>${r.behavior}</td>
-        <td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` <span class="tajweed-star" title="درجة عالية في التجويد" onclick="showTajweedHigh('${String(r.studentName).replace(/'/g, "\\'")}', ${r.tajweed})">★</span>` : ''}</td>
-        <td class="${hiddenCls}">${r.oldRevision}</td>
-        <td class="${hiddenCls}">${r.newLesson}</td>
-        <td class="${hiddenCls}">${r.recitation}</td>
-        <td class="${hiddenCls}">${r.homework || 0}</td>
-        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation1 || 0) : '-'}</td>
-        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation2 || 0) : '-'}</td>
-        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation3 || 0) : '-'}</td>
-        <td class="${onlyHiddenCls}">${fifthRow ? (r.recitation4 || 0) : '-'}</td>
+        <td>${r.attendance ?? 0}</td>
+        <td>${r.behavior ?? 0}</td>
+        <td class="fifth-hide-on-class">${r.newLesson ?? 0}</td>
+        <td class="fifth-hide-on-class" style="color:#e67e22;">${r.newTopicToday || r.newTopicText || '-'}</td>
+        <td class="fifth-hide-on-class" style="color:#d35400;">${r.newTopicRecited || '-'}</td>
+        <td class="fifth-hide-on-class">${r.oldRevision ?? 0}</td>
+        <td class="fifth-hide-on-class" style="color:#27ae60;">${r.oldTopicToday || r.oldTopicText || '-'}</td>
+        <td class="fifth-hide-on-class" style="color:#229954;">${r.oldTopicRecited || '-'}</td>
+        <td>${r.recitation ?? 0}</td>
+        <td style="color:var(--primary-color); font-weight:bold;">${r.recitationTopicToday || r.recitationTopic || '-'}</td>
+        <td style="color:#7d3c98; font-weight:bold;">${r.recitationTopicRecited || '-'}</td>
+        <td>${r.homework ?? 0}</td>
+        <td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` <span class="tajweed-star" title="درجة عالية في التجويد" onclick="showTajweedHigh('${String(r.studentName).replace(/'/g, "\'")}', ${r.tajweed})">★</span>` : ''}</td>
         <td><strong style="color:var(--primary-dark);">${total}</strong> / ${getDailyMax(r.className)}</td>
         <td>${actionBtns}</td>
       </tr>
@@ -2998,15 +2982,12 @@ function renderDailyTable() {
   });
 }
 
-
 async function editRecord(id) {
   const record = dailyRecords.find(r => r.id.toString() === id.toString());
   if (!record) return;
 
   const allowed = currentTeacher.username === 'admin' || currentTeacher.username === record.teacherName;
   if (!allowed) return showMessage('app-msg', 'ليس لديك صلاحية تعديل هذا السجل', 'error');
-
-  const fifth = isFifthClass(record.className);
 
   showSiteModal(
     '✏️ تعديل درجات الطالب',
@@ -3019,31 +3000,19 @@ async function editRecord(id) {
         <label>الطالب:</label>
         <input value="${String(record.studentName || '').replace(/"/g,'&quot;')}" readonly>
       </div>
-      <div class="form-group full">
-        <label>مقرر التلاوة:</label>
-        <input id="modalRecitationTopic" value="${String(record.recitationTopic || '').replace(/"/g,'&quot;')}">
-      </div>
-      ${fifth ? '' : `
-      <div class="form-group full">
-        <label>مقرر الماضي:</label>
-        <input id="modalOldTopicText" value="${String(record.oldTopicText || '').replace(/"/g,'&quot;')}">
-      </div>
-      <div class="form-group full">
-        <label>مقرر الجديد:</label>
-        <input id="modalNewTopicText" value="${String(record.newTopicText || '').replace(/"/g,'&quot;')}">
-      </div>`}
       <div class="form-group"><label>الحضور (10):</label><input type="number" id="modalAttendance" min="0" max="10" value="${record.attendance ?? 0}"></div>
       <div class="form-group"><label>السلوك (10):</label><input type="number" id="modalBehavior" min="0" max="10" value="${record.behavior ?? 0}"></div>
-      <div class="form-group"><label>📖 التجويد (10) — خارج المجموع:</label><input type="number" id="modalTajweed" min="0" max="10" value="${record.tajweed ?? 0}"></div>
-      ${fifth ? `
-      <div class="form-group"><label>تلاوة 1 (10):</label><input type="number" id="modalRecitation1" min="0" max="10" value="${record.recitation1 ?? 0}"></div>
-      <div class="form-group"><label>تلاوة 2 (10):</label><input type="number" id="modalRecitation2" min="0" max="10" value="${record.recitation2 ?? 0}"></div>
-      <div class="form-group"><label>تلاوة 3 (10):</label><input type="number" id="modalRecitation3" min="0" max="10" value="${record.recitation3 ?? 0}"></div>
-      <div class="form-group"><label>تلاوة 4 (10):</label><input type="number" id="modalRecitation4" min="0" max="10" value="${record.recitation4 ?? 0}"></div>` : `
-      <div class="form-group"><label>الماضي (10):</label><input type="number" id="modalOldRevision" min="0" max="10" value="${record.oldRevision ?? 0}"></div>
-      <div class="form-group"><label>الجديد (10):</label><input type="number" id="modalNewLesson" min="0" max="10" value="${record.newLesson ?? 0}"></div>
+      <div class="form-group fifth-hide-on-class"><label>الجديد (10):</label><input type="number" id="modalNewLesson" min="0" max="10" value="${record.newLesson ?? 0}"></div>
+      <div class="form-group fifth-hide-on-class"><label>مقرر الجديد اليوم <span style="color:var(--danger-color);">*</span>:</label><input id="modalNewTopicToday" value="${String(record.newTopicToday || record.newTopicText || '').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group fifth-hide-on-class"><label>مقرر الجديد الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input id="modalNewTopicRecited" value="${String(record.newTopicRecited || '').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group fifth-hide-on-class"><label>الماضي (10):</label><input type="number" id="modalOldRevision" min="0" max="10" value="${record.oldRevision ?? 0}"></div>
+      <div class="form-group fifth-hide-on-class"><label>مقرر الماضي اليوم <span style="color:var(--danger-color);">*</span>:</label><input id="modalOldTopicToday" value="${String(record.oldTopicToday || record.oldTopicText || '').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group fifth-hide-on-class"><label>مقرر الماضي الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input id="modalOldTopicRecited" value="${String(record.oldTopicRecited || '').replace(/"/g,'&quot;')}"></div>
       <div class="form-group"><label>التلاوة (10):</label><input type="number" id="modalRecitation" min="0" max="10" value="${record.recitation ?? 0}"></div>
-      <div class="form-group"><label>الواجب (10):</label><input type="number" id="modalHomework" min="0" max="10" value="${record.homework ?? 0}"></div>`}
+      <div class="form-group"><label>مقرر التلاوة اليوم <span style="color:var(--danger-color);">*</span>:</label><input id="modalRecitationTopicToday" value="${String(record.recitationTopicToday || record.recitationTopic || '').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group"><label>مقرر التلاوة الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input id="modalRecitationTopicRecited" value="${String(record.recitationTopicRecited || '').replace(/"/g,'&quot;')}"></div>
+      <div class="form-group"><label>الواجب (10):</label><input type="number" id="modalHomework" min="0" max="10" value="${record.homework ?? 0}"></div>
+      <div class="form-group"><label>📖 التجويد (10) — خارج المجموع:</label><input type="number" id="modalTajweed" min="0" max="10" value="${record.tajweed ?? 0}"></div>
     </div>`,
     `<button class="action-btn modal-success" id="saveRecordEditBtn">💾 حفظ التعديل</button>
      <button class="action-btn modal-cancel" id="cancelRecordEditBtn">إلغاء</button>`
@@ -3052,13 +3021,21 @@ async function editRecord(id) {
   document.getElementById('saveRecordEditBtn').onclick = async () => {
     const dateISO = document.getElementById('modalRecordDate').value;
     const getVal = id => document.getElementById(id)?.value ?? '';
-    const fieldIds = fifth
-      ? ['modalAttendance','modalBehavior','modalTajweed','modalRecitation1','modalRecitation2','modalRecitation3','modalRecitation4']
-      : ['modalAttendance','modalBehavior','modalTajweed','modalOldRevision','modalNewLesson','modalRecitation','modalHomework'];
-    const values = fieldIds.map(getVal);
+    const newTopicToday = getVal('modalNewTopicToday').trim();
+    const newTopicRecited = getVal('modalNewTopicRecited').trim();
+    const oldTopicToday = getVal('modalOldTopicToday').trim();
+    const oldTopicRecited = getVal('modalOldTopicRecited').trim();
+    const recitationTopicToday = getVal('modalRecitationTopicToday').trim();
+    const recitationTopicRecited = getVal('modalRecitationTopicRecited').trim();
+    const values = fifth
+      ? [getVal('modalAttendance'), getVal('modalBehavior'), getVal('modalRecitation'), getVal('modalHomework'), getVal('modalTajweed')]
+      : [getVal('modalAttendance'), getVal('modalBehavior'), getVal('modalNewLesson'), getVal('modalOldRevision'), getVal('modalRecitation'), getVal('modalHomework'), getVal('modalTajweed')];
 
     if (!dateISO || values.some(v => v === '')) {
       return showSiteError('يرجى إدخال التاريخ وجميع الدرجات.');
+    }
+    if (!recitationTopicToday || !recitationTopicRecited || (!fifth && (!newTopicToday || !newTopicRecited || !oldTopicToday || !oldTopicRecited))) {
+      return showSiteError(fifth ? 'يرجى إدخال مقرري التلاوة: اليوم والتسميع.' : 'يرجى إدخال مقررات الجديد والماضي والتلاوة: اليوم والتسميع.');
     }
     if (values.some(v => Number(v) < 0 || Number(v) > 10)) {
       return showSiteError('كل درجة يجب أن تكون بين 0 و10.');
@@ -3069,31 +3046,34 @@ async function editRecord(id) {
       ...record,
       dateISO,
       dayName: dayNames[new Date(dateISO + 'T00:00:00').getDay()],
-      recitationTopic: document.getElementById('modalRecitationTopic').value.trim() || '-',
-      oldTopicText: fifth ? (record.oldTopicText || '-') : (document.getElementById('modalOldTopicText').value.trim() || '-'),
-      newTopicText: fifth ? (record.newTopicText || '-') : (document.getElementById('modalNewTopicText').value.trim() || '-'),
+      recitationTopicToday,
+      recitationTopicRecited,
+      recitationTopic: recitationTopicToday,
+      oldTopicToday: fifth ? '' : oldTopicToday,
+      oldTopicRecited: fifth ? '' : oldTopicRecited,
+      newTopicToday: fifth ? '' : newTopicToday,
+      newTopicRecited: fifth ? '' : newTopicRecited,
+      oldTopicText: fifth ? '' : oldTopicToday,
+      newTopicText: fifth ? '' : newTopicToday,
       attendance: clampGrade(values[0]),
       behavior: clampGrade(values[1]),
-      tajweed: clampGrade(values[2]),
+      newLesson: fifth ? 0 : clampGrade(values[2]),
       oldRevision: fifth ? 0 : clampGrade(values[3]),
-      newLesson: fifth ? 0 : clampGrade(values[4]),
-      recitation: fifth ? (clampGrade(values[3]) + clampGrade(values[4]) + clampGrade(values[5]) + clampGrade(values[6])) : clampGrade(values[5]),
-      recitation1: fifth ? clampGrade(values[3]) : 0,
-      recitation2: fifth ? clampGrade(values[4]) : 0,
-      recitation3: fifth ? clampGrade(values[5]) : 0,
-      recitation4: fifth ? clampGrade(values[6]) : 0,
-      homework: fifth ? 0 : clampGrade(values[6])
+      recitation: fifth ? clampGrade(values[2]) : clampGrade(values[4]),
+      homework: fifth ? clampGrade(values[3]) : clampGrade(values[5]),
+      tajweed: fifth ? clampGrade(values[4]) : clampGrade(values[6]),
+      recitation1: 0,
+      recitation2: 0,
+      recitation3: 0,
+      recitation4: 0
     };
 
-    // لأن المعرّف القديم مبني على الطالب + التاريخ، نحتاج نقل المستند إذا تغيّر التاريخ.
     const newId = `rec_${record.studentName}_${dateISO}`.replace(/\s+/g, '_');
     updatedRecord.id = newId;
 
     try {
       if (useFirebase) {
-        if (newId !== record.id) {
-          await db.collection("dailyRecords").doc(record.id.toString()).delete();
-        }
+        if (newId !== record.id) await db.collection("dailyRecords").doc(record.id.toString()).delete();
         await db.collection("dailyRecords").doc(newId).set(updatedRecord);
       } else {
         const idx = dailyRecords.findIndex(r => r.id.toString() === record.id.toString());
@@ -3109,6 +3089,7 @@ async function editRecord(id) {
       }
 
       closeSiteModal();
+      updateFifthGradeFields(document.getElementById('classSelect')?.value || record.className);
       showMessage('app-msg', 'تم تعديل الدرجات بنجاح ✨', 'success');
     } catch (e) {
       showSiteError('تعذر حفظ التعديل. حاول مرة أخرى.');
@@ -3626,6 +3607,19 @@ function getTopPeriodDates() {
   };
 }
 
+
+function getStudentGradeColorClass(value, maxValue) {
+  const max = Number(maxValue);
+  const score = Number(value);
+  if (!Number.isFinite(score) || !Number.isFinite(max) || max <= 0) return 'grade-red';
+
+  const percent = (score / max) * 100;
+
+  if (percent > 70) return 'grade-green';
+  if (percent > 50) return 'grade-yellow';
+  return 'grade-red';
+}
+
 function renderTopStudents() {
   const container = document.getElementById('topStudentsClasses');
   const titleEl = document.getElementById('topStudentsPeriodTitle');
@@ -3726,17 +3720,22 @@ function renderManagerView() {
                                   .sort((a,b) => a.studentName.localeCompare(b.studentName, 'ar'));
 
   if(dailyClassRecs.length === 0) {
-    tDaily.innerHTML = '<tr><td colspan="17">لا توجد درجات مسجلة لهذا الصف اليوم.</td></tr>';
+    tDaily.innerHTML = '<tr><td colspan="14">لا توجد درجات مسجلة لهذا الصف اليوم.</td></tr>';
   } else {
     const mgrFifth = isFifthClass(currentManagerClass);
     dailyClassRecs.forEach(r => {
-      tDaily.innerHTML += `<tr><td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td><td style="color:var(--primary-color);">${r.recitationTopic||'-'}</td><td class="fifth-topic-col">${r.oldTopicText||'-'}</td><td class="fifth-topic-col">${r.newTopicText||'-'}</td><td>${r.attendance}</td><td>${r.behavior}</td><td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` ★` : ""}</td><td class="fifth-score-col">${r.oldRevision}</td><td class="fifth-score-col">${r.newLesson}</td><td class="fifth-score-col">${r.recitation}</td><td class="fifth-score-col">${r.homework||0}</td><td class="fifth-only-col">${r.recitation1||0}</td><td class="fifth-only-col">${r.recitation2||0}</td><td class="fifth-only-col">${r.recitation3||0}</td><td class="fifth-only-col">${r.recitation4||0}</td><td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td></tr>`;
+            tDaily.innerHTML += `<tr>
+        <td>${r.dateISO}</td><td>${r.teacherName}</td><td style="font-weight:bold;">${r.studentName}</td>
+        <td>${r.attendance ?? 0}</td><td>${r.behavior ?? 0}</td><td class="fifth-hide-on-class">${r.newLesson ?? 0}</td>
+        <td class="fifth-hide-on-class" style="color:#e67e22;">${r.newTopicToday || r.newTopicText || '-'}</td><td class="fifth-hide-on-class">${r.newTopicRecited || '-'}</td><td class="fifth-hide-on-class">${r.oldRevision ?? 0}</td>
+        <td class="fifth-hide-on-class" style="color:#27ae60;">${r.oldTopicToday || r.oldTopicText || '-'}</td><td class="fifth-hide-on-class">${r.oldTopicRecited || '-'}</td><td>${r.recitation ?? 0}</td>
+        <td style="color:var(--primary-color);">${r.recitationTopicToday || r.recitationTopic || '-'}</td><td style="color:#7d3c98;">${r.recitationTopicRecited || '-'}</td><td>${r.homework ?? 0}</td>
+        <td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` ★` : ""}</td>
+        <td><strong style="color:var(--primary-dark);">${getDailyTotal(r)}</strong> / ${getDailyMax(r.className)}</td>
+      </tr>`
     });
   }
-  document.querySelectorAll('#mgrDailyTable th.fifth-topic-col, #mgrDailyTable th.fifth-score-col, #mgrDailyTable td.fifth-topic-col, #mgrDailyTable td.fifth-score-col')
-    .forEach(el => el.classList.toggle('fifth-hidden', isFifthClass(currentManagerClass)));
-  document.querySelectorAll('#mgrDailyTable th.fifth-only-col, #mgrDailyTable td.fifth-only-col')
-    .forEach(el => el.classList.toggle('fifth-hidden', !isFifthClass(currentManagerClass)));
+
 
   const tWeekly = document.querySelector('#mgrWeeklyTable tbody');
   tWeekly.innerHTML = '';
@@ -4680,10 +4679,9 @@ function lookupResultByCode() {
 /* -------- 1) نسخة درجات الرصد اليومي (كل السنين) -------- */
 const gradesHeaderMap = [
   ['المعرف', 'id'], ['المدرس', 'teacherName'], ['الصف', 'className'], ['التاريخ', 'dateISO'], ['اليوم', 'dayName'],
-  ['اسم الطالب', 'studentName'], ['موضوع التلاوة', 'recitationTopic'], ['الماضي (نص)', 'oldTopicText'], ['الجديد (نص)', 'newTopicText'],
-  ['الحضور', 'attendance'], ['السلوك', 'behavior'], ['التجويد', 'tajweed'], ['درجة الماضي', 'oldRevision'], ['درجة الجديد', 'newLesson'],
-  ['درجة التلاوة', 'recitation'], ['الواجب', 'homework'],
-  ['تلاوة 1', 'recitation1'], ['تلاوة 2', 'recitation2'], ['تلاوة 3', 'recitation3'], ['تلاوة 4', 'recitation4']
+  ['اسم الطالب', 'studentName'], ['الحضور', 'attendance'], ['السلوك', 'behavior'], ['الجديد', 'newLesson'], ['مقرر الجديد اليوم', 'newTopicToday'], ['مقرر الجديد الذي تم تسميعه', 'newTopicRecited'],
+  ['الماضي', 'oldRevision'], ['مقرر الماضي اليوم', 'oldTopicToday'], ['مقرر الماضي الذي تم تسميعه', 'oldTopicRecited'], ['التلاوة', 'recitation'], ['مقرر التلاوة اليوم', 'recitationTopicToday'], ['مقرر التلاوة الذي تم تسميعه', 'recitationTopicRecited'],
+  ['الواجب', 'homework'], ['التجويد', 'tajweed']
 ];
 
 function exportAllGradesToExcel() {
