@@ -627,6 +627,46 @@ tr:hover { background-color: rgba(212, 175, 55, 0.10) !important; }
 
 .notes-table textarea { min-width:220px; }
 .fifth-hidden { display:none !important; }
+
+/* ================= تحليل البيانات ================= */
+.admin-analysis-launch{margin-bottom:18px;}
+.student-analysis-section{display:block;}
+.student-analysis-section.hidden{display:none!important;}
+.student-analysis-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.student-analysis-muted{color:var(--text-muted);font-size:.84em;font-weight:700;}
+.student-analysis-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0 18px;}
+.analysis-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px;}
+.analysis-summary-card{background:var(--surface);border:1px solid var(--border-soft);border-top:4px solid var(--accent-gold);border-radius:14px;padding:13px;text-align:center;box-shadow:0 5px 14px rgba(0,0,0,.12);}
+.analysis-summary-card .a-label{font-size:.78em;color:var(--text-muted);font-weight:800;}
+.analysis-summary-card .a-value{font-size:1.35em;font-weight:900;color:var(--primary-dark);margin-top:4px;}
+.analysis-summary-card .a-sub{font-size:.74em;color:var(--text-muted);margin-top:3px;}
+.analysis-diagnosis{background:linear-gradient(135deg,#f7fbf8,#eef7f2);border:1px solid var(--border-soft-strong);border-right:5px solid var(--primary-color);border-radius:14px;padding:14px;margin-bottom:16px;line-height:1.9;}
+.analysis-diagnosis strong{color:var(--primary-dark);}
+.analysis-time-card,.analysis-week-comparison{margin-top:16px;background:var(--surface);border:1px solid var(--border-soft);border-radius:16px;padding:14px;}
+.analysis-time-card h4,.analysis-week-comparison h4{margin:0 0 12px;color:var(--accent-gold-light);font-family:'Amiri',serif;font-size:1.2em;}
+.analysis-table{min-width:780px;width:100%;border-collapse:collapse;}
+.analysis-table th,.analysis-table td{padding:9px 8px;border-bottom:1px solid var(--border-soft);text-align:center;}
+.analysis-table th{position:static;}
+.analysis-charts-title{margin:22px 0 12px;color:var(--accent-gold-light);font-family:'Amiri',serif;font-size:1.35em;font-weight:800;border-bottom:1px dashed var(--accent-gold);padding-bottom:7px;}
+.analysis-charts-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.analysis-chart-card{background:var(--surface);border:1px solid var(--border-soft);border-top:4px solid var(--primary-color);border-radius:16px;padding:12px;min-width:0;}
+.analysis-chart-card h4{margin:0 0 8px;color:var(--primary-dark);font-family:'Amiri',serif;font-size:1.08em;}
+.analysis-chart-wrap{position:relative;height:245px;}
+.analysis-status-good{color:#0f7a4a;font-weight:900;}
+.analysis-status-bad{color:#a83226;font-weight:900;}
+.analysis-status-neutral{color:#8a5f10;font-weight:900;}
+.analysis-status-slow{color:#a83226;font-weight:900;}
+.analysis-status-fast{color:#0f7a4a;font-weight:900;}
+@media(max-width:850px){
+  .student-analysis-filters{grid-template-columns:1fr 1fr;}
+  .analysis-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .analysis-charts-grid{grid-template-columns:1fr;}
+}
+@media(max-width:430px){
+  .student-analysis-filters{grid-template-columns:1fr;}
+  .analysis-summary-grid{grid-template-columns:1fr 1fr;}
+}
+
 /* ================= التجويد: درجة مستقلة عن المجموع ================= */
 .tajweed-star { color: var(--accent-gold-dark); font-size: 1.15em; font-weight: 900; cursor: pointer; display:inline-block; margin-right:4px; }
 .tajweed-cell { font-weight:800; color:var(--accent-gold-dark); }
@@ -1203,6 +1243,28 @@ body.fifth-selected .fifth-hide-on-class { display: none !important; }
   color: var(--accent-gold);
 }
 
+
+/* ================= تنبيه الخانات غير المسجلة ================= */
+.daily-grade-input:disabled { background:#f1f1f1; cursor:not-allowed; opacity:.75; }
+
+.missing-cell {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-width:72px;
+  padding:3px 7px;
+  border:1px solid #f0a6a0;
+  border-right:4px solid var(--danger-color);
+  border-radius:8px;
+  background:#fbe1df !important;
+  color:#9f2f25 !important;
+  font-weight:900;
+  font-size:.82em;
+  white-space:nowrap;
+}
+.missing-cell::before { content:'⚠️'; }
+
 </style>
 
 
@@ -1333,6 +1395,104 @@ body.wafdeen-mode #main-menu-drawer,
 body.wafdeen-mode #menu-overlay { display:none !important; visibility:hidden !important; pointer-events:none !important; }
 .daily-student-class{display:none!important;}
 </style>
+
+<style id="main-menu-white-text-fix">
+#main-menu-drawer .tabs .tab-btn,
+#main-menu-drawer .tabs .tab-btn *,
+#main-menu-drawer .reports-submenu .tab-btn,
+#main-menu-drawer .reports-submenu .tab-btn * {
+  color: #ffffff !important;
+}
+#main-menu-drawer .tabs .tab-btn:hover,
+#main-menu-drawer .tabs .tab-btn:hover * {
+  color: #ffffff !important;
+}
+</style>
+
+<style id="reports-same-color-fix">
+/* توحيد لون أزرار التقارير مع باقي أزرار قائمة القوائم */
+#main-menu-drawer .reports-menu-wrap > .reports-toggle,
+#main-menu-drawer .reports-submenu .tab-btn {
+  background: rgba(18,30,26,.78) !important;
+  color: #ffffff !important;
+  border-color: rgba(212,175,55,.16) !important;
+}
+#main-menu-drawer .reports-menu-wrap > .reports-toggle:hover,
+#main-menu-drawer .reports-submenu .tab-btn:hover {
+  background: rgba(27,50,42,.94) !important;
+  color: #ffffff !important;
+  border-color: rgba(212,175,55,.42) !important;
+}
+#main-menu-drawer .reports-menu-wrap > .reports-toggle *,
+#main-menu-drawer .reports-submenu .tab-btn * {
+  color: #ffffff !important;
+}
+#main-menu-drawer .reports-menu-wrap > .reports-toggle.active,
+#main-menu-drawer .reports-submenu .tab-btn.active {
+  background: linear-gradient(120deg,rgba(18,144,120,.96),rgba(6,61,51,.98)) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-gold) !important;
+}
+</style>
+
+<style id="hide-admin-from-analysis">
+/* لا تظهر لوحة الإدارة داخل تحليل البيانات */
+#analysis-section #admin-tab,
+#analysis-section #backup-tab,
+#analysis-section #manager-tab,
+#analysis-section .admin-panel,
+#analysis-section .admin-section,
+#analysis-section [data-tab="admin"],
+#analysis-section [data-tab="backup"],
+#analysis-section [data-tab="manager"] {
+  display: none !important;
+}
+</style>
+<script>
+(function () {
+  function hideAdminInsideAnalysis() {
+    const analysis = document.querySelector('#analysis-section, .student-analysis-section, [id*="analysis"]');
+    if (!analysis) return;
+
+    analysis.querySelectorAll('#admin-tab,#backup-tab,#manager-tab,.admin-panel,.admin-section,[data-tab="admin"],[data-tab="backup"],[data-tab="manager"]')
+      .forEach(el => el.style.setProperty('display', 'none', 'important'));
+  }
+
+  document.addEventListener('DOMContentLoaded', hideAdminInsideAnalysis);
+  new MutationObserver(hideAdminInsideAnalysis).observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+})();
+</script>
+
+
+<style id="analysis-only-admin-sections">
+/* عند فتح تحليل البيانات داخل لوحة الإدارة:
+   اعرض تحليل البيانات فقط، وأخفِ كل أقسام لوحة الإدارة الأخرى. */
+#admin-tab.analysis-only > *:not(#student-analysis-section) {
+  display: none !important;
+}
+
+#admin-tab.analysis-only {
+  display: block !important;
+}
+
+#admin-tab.analysis-only #student-analysis-section {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* لا تظهر عناصر لوحة الإدارة الداخلية حتى لو أعاد النظام بناءها ديناميكياً */
+#admin-tab.analysis-only .admin-panel,
+#admin-tab.analysis-only .admin-section,
+#admin-tab.analysis-only .admin-card,
+#admin-tab.analysis-only [data-admin-section] {
+  display: none !important;
+}
+</style>
+
 </head>
 <body class="login-screen-active">
 
@@ -1667,6 +1827,7 @@ function handleImgError(el, isWatermark = false) {
         <button class="tab-btn" id="top-students-tab-btn" onclick="switchTab('top-students-tab', event)">🏆 الأوائل</button>
         <button class="tab-btn" id="notes-tab-btn" onclick="switchTab('notes-tab', event)">🗒️ الملاحظات</button>
         <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: var(--warning-color); color: white;" onclick="switchTab('admin-tab', event)">⚙️ لوحة الإدارة</button>
+        <button class="tab-btn hidden" id="analysis-tab-btn" onclick="openStudentDataAnalysis(); closeMainMenu()">📈 تحليل البيانات</button>
         <button class="tab-btn hidden" id="backup-tab-btn" style="background-color: var(--primary-dark); color: white;" onclick="switchTab('backup-tab', event)">💾 النسخة الاحتياطية</button>
       </div>
     </aside>
@@ -1740,21 +1901,21 @@ function handleImgError(el, isWatermark = false) {
             <div class="form-grid">
               <div class="form-group"><label>الحضور (10):</label><input type="number" id="attendance" min="0" max="10" placeholder="0-10" required></div>
               <div class="form-group"><label>السلوك (10):</label><input type="number" id="behavior" min="0" max="10" placeholder="0-10" required></div>
-              <div class="form-group fifth-hide-on-class"><label>الجديد (10):<span id="newLessonTimeLabel" class="daily-score-time"></span></label><input type="number" id="newLesson" min="0" max="10" placeholder="0-10" required readonly></div>
+              <div class="form-group fifth-hide-on-class"><label>الجديد (10):<span id="newLessonTimeLabel" class="daily-score-time"></span></label><input type="number" id="newLesson" class="daily-grade-input" min="0" max="10" placeholder="اختر عدد المرات أولاً" required disabled oninput="enforceDailyRecitationGrade('new')"></div>
               <div class="form-group fifth-hide-on-class"><label>مقرر الجديد اليوم <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="newTopicToday" placeholder="اكتب مقرر الجديد اليوم..." required></div>
-              <div class="form-group fifth-hide-on-class"><label>عدد الصفحات (الجديد):</label><select id="newPagesCount" required><option value="">اختر</option><option value="0.25">ربع صفحة</option><option value="0.5">نصف صفحة</option><option value="1">صفحة</option><option value="1.5">صفحة ونص</option></select></div>
+              <div class="form-group fifth-hide-on-class"><label>عدد الصفحات (الجديد):</label><input type="text" id="newPagesCount" placeholder="اكتب عدد الصفحات" required></div>
               <div class="form-group fifth-hide-on-class"><label>مقرر الجديد الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="newTopicRecited" placeholder="اكتب مقرر الجديد الذي تم تسميعه..." required></div>
               <div class="form-group fifth-hide-on-class"><label>عدد التسميع (الجديد):</label><select id="newRecitationCount" required onchange="updateDailyRecitationGrade('new')"><option value="">اختر عدد المرات</option><option value="1">مرة</option><option value="2">مرتين</option><option value="3">ثلاث مرات</option></select></div>
 
-              <div class="form-group fifth-hide-on-class"><label>الماضي (10):<span id="oldRevisionTimeLabel" class="daily-score-time"></span></label><input type="number" id="oldRevision" min="0" max="10" placeholder="0-10" required readonly></div>
+              <div class="form-group fifth-hide-on-class"><label>الماضي (10):<span id="oldRevisionTimeLabel" class="daily-score-time"></span></label><input type="number" id="oldRevision" class="daily-grade-input" min="0" max="10" placeholder="اختر عدد المرات أولاً" required disabled oninput="enforceDailyRecitationGrade('old')"></div>
               <div class="form-group fifth-hide-on-class"><label>مقرر الماضي اليوم <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="oldTopicToday" placeholder="اكتب مقرر الماضي اليوم..." required></div>
-              <div class="form-group fifth-hide-on-class"><label>عدد الصفحات (الماضي):</label><select id="oldPagesCount" required><option value="">اختر</option><option value="5">٥ صفحات</option><option value="10">١٠ صفحات</option><option value="15">١٥ صفحة</option><option value="20">٢٠ صفحة</option><option value="25">٢٥ صفحة</option><option value="30">٣٠ صفحة</option></select></div>
+              <div class="form-group fifth-hide-on-class"><label>عدد الصفحات (الماضي):</label><input type="text" id="oldPagesCount" placeholder="اكتب عدد الصفحات" required></div>
               <div class="form-group fifth-hide-on-class"><label>مقرر الماضي الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="oldTopicRecited" placeholder="اكتب مقرر الماضي الذي تم تسميعه..." required></div>
               <div class="form-group fifth-hide-on-class"><label>عدد التسميع (الماضي):</label><select id="oldRecitationCount" required onchange="updateDailyRecitationGrade('old')"><option value="">اختر عدد المرات</option><option value="1">مرة</option><option value="2">مرتين</option><option value="3">ثلاث مرات</option></select></div>
 
-              <div class="form-group"><label>التلاوة (10):<span id="recitationTimeLabel" class="daily-score-time"></span></label><input type="number" id="recitation" min="0" max="10" placeholder="0-10" required readonly></div>
+              <div class="form-group"><label>التلاوة (10):<span id="recitationTimeLabel" class="daily-score-time"></span></label><input type="number" id="recitation" class="daily-grade-input" min="0" max="10" placeholder="اختر عدد المرات أولاً" required disabled oninput="enforceDailyRecitationGrade('recitation')"></div>
               <div class="form-group"><label>مقرر التلاوة اليوم <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="recitationTopicToday" placeholder="اكتب مقرر التلاوة اليوم..." required></div>
-              <div class="form-group"><label>عدد الصفحات/الأجزاء (التلاوة):</label><select id="recitationPagesCount" required><option value="">اختر</option><option value="1">جزء</option><option value="2">٢ جزء</option><option value="3">٣ أجزاء</option><option value="4">٤ أجزاء</option><option value="5">٥ أجزاء</option><option value="6">٦ أجزاء</option></select></div>
+              <div class="form-group"><label>عدد الصفحات/الأجزاء (التلاوة):</label><input type="text" id="recitationPagesCount" placeholder="اكتب عدد الصفحات أو الأجزاء" required></div>
               <div class="form-group"><label>مقرر التلاوة الذي تم تسميعه <span style="color:var(--danger-color);">*</span>:</label><input type="text" id="recitationTopicRecited" placeholder="اكتب مقرر التلاوة الذي تم تسميعه..." required></div>
               <div class="form-group"><label>عدد التسميع (التلاوة):</label><select id="recitationRecitationCount" required onchange="updateDailyRecitationGrade('recitation')"><option value="">اختر عدد المرات</option><option value="1">مرة</option><option value="2">مرتين</option><option value="3">ثلاث مرات</option></select></div>
               <div class="form-group"><label>الواجب (10):</label><input type="number" id="homework" min="0" max="10" placeholder="0-10" required></div>
@@ -2166,6 +2327,77 @@ function handleImgError(el, isWatermark = false) {
 
       <!-- 7. تبويب لوحة التحكم والإدارة المتقدمة -->
       <div id="admin-tab" class="tab-content">
+
+        <!-- ================= تحليل البيانات ================= -->
+<div id="student-analysis-section" class="student-analysis-section hidden">
+          <div class="card-view">
+            <div class="student-analysis-head">
+              <div>
+                <h3 class="card-title" style="margin-bottom:6px;">📊 تحليل مستوى الطالب</h3>
+                <div id="analysis-period-title" class="student-analysis-muted"></div>
+              </div>
+              <button type="button" class="action-btn modal-cancel" style="flex:none;min-width:110px;" onclick="closeStudentDataAnalysis()">إغلاق</button>
+            </div>
+
+            <div class="student-analysis-filters">
+              <div class="form-group">
+                <label>الصف الدراسي:</label>
+                <select id="analysisClassSelect" onchange="populateAnalysisStudents(); renderStudentDataAnalysis();"></select>
+              </div>
+              <div class="form-group">
+                <label>اسم الطالب/الطالبة:</label>
+                <select id="analysisStudentSelect" onchange="renderStudentDataAnalysis()"></select>
+              </div>
+              <div class="form-group">
+                <label>الأسبوع المراد تحليله:</label>
+                <select id="analysisWeekSelect" onchange="renderStudentDataAnalysis()"></select>
+              </div>
+            </div>
+
+            <div id="analysis-summary-cards" class="analysis-summary-grid"></div>
+            <div id="analysis-diagnosis" class="analysis-diagnosis"></div>
+
+            <div class="analysis-time-card">
+              <h4>⏱️ تحليل وقت التسميع وسرعة الصفحة</h4>
+              <div class="table-responsive">
+                <table class="analysis-table">
+                  <thead>
+                    <tr>
+                      <th>المقرر</th>
+                      <th>متوسط الدرجة</th>
+                      <th>إجمالي وقت التسميع</th>
+                      <th>عدد الصفحات/الأجزاء</th>
+                      <th>متوسط وقت الصفحة</th>
+                      <th>التقييم</th>
+                    </tr>
+                  </thead>
+                  <tbody id="analysis-time-body"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="analysis-charts-title">📈 الرسوم البيانية للدرجات — أسبوعياً</div>
+            <div id="analysis-charts-grid" class="analysis-charts-grid"></div>
+
+            <div class="analysis-week-comparison">
+              <h4>🔎 مقارنة الأسبوع الحالي بالأسبوع السابق</h4>
+              <div class="table-responsive">
+                <table class="analysis-table">
+                  <thead>
+                    <tr>
+                      <th>الدرجة</th>
+                      <th>الأسبوع السابق</th>
+                      <th>الأسبوع الحالي</th>
+                      <th>الفرق</th>
+                      <th>النتيجة</th>
+                    </tr>
+                  </thead>
+                  <tbody id="analysis-comparison-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div style="background:linear-gradient(135deg,#f4f7f8,#eef7f2); padding:18px; border-radius:12px; margin-bottom:22px; border:1px solid #cfd8dc; border-top:4px solid #566573;">
           <h3 style="margin-top:0; font-size:1.15em; color:var(--primary-dark); font-family:'Amiri', serif;">🔎 اختبار اتصال النظام</h3>
@@ -3235,6 +3467,7 @@ function showAppScreen() {
 
   if (isManager) {
     adminBtn.classList.remove('hidden');
+    document.getElementById('analysis-tab-btn')?.classList.remove('hidden');
     backupBtn.classList.remove('hidden');
     managerBtn.classList.remove('hidden');
     document.getElementById('top-students-tab-btn').classList.remove('hidden');
@@ -3254,6 +3487,10 @@ function showAppScreen() {
     attendanceClassSelect.disabled = false;
 
     renderTeachersTable();
+    if (document.getElementById('analysisClassSelect')) {
+      populateAnalysisStudents();
+      populateAnalysisWeeks();
+    }
     studentsData = ensureStudentLoginCodes(studentsData);
     localStorage.setItem('studentsData', JSON.stringify(studentsData));
     renderStudentsTable();
@@ -3282,6 +3519,14 @@ function showAppScreen() {
   renderMonthlyReport();
   renderManagerView();
   renderClassStatusTable();
+  if (document.getElementById('analysisClassSelect')) {
+    const isManagerNow = currentTeacher && (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
+    const analysisClasses = isManagerNow ? ALL_CLASSES : [currentTeacher.assignedClass];
+    document.getElementById('analysisClassSelect').innerHTML = analysisClasses.map(c => `<option value="${c}">${c}</option>`).join('');
+    if (analysisClasses.includes(currentTeacher.assignedClass)) document.getElementById('analysisClassSelect').value = currentTeacher.assignedClass;
+    populateAnalysisStudents();
+    populateAnalysisWeeks();
+  }
 }
 
 function toggleReportsMenu(event) {
@@ -3324,7 +3569,440 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMainMen
 function toggleMainMenu(event){if(event){event.preventDefault();event.stopPropagation();}if(document.body.classList.contains('login-screen-active')||document.body.classList.contains('wafdeen-mode')){closeMainMenu();return;}const drawer=document.getElementById('main-menu-drawer');if(drawer&&drawer.classList.contains('open'))closeMainMenu();else openMainMenu();}
 (function setupMenuSwipe(){let startX=null;const drawer=document.getElementById('main-menu-drawer');if(!drawer)return;drawer.addEventListener('touchstart',e=>{if(e.touches&&e.touches[0])startX=e.touches[0].clientX},{passive:true});drawer.addEventListener('touchend',e=>{if(startX===null||!e.changedTouches||!e.changedTouches[0])return;const endX=e.changedTouches[0].clientX;if(endX-startX>70)closeMainMenu();startX=null},{passive:true});})();
 
+
+/* ================= تحليل بيانات الطالب: أسبوعي + درجات + وقت + سرعة الصفحة ================= */
+let analysisChartInstances = {};
+
+function openStudentDataAnalysis() {
+  const adminTab = document.getElementById('admin-tab');
+  document.body.classList.add('analysis-only-mode');
+  if (adminTab) adminTab.classList.add('analysis-only');
+  if (adminTab && !adminTab.classList.contains('active')) {
+    try {
+      switchTab('admin-tab', null);
+    } catch (e) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      adminTab.classList.add('active');
+    }
+  }
+  const section = document.getElementById('student-analysis-section');
+  if (!section) return;
+  section.classList.remove('hidden');
+
+  const classSelect = document.getElementById('analysisClassSelect');
+  if (!classSelect) return;
+
+  const isManager = currentTeacher && (currentTeacher.username === 'admin' || currentTeacher.assignedClass === 'الكل');
+  const allowedClasses = isManager
+    ? ALL_CLASSES
+    : [currentTeacher.assignedClass];
+
+  classSelect.innerHTML = allowedClasses.map(c => `<option value="${c}">${c}</option>`).join('');
+  if (currentTeacher && allowedClasses.includes(currentTeacher.assignedClass)) classSelect.value = currentTeacher.assignedClass;
+
+  populateAnalysisStudents();
+  populateAnalysisWeeks();
+  renderStudentDataAnalysis();
+
+  setTimeout(() => section.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+}
+
+function closeStudentDataAnalysis() {
+  document.body.classList.remove('analysis-only-mode');
+  const adminTab = document.getElementById('admin-tab');
+  if (adminTab) adminTab.classList.remove('analysis-only');
+  const section = document.getElementById('student-analysis-section');
+  if (section) section.classList.add('hidden');
+  Object.values(analysisChartInstances).forEach(c => { try { c.destroy(); } catch(e) {} });
+  analysisChartInstances = {};
+}
+
+function populateAnalysisStudents() {
+  const className = document.getElementById('analysisClassSelect')?.value;
+  const select = document.getElementById('analysisStudentSelect');
+  if (!select) return;
+
+  const names = studentsData
+    .filter(s => s.className === className)
+    .map(s => s.name)
+    .sort((a,b) => a.localeCompare(b,'ar'));
+
+  const old = select.value;
+  select.innerHTML = names.length
+    ? names.map(n => `<option value="${String(n).replace(/"/g,'&quot;')}">${n}</option>`).join('')
+    : '<option value="">لا يوجد طلاب في هذا الصف</option>';
+
+  if (names.includes(old)) select.value = old;
+}
+
+function getAnalysisWeekDates(weekKey) {
+  if (!weekKey) return [];
+  const parts = String(weekKey).split('_');
+  if (parts.length !== 2) return [];
+  const start = new Date(parts[0] + 'T00:00:00');
+  if (Number.isNaN(start.getTime())) return [];
+  return Array.from({length:5}, (_,i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return getISODateOnly(d);
+  });
+}
+
+function getPreviousAnalysisWeekKey(weekKey) {
+  const dates = getAnalysisWeekDates(weekKey);
+  if (!dates.length) return '';
+  const start = new Date(dates[0] + 'T00:00:00');
+  start.setDate(start.getDate() - 7);
+  return getWeekKey(getISODateOnly(start));
+}
+
+function populateAnalysisWeeks() {
+  const select = document.getElementById('analysisWeekSelect');
+  if (!select) return;
+
+  const weeks = new Set();
+  dailyRecords.forEach(r => {
+    if (r.dateISO) weeks.add(getWeekKey(r.dateISO));
+  });
+
+  const current = document.getElementById('recordDate')?.value || getISODateOnly(new Date());
+  weeks.add(getWeekKey(current));
+
+  const old = select.value;
+  const sorted = Array.from(weeks).sort().reverse();
+
+  select.innerHTML = sorted.map(w => {
+    const p = w.split('_');
+    return `<option value="${w}">الأسبوع: ${p[0]} إلى ${p[1]}</option>`;
+  }).join('');
+
+  if (sorted.includes(old)) select.value = old;
+  else select.value = sorted[0] || '';
+}
+
+function getAnalysisRecords(studentName, className, weekKey) {
+  const dates = new Set(getAnalysisWeekDates(weekKey));
+  return dailyRecords.filter(r =>
+    r.studentName === studentName &&
+    r.className === className &&
+    dates.has(r.dateISO)
+  );
+}
+
+function analysisAverage(records, field) {
+  const values = records.map(r => Number(r[field])).filter(v => Number.isFinite(v));
+  return values.length ? values.reduce((a,b)=>a+b,0) / values.length : 0;
+}
+
+function analysisSum(records, field) {
+  return records.reduce((sum,r) => sum + (Number(r[field]) || 0), 0);
+}
+
+function analysisPages(records, field) {
+  return records.reduce((sum,r) => {
+    const v = String(r[field] ?? '').replace(',', '.');
+    const n = parseFloat(v);
+    return sum + (Number.isFinite(n) ? n : 0);
+  }, 0);
+}
+
+function analysisTimePerPage(records, timeField, pagesField) {
+  const totalTime = analysisSum(records, timeField);
+  const pages = analysisPages(records, pagesField);
+  return pages > 0 ? totalTime / pages : 0;
+}
+
+function analysisFormatMinutes(seconds) {
+  const s = Math.max(0, Math.round(Number(seconds)||0));
+  const min = Math.floor(s/60);
+  const sec = s % 60;
+  return `${min} د ${String(sec).padStart(2,'0')} ث`;
+}
+
+function analysisGradeTrend(current, previous) {
+  if (!previous || previous.recordsCount === 0 || current.recordsCount === 0) return {label:'لا توجد مقارنة كافية', cls:'analysis-status-neutral'};
+  const diff = current.average - previous.average;
+  if (diff > 0.25) return {label:`تحسن +${diff.toFixed(1)}`, cls:'analysis-status-good'};
+  if (diff < -0.25) return {label:`ضعف ${diff.toFixed(1)}`, cls:'analysis-status-bad'};
+  return {label:'مستقر تقريباً', cls:'analysis-status-neutral'};
+}
+
+function analysisSpeedTrend(currentSecondsPerPage, previousSecondsPerPage) {
+  if (!(previousSecondsPerPage > 0) || !(currentSecondsPerPage > 0)) return {label:'لا توجد مقارنة كافية', cls:'analysis-status-neutral'};
+  const diff = currentSecondsPerPage - previousSecondsPerPage;
+  const threshold = Math.max(3, previousSecondsPerPage * 0.08);
+  if (diff < -threshold) return {label:'أسرع من الأسبوع السابق', cls:'analysis-status-fast'};
+  if (diff > threshold) return {label:'أبطأ من الأسبوع السابق', cls:'analysis-status-slow'};
+  return {label:'سرعته مستقرة', cls:'analysis-status-neutral'};
+}
+
+function getAnalysisGradeDefs(className) {
+  const fifth = isFifthClass(className);
+  const defs = [
+    {key:'attendance', label:'الحضور', max:10},
+    {key:'behavior', label:'السلوك', max:10},
+  ];
+  if (!fifth) {
+    defs.push({key:'newLesson', label:'الجديد', max:10});
+    defs.push({key:'oldRevision', label:'الماضي', max:10});
+  }
+  defs.push({key:'recitation', label:'التلاوة', max:10});
+  defs.push({key:'homework', label:'الواجب', max:10});
+  defs.push({key:'tajweed', label:'التجويد', max:10});
+  defs.push({key:'total', label:'المجموع', max:getDailyMax(className)});
+  return defs;
+}
+
+function renderAnalysisSummary(studentName, className, currentRecords, previousRecords) {
+  const box = document.getElementById('analysis-summary-cards');
+  const diagnosis = document.getElementById('analysis-diagnosis');
+  if (!box || !diagnosis) return;
+
+  const defs = getAnalysisGradeDefs(className);
+  const gradeDefs = defs.filter(d => d.key !== 'total');
+
+  let improved = 0, declined = 0, stable = 0;
+  gradeDefs.forEach(d => {
+    const cur = {average:analysisAverage(currentRecords,d.key),recordsCount:currentRecords.length};
+    const prev = {average:analysisAverage(previousRecords,d.key),recordsCount:previousRecords.length};
+    const tr = analysisGradeTrend(cur,prev);
+    if (tr.cls === 'analysis-status-good') improved++;
+    else if (tr.cls === 'analysis-status-bad') declined++;
+    else stable++;
+  });
+
+  const currentTotal = currentRecords.length ? currentRecords.reduce((s,r)=>s+getDailyTotal(r),0)/currentRecords.length : 0;
+  const previousTotal = previousRecords.length ? previousRecords.reduce((s,r)=>s+getDailyTotal(r),0)/previousRecords.length : 0;
+  const totalDiff = currentTotal - previousTotal;
+
+  const timeDefs = [
+    {key:'new', label:'الجديد', time:'newLessonTimeSeconds', pages:'newPagesCount'},
+    {key:'old', label:'الماضي', time:'oldRevisionTimeSeconds', pages:'oldPagesCount'},
+    {key:'recitation', label:'التلاوة', time:'recitationTimeSeconds', pages:'recitationPagesCount'}
+  ].filter(d => !(isFifthClass(className) && (d.key === 'new' || d.key === 'old')));
+
+  const currentTimes = timeDefs.map(d => analysisTimePerPage(currentRecords,d.time,d.pages)).filter(v=>v>0);
+  const avgSecPerPage = currentTimes.length ? currentTimes.reduce((a,b)=>a+b,0)/currentTimes.length : 0;
+
+  box.innerHTML = `
+    <div class="analysis-summary-card">
+      <div class="a-label">متوسط المجموع هذا الأسبوع</div>
+      <div class="a-value">${currentTotal.toFixed(1)} / ${getDailyMax(className)}</div>
+      <div class="a-sub">الفرق: ${totalDiff >= 0 ? '+' : ''}${totalDiff.toFixed(1)}</div>
+    </div>
+    <div class="analysis-summary-card">
+      <div class="a-label">حالات التحسن</div>
+      <div class="a-value analysis-status-good">${improved}</div>
+      <div class="a-sub">من ${gradeDefs.length} درجات</div>
+    </div>
+    <div class="analysis-summary-card">
+      <div class="a-label">حالات الضعف</div>
+      <div class="a-value analysis-status-bad">${declined}</div>
+      <div class="a-sub">من ${gradeDefs.length} درجات</div>
+    </div>
+    <div class="analysis-summary-card">
+      <div class="a-label">متوسط زمن الصفحة</div>
+      <div class="a-value">${avgSecPerPage ? analysisFormatMinutes(avgSecPerPage) : '-'}</div>
+      <div class="a-sub">كلما قل الوقت زادت السرعة</div>
+    </div>
+  `;
+
+  const weak = [];
+  const strong = [];
+  gradeDefs.forEach(d => {
+    const cur = analysisAverage(currentRecords,d.key);
+    const prev = analysisAverage(previousRecords,d.key);
+    if (currentRecords.length && cur < 6) weak.push(`${d.label} (${cur.toFixed(1)}/10)`);
+    if (previousRecords.length && cur - prev > 0.25) strong.push(`${d.label} (+${(cur-prev).toFixed(1)})`);
+    if (previousRecords.length && cur - prev < -0.25) weak.push(`${d.label} (انخفض ${(prev-cur).toFixed(1)})`);
+  });
+
+  const speedText = avgSecPerPage
+    ? ` ومتوسط سرعة الصفحة الحالية ${analysisFormatMinutes(avgSecPerPage)}`
+    : '';
+
+  diagnosis.innerHTML = `
+    <strong>تقييم الطالب ${studentName}:</strong>
+    ${
+      !currentRecords.length
+      ? 'لا توجد درجات مسجلة في الأسبوع المحدد.'
+      : `تم تسجيل ${currentRecords.length} يوم/أيام. ${
+          improved > declined
+            ? '<span class="analysis-status-good">المستوى العام يميل إلى التحسن.</span>'
+            : declined > improved
+              ? '<span class="analysis-status-bad">المستوى العام يميل إلى التراجع ويحتاج متابعة.</span>'
+              : '<span class="analysis-status-neutral">المستوى العام مستقر تقريباً.</span>'
+        }`
+    }
+    ${speedText}.
+    ${strong.length ? `<br><strong>نقاط تحسن واضحة:</strong> ${strong.join('، ')}.` : ''}
+    ${weak.length ? `<br><strong>نقاط تحتاج متابعة:</strong> ${weak.join('، ')}.` : ''}
+  `;
+}
+
+function renderAnalysisTimeTable(className, currentRecords, previousRecords) {
+  const body = document.getElementById('analysis-time-body');
+  if (!body) return;
+
+  const defs = [
+    {key:'new', label:'الجديد', grade:'newLesson', time:'newLessonTimeSeconds', pages:'newPagesCount'},
+    {key:'old', label:'الماضي', grade:'oldRevision', time:'oldRevisionTimeSeconds', pages:'oldPagesCount'},
+    {key:'recitation', label:'التلاوة', grade:'recitation', time:'recitationTimeSeconds', pages:'recitationPagesCount'}
+  ].filter(d => !(isFifthClass(className) && (d.key === 'new' || d.key === 'old')));
+
+  body.innerHTML = '';
+  defs.forEach(d => {
+    const avgGrade = analysisAverage(currentRecords,d.grade);
+    const totalTime = analysisSum(currentRecords,d.time);
+    const pages = analysisPages(currentRecords,d.pages);
+    const secPerPage = analysisTimePerPage(currentRecords,d.time,d.pages);
+    const prevSecPerPage = analysisTimePerPage(previousRecords,d.time,d.pages);
+    const speed = analysisSpeedTrend(secPerPage,prevSecPerPage);
+    const gradeText = avgGrade ? `${avgGrade.toFixed(1)} / 10` : '-';
+
+    body.innerHTML += `
+      <tr>
+        <td><strong>${d.label}</strong></td>
+        <td>${gradeText}</td>
+        <td>${totalTime ? analysisFormatMinutes(totalTime) : '-'}</td>
+        <td>${pages ? pages.toFixed(1) : '-'}</td>
+        <td>${secPerPage ? analysisFormatMinutes(secPerPage) : '-'}</td>
+        <td class="${speed.cls}">${speed.label}</td>
+      </tr>
+    `;
+  });
+
+  if (!body.innerHTML) body.innerHTML = '<tr><td colspan="6">لا توجد بيانات وقت/صفحات متاحة.</td></tr>';
+}
+
+function renderAnalysisComparison(className, currentRecords, previousRecords) {
+  const body = document.getElementById('analysis-comparison-body');
+  if (!body) return;
+  body.innerHTML = '';
+
+  getAnalysisGradeDefs(className).forEach(d => {
+    const cur = d.key === 'total'
+      ? (currentRecords.length ? currentRecords.reduce((s,r)=>s+getDailyTotal(r),0)/currentRecords.length : 0)
+      : analysisAverage(currentRecords,d.key);
+    const prev = d.key === 'total'
+      ? (previousRecords.length ? previousRecords.reduce((s,r)=>s+getDailyTotal(r),0)/previousRecords.length : 0)
+      : analysisAverage(previousRecords,d.key);
+    const diff = cur - prev;
+    const trend = analysisGradeTrend({average:cur,recordsCount:currentRecords.length},{average:prev,recordsCount:previousRecords.length});
+    const max = d.max;
+
+    body.innerHTML += `
+      <tr>
+        <td><strong>${d.label}</strong></td>
+        <td>${previousRecords.length ? prev.toFixed(1) : '-'}</td>
+        <td>${currentRecords.length ? cur.toFixed(1) : '-'}</td>
+        <td>${previousRecords.length && currentRecords.length ? `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}` : '-'}</td>
+        <td class="${trend.cls}">${trend.label}</td>
+      </tr>
+    `;
+  });
+}
+
+function renderAnalysisCharts(studentName, className, selectedWeekKey) {
+  const grid = document.getElementById('analysis-charts-grid');
+  if (!grid) return;
+
+  Object.values(analysisChartInstances).forEach(c => { try { c.destroy(); } catch(e) {} });
+  analysisChartInstances = {};
+  grid.innerHTML = '';
+
+  const defs = getAnalysisGradeDefs(className).filter(d => d.key !== 'total');
+  const weeks = [];
+  const allWeekKeys = Array.from(new Set(dailyRecords
+    .filter(r => r.studentName === studentName && r.className === className && r.dateISO)
+    .map(r => getWeekKey(r.dateISO))
+  )).sort();
+
+  const selectedIndex = allWeekKeys.indexOf(selectedWeekKey);
+  const endIndex = selectedIndex >= 0 ? selectedIndex : allWeekKeys.length - 1;
+  const startIndex = Math.max(0,endIndex-7);
+  const chartWeeks = allWeekKeys.slice(startIndex,endIndex+1);
+
+  defs.forEach((d,index) => {
+    const id = `analysisChart_${index}_${Date.now()}`;
+    grid.innerHTML += `
+      <div class="analysis-chart-card">
+        <h4>${d.label}</h4>
+        <div class="analysis-chart-wrap"><canvas id="${id}"></canvas></div>
+      </div>
+    `;
+
+    const labels = chartWeeks.map(w => {
+      const p = w.split('_');
+      return `${p[0].slice(5)} → ${p[1].slice(5)}`;
+    });
+    const data = chartWeeks.map(w => {
+      const recs = getAnalysisRecords(studentName,className,w);
+      return Number(analysisAverage(recs,d.key).toFixed(2));
+    });
+
+    const canvas = document.getElementById(id);
+    if (!canvas || typeof Chart === 'undefined') return;
+
+    analysisChartInstances[d.key] = new Chart(canvas,{
+      type:'line',
+      data:{
+        labels,
+        datasets:[{
+          label:`${d.label} / 10`,
+          data,
+          fill:false,
+          tension:.28,
+          pointRadius:4
+        }]
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        plugins:{
+          legend:{display:true},
+          tooltip:{rtl:true}
+        },
+        scales:{
+          y:{min:0,max:10,ticks:{stepSize:1}}
+        }
+      }
+    });
+  });
+}
+
+function renderStudentDataAnalysis() {
+  const className = document.getElementById('analysisClassSelect')?.value;
+  const studentName = document.getElementById('analysisStudentSelect')?.value;
+  const weekKey = document.getElementById('analysisWeekSelect')?.value;
+  if (!className || !studentName || !weekKey) {
+    const title = document.getElementById('analysis-period-title');
+    if (title) title.textContent = 'اختر الصف والطالب والأسبوع لعرض التحليل.';
+    return;
+  }
+
+  const currentRecords = getAnalysisRecords(studentName,className,weekKey);
+  const previousWeekKey = getPreviousAnalysisWeekKey(weekKey);
+  const previousRecords = getAnalysisRecords(studentName,className,previousWeekKey);
+
+  const p = weekKey.split('_');
+  const title = document.getElementById('analysis-period-title');
+  if (title) title.textContent = `الطالب: ${studentName} — ${className} — من ${p[0]} إلى ${p[1]}`;
+
+  renderAnalysisSummary(studentName,className,currentRecords,previousRecords);
+  renderAnalysisTimeTable(className,currentRecords,previousRecords);
+  renderAnalysisComparison(className,currentRecords,previousRecords);
+  renderAnalysisCharts(studentName,className,weekKey);
+}
+
 function switchTab(tabId, event) {
+  if (tabId !== 'admin-tab') {
+    document.body.classList.remove('analysis-only-mode');
+    const analysisAdminTab = document.getElementById('admin-tab');
+    if (analysisAdminTab) analysisAdminTab.classList.remove('analysis-only');
+    const analysisSection = document.getElementById('student-analysis-section');
+    if (analysisSection) analysisSection.classList.add('hidden');
+  }
   document.querySelectorAll('.sidebar-nav .tab-btn').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
@@ -3501,9 +4179,29 @@ function updateDailyRecitationGrade(type){
   const countEl=document.getElementById(map[type]);
   const gradeEl=document.getElementById(gradeMap[type]);
   if(!countEl||!gradeEl)return;
-  const grade=dailyGradeFromRecitationCount(countEl.value);
-  gradeEl.value=grade===''?'':grade;
-  gradeEl.classList.add('daily-auto-grade');
+  const maxGrade=dailyGradeFromRecitationCount(countEl.value);
+  const hasCount = maxGrade !== '';
+  gradeEl.disabled = !hasCount;
+  gradeEl.max=hasCount?String(maxGrade):'10';
+  gradeEl.placeholder=hasCount?`اكتب الدرجة من 0 إلى ${maxGrade}`:'اختر عدد المرات أولاً';
+  // لا يكتب الموقع أي درجة تلقائياً؛ لا تصبح خانة الدرجة قابلة للكتابة إلا بعد اختيار عدد المرات.
+  gradeEl.classList.remove('daily-auto-grade');
+}
+function enforceDailyRecitationGrade(type){
+  const map={new:'newRecitationCount',old:'oldRecitationCount',recitation:'recitationRecitationCount'};
+  const gradeMap={new:'newLesson',old:'oldRevision',recitation:'recitation'};
+  const countEl=document.getElementById(map[type]);
+  const gradeEl=document.getElementById(gradeMap[type]);
+  if(!countEl||!gradeEl)return;
+  const maxGrade=dailyGradeFromRecitationCount(countEl.value);
+  if(maxGrade===''){ gradeEl.disabled=true; return; }
+  if(gradeEl.value==='') return;
+  const value=Number(gradeEl.value);
+  if(value>maxGrade){
+    gradeEl.value='';
+    if(typeof showMessage==='function') showMessage('app-msg', `أعلى درجة مسموح بها عند ${countEl.options[countEl.selectedIndex]?.text || 'عدد مرات التسميع المحدد'} هي ${maxGrade} من 10.`, 'error');
+  }
+  if(value<0) gradeEl.value='';
 }
 function resetDailyExtraFieldsFromRecord(record){
   const fields=[
@@ -3515,7 +4213,15 @@ function resetDailyExtraFieldsFromRecord(record){
     ['recitationRecitationCount',record?.recitationRecitationCount||'']
   ];
   fields.forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=String(val);});
-  ['new','old','recitation'].forEach(updateDailyRecitationGrade);
+  ['new','old','recitation'].forEach(type=>{
+    updateDailyRecitationGrade(type);
+    const gradeMap={new:'newLesson',old:'oldRevision',recitation:'recitation'};
+    const gradeEl=document.getElementById(gradeMap[type]);
+    const savedKey=gradeMap[type];
+    if(record && record[savedKey] !== undefined && record[savedKey] !== null && record[savedKey] !== ''){
+      gradeEl.value=String(record[savedKey]);
+    }
+  });
 }
 
 async function addGrade() {
@@ -3555,14 +4261,22 @@ async function addGrade() {
   if (!isAbsent && (!recitationPagesCount || !recitationRecitationCount || (!fifth && (!newPagesCount || !oldPagesCount || !newRecitationCount || !oldRecitationCount)))) {
     return showMessage('app-msg', fifth ? 'عذراً، اختر عدد أجزاء التلاوة وعدد مرات التسميع.' : 'عذراً، اختر عدد الصفحات لكل مقرر وعدد مرات التسميع لكل مقرر.', 'error');
   }
-  if (!isAbsent) {
-    updateDailyRecitationGrade('new');
-    updateDailyRecitationGrade('old');
-    updateDailyRecitationGrade('recitation');
-  }
   const values = fifth ? [attVal, behVal, tajweedVal, recVal, hwVal] : [attVal, behVal, tajweedVal, oldRVal, newLVal, recVal, hwVal];
   if (values.some(v => v === '')) return showMessage('app-msg', 'عذراً، يجب إدخال جميع درجات الطالب!', 'error');
   if (values.some(v => Number(v) < 0 || Number(v) > 10)) return showMessage('app-msg', 'تنبيه: أعلى درجة مسموح بها هي 10 درجات في كل خانة.', 'error');
+  if (!isAbsent) {
+    const recitationGradeLimits = [
+      ['new', newLVal, newRecitationCount, 'الجديد'],
+      ['old', oldRVal, oldRecitationCount, 'الماضي'],
+      ['recitation', recVal, recitationRecitationCount, 'التلاوة']
+    ];
+    for (const [, gradeValue, countValue, label] of recitationGradeLimits) {
+      const limit = dailyGradeFromRecitationCount(countValue);
+      if (limit !== '' && Number(gradeValue) > Number(limit)) {
+        return showMessage('app-msg', `درجة ${label} لا يمكن أن تتجاوز ${limit} من 10 عند ${countValue === '1' ? 'التسميع مرة واحدة' : countValue === '2' ? 'التسميع مرتين' : 'التسميع ثلاث مرات'}.`, 'error');
+      }
+    }
+  }
 
   const uniqueId = `rec_${studentName}_${dateISO}`.replace(/\s+/g, '_');
   const previous = dailyRecords.find(r=>r.id===uniqueId) || {};
@@ -3602,7 +4316,7 @@ async function addGrade() {
   }
   // Firebase هو مصدر بيانات النظام، وGoogle Sheets نسخة الدرجات.
   await sendGradeToGoogleSheet('saveDailyGrade', record);
-  renderDailyTable(); renderAttendanceTable(); renderWeeklyTable(); renderMonthlyReport(); renderManagerView(); renderClassStatusTable();
+  renderDailyTable(); renderAttendanceTable(); renderWeeklyTable(); renderMonthlyReport(); renderManagerView(); renderClassStatusTable(); if(document.getElementById('student-analysis-section') && !document.getElementById('student-analysis-section').classList.contains('hidden')){ populateAnalysisWeeks(); renderStudentDataAnalysis(); }
   dailyTimerSeconds={new:Number(record.newLessonTimeSeconds||0),old:Number(record.oldRevisionTimeSeconds||0),recitation:Number(record.recitationTimeSeconds||0)};
   updateDailyTypeTimes();
   document.getElementById('daily-score-time-summary').textContent=`تم حفظ الوقت — الجديد: ${formatTimerSeconds(dailyTimerSeconds.new)} | الماضي: ${formatTimerSeconds(dailyTimerSeconds.old)} | التلاوة: ${formatTimerSeconds(dailyTimerSeconds.recitation)}`;
@@ -3764,8 +4478,18 @@ async function deleteRecord(id) {
     renderMonthlyReport();
     renderManagerView();
     renderClassStatusTable();
+    if(document.getElementById('student-analysis-section') && !document.getElementById('student-analysis-section').classList.contains('hidden')){ populateAnalysisWeeks(); renderStudentDataAnalysis(); }
   }
   showMessage('app-msg', 'تم حذف السجل بنجاح', 'success');
+}
+
+
+function dailyMissingCell(value, label='لم تُسجل') {
+  const missing = value === null || value === undefined || String(value).trim() === '';
+  return missing ? `<span class="missing-cell" title="${label}">${label}</span>` : String(value);
+}
+function dailyMissingTimeCell(seconds) {
+  return Number(seconds || 0) > 0 ? formatTimerSeconds(seconds) : '<span class="missing-cell" title="الوقت لم يُسجل">الوقت لم يُسجل</span>';
 }
 
 function renderDailyTable() {
@@ -3811,22 +4535,22 @@ function renderDailyTable() {
         <td>${r.className}</td>
         <td>${r.teacherName}</td>
         <td style="font-weight:bold;">${r.studentName}</td>
-        <td>${r.attendance ?? 0}</td>
-        <td>${r.behavior ?? 0}</td>
-        <td class="fifth-hide-on-class">${r.newLesson ?? 0}<span class="daily-score-time">${r.newLessonTimeSeconds ? `تم التسميع في ${formatTimerSeconds(r.newLessonTimeSeconds)}` : ''}</span></td>
-        <td class="fifth-hide-on-class daily-score-time">${r.newLessonTimeSeconds ? formatTimerSeconds(r.newLessonTimeSeconds) : '-'}</td>
-        <td class="fifth-hide-on-class" style="color:#e67e22;">${r.newTopicToday || r.newTopicText || '-'}</td>
-        <td class="fifth-hide-on-class" style="color:#d35400;">${r.newTopicRecited || '-'}</td>
-        <td class="fifth-hide-on-class">${r.oldRevision ?? 0}<span class="daily-score-time">${r.oldRevisionTimeSeconds ? `تم التسميع في ${formatTimerSeconds(r.oldRevisionTimeSeconds)}` : ''}</span></td>
-        <td class="fifth-hide-on-class daily-score-time">${r.oldRevisionTimeSeconds ? formatTimerSeconds(r.oldRevisionTimeSeconds) : '-'}</td>
-        <td class="fifth-hide-on-class" style="color:#27ae60;">${r.oldTopicToday || r.oldTopicText || '-'}</td>
-        <td class="fifth-hide-on-class" style="color:#229954;">${r.oldTopicRecited || '-'}</td>
-        <td>${r.recitation ?? 0}<span class="daily-score-time">${r.recitationTimeSeconds ? `تم التسميع في ${formatTimerSeconds(r.recitationTimeSeconds)}` : ''}</span></td>
-        <td class="daily-score-time">${r.recitationTimeSeconds ? formatTimerSeconds(r.recitationTimeSeconds) : '-'}</td>
-        <td style="color:var(--primary-color); font-weight:bold;">${r.recitationTopicToday || r.recitationTopic || '-'}</td>
-        <td style="color:#7d3c98; font-weight:bold;">${r.recitationTopicRecited || '-'}</td>
-        <td>${r.homework ?? 0}</td>
-        <td class="tajweed-cell">${r.tajweed ?? 0}${Number(r.tajweed || 0) >= 9 ? ` <span class="tajweed-star" title="درجة عالية في التجويد" onclick="showTajweedHigh('${String(r.studentName).replace(/'/g, "\'")}', ${r.tajweed})">★</span>` : ''}</td>
+        <td>${dailyMissingCell(r.attendance)}</td>
+        <td>${dailyMissingCell(r.behavior)}</td>
+        <td class="fifth-hide-on-class">${dailyMissingCell(r.newLesson)}<span class="daily-score-time">${r.newLessonTimeSeconds ? `تم التسميع في ${formatTimerSeconds(r.newLessonTimeSeconds)}` : ''}</span></td>
+        <td class="fifth-hide-on-class daily-score-time">${dailyMissingTimeCell(r.newLessonTimeSeconds)}</td>
+        <td class="fifth-hide-on-class" style="color:#e67e22;">${dailyMissingCell(r.newTopicToday || r.newTopicText)}</td>
+        <td class="fifth-hide-on-class" style="color:#d35400;">${dailyMissingCell(r.newTopicRecited)}</td>
+        <td class="fifth-hide-on-class">${dailyMissingCell(r.oldRevision)}<span class="daily-score-time">${r.oldRevisionTimeSeconds ? `تم التسميع في ${formatTimerSeconds(r.oldRevisionTimeSeconds)}` : ''}</span></td>
+        <td class="fifth-hide-on-class daily-score-time">${dailyMissingTimeCell(r.oldRevisionTimeSeconds)}</td>
+        <td class="fifth-hide-on-class" style="color:#27ae60;">${dailyMissingCell(r.oldTopicToday || r.oldTopicText)}</td>
+        <td class="fifth-hide-on-class" style="color:#229954;">${dailyMissingCell(r.oldTopicRecited)}</td>
+        <td>${dailyMissingCell(r.recitation)}<span class="daily-score-time">${r.recitationTimeSeconds ? `تم التسميع في ${formatTimerSeconds(r.recitationTimeSeconds)}` : ''}</span></td>
+        <td class="daily-score-time">${dailyMissingTimeCell(r.recitationTimeSeconds)}</td>
+        <td style="color:var(--primary-color); font-weight:bold;">${dailyMissingCell(r.recitationTopicToday || r.recitationTopic)}</td>
+        <td style="color:#7d3c98; font-weight:bold;">${dailyMissingCell(r.recitationTopicRecited)}</td>
+        <td>${dailyMissingCell(r.homework)}</td>
+        <td class="tajweed-cell">${dailyMissingCell(r.tajweed)}${Number(r.tajweed || 0) >= 9 ? ` <span class="tajweed-star" title="درجة عالية في التجويد" onclick="showTajweedHigh('${String(r.studentName).replace(/'/g, "\'")}', ${r.tajweed})">★</span>` : ''}</td>
         <td><strong style="color:var(--primary-dark);">${total}</strong> / ${getDailyMax(r.className)}</td>
         <td>${actionBtns}</td>
       </tr>
