@@ -1265,6 +1265,16 @@ body.fifth-selected .fifth-hide-on-class { display: none !important; }
 }
 .missing-cell::before { content:'⚠️'; }
 
+
+/* توحيد الأزرار البيضاء داخل جلسة الوافدين مع لون أزرارها الأخرى */
+.wafdeen-app-screen button:not(.btn-save):not(.btn-danger):not(.btn-edit):not(.btn-warning):not(.btn-export){
+  background: linear-gradient(120deg,var(--primary-color) 0%,var(--primary-dark) 100%) !important;
+  color:#fff !important;
+  border-color:var(--accent-gold) !important;
+}
+.wafdeen-app-screen button:not(.btn-save):not(.btn-danger):not(.btn-edit):not(.btn-warning):not(.btn-export):hover{
+  color:#fff !important;
+}
 </style>
 
 
@@ -1493,6 +1503,79 @@ body.wafdeen-mode #menu-overlay { display:none !important; visibility:hidden !im
 }
 </style>
 
+<style id="wafdeen-buttons-click-fix">
+/* إصلاح نهائي لمشكلة عدم استجابة أزرار جلسة الوافدين */
+#wafdeen-app-screen{position:relative;z-index:1;pointer-events:auto!important;}
+#wafdeen-app-screen *{pointer-events:auto;}
+#wafdeen-menu-overlay{pointer-events:none!important;display:none;}
+#wafdeen-menu-overlay.open{display:block;pointer-events:auto!important;}
+#wafdeen-drawer{pointer-events:auto!important;}
+#wafdeen-drawer button{pointer-events:auto!important;cursor:pointer!important;}
+#wafdeen-app-screen button{pointer-events:auto!important;cursor:pointer;}
+#wafdeen-app-screen button:disabled{pointer-events:auto;cursor:not-allowed;}
+</style>
+
+<style id="wafdeen-click-fix">
+#wafdeen-app-screen{position:relative!important;z-index:100!important;pointer-events:auto!important;}
+#wafdeen-app-screen button,#wafdeen-app-screen select,#wafdeen-app-screen input{position:relative;z-index:101;pointer-events:auto!important;}
+#wafdeen-app-screen .wafdeen-panel,#wafdeen-app-screen .wafdeen-monitor-card{position:relative;z-index:2;}
+#wafdeen-menu-overlay{z-index:-1!important;pointer-events:none!important;}
+#wafdeen-menu-overlay.open{z-index:2147483645!important;pointer-events:auto!important;}
+#wafdeen-drawer{z-index:2147483646!important;}
+.wafdeen-type-btn{pointer-events:auto!important;user-select:none;}
+</style>
+
+<style id="all-buttons-same-color">
+/* توحيد لون جميع أزرار الموقع */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+label.action-btn,
+.action-btn,
+.tab-btn,
+.top-period-btn,
+.wafdeen-type-btn,
+.wafdeen-edu-box,
+.result-link-btn,
+.student-login-link-btn,
+.sidebar-close-btn,
+.main-menu-handle {
+  background: var(--primary-color) !important;
+  color: #fff !important;
+  border-color: var(--primary-color) !important;
+}
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+label.action-btn:hover,
+.action-btn:hover,
+.tab-btn:hover,
+.top-period-btn:hover,
+.wafdeen-type-btn:hover,
+.wafdeen-edu-box:hover,
+.result-link-btn:hover,
+.student-login-link-btn:hover,
+.sidebar-close-btn:hover,
+.main-menu-handle:hover {
+  background: var(--primary-dark) !important;
+  color: #fff !important;
+  border-color: var(--primary-dark) !important;
+}
+button:active,
+input[type="button"]:active,
+input[type="submit"]:active,
+input[type="reset"]:active,
+.action-btn:active,
+.tab-btn:active,
+.top-period-btn:active,
+.wafdeen-type-btn:active,
+.wafdeen-edu-box:active {
+  background: var(--primary-dark) !important;
+  color: #fff !important;
+}
+</style>
 </head>
 <body class="login-screen-active">
 
@@ -1549,19 +1632,19 @@ function handleImgError(el, isWatermark = false) {
     <input type="password" id="password" placeholder="••••••••" style="text-align: center;">
   </div>
 
-  <button class="action-btn btn-save" style="width: 100%; font-size: 1em; height: 46px;" onclick="handleLogin()">
+  <button type="button" class="action-btn btn-save" style="width: 100%; font-size: 1em; height: 46px;" onclick="handleLogin()">
     دخول للنظام 🔑
   </button>
 
-  <button class="action-btn result-link-btn" style="height: 44px;" onclick="showResultsScreen()">
+  <button type="button" class="action-btn result-link-btn" style="height: 44px;" onclick="showResultsScreen()">
     🎓 عرض نتيجة طالب بالكود
   </button>
 
-  <button class="action-btn student-login-link-btn" style="height: 44px;" onclick="showStudentLoginScreen()">
+  <button type="button" class="action-btn student-login-link-btn" style="height: 44px;" onclick="showStudentLoginScreen()">
     👩‍🎓 تسجيل دخول الطالب
   </button>
 
-  <button class="action-btn btn-save" style="height:44px;" onclick="showWafdeenLoginScreen()">
+  <button type="button" class="action-btn btn-save" style="height:44px;" onclick="showWafdeenLoginScreen()">
     🕒 جلسة الوافدين
   </button>
 
@@ -1574,10 +1657,10 @@ function handleImgError(el, isWatermark = false) {
   <h2 class="wafdeen-title">🕒 جلسة الوافدين</h2>
   <div class="wafdeen-subtitle">دخول المعلمين والطلاب المسجلين في جلسة الوافدين</div>
   <div id="wafdeen-login-msg" class="toast-msg"></div>
-  <div class="form-group"><label>اسم المستخدم:</label><input id="wafdeenUsername" type="text" autocomplete="username" placeholder="اسم المستخدم"></div>
+  <div class="form-group"><label>اسم المستخدم أو اسم الطالب:</label><input id="wafdeenUsername" type="text" autocomplete="username" placeholder="اسم المستخدم"></div>
   <div class="form-group"><label>كلمة المرور:</label><input id="wafdeenPassword" type="password" autocomplete="current-password" placeholder="كلمة المرور"></div>
-  <button class="action-btn btn-save" style="width:100%;height:48px" onclick="wafdeenLogin()">دخول جلسة الوافدين 🔐</button>
-  <button class="action-btn" style="width:100%;height:44px;margin-top:8px" onclick="showLoginScreen()">🔙 رجوع</button>
+  <button type="button" class="action-btn btn-save" style="width:100%;height:48px" onclick="wafdeenLogin()">دخول جلسة الوافدين 🔐</button>
+  <button type="button" class="action-btn" style="width:100%;height:44px;margin-top:8px" onclick="showLoginScreen()">🔙 رجوع</button>
 </div>
 
 <div id="wafdeen-app-screen" class="hidden wafdeen-app">
@@ -1585,14 +1668,14 @@ function handleImgError(el, isWatermark = false) {
   <div id="wafdeen-menu-overlay" class="wafdeen-overlay" onclick="closeWafdeenMenu()"></div>
   <aside id="wafdeen-drawer" class="wafdeen-drawer" aria-hidden="true">
     <h3>📚 قائمة جلسة الوافدين</h3>
-    <button class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('daily')">📝 الرصد اليومي</button>
-    <button class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('materials')">📚 المواد التعليمية</button>
+    <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('daily')">📝 الرصد اليومي</button>
+    <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('materials')">📚 المواد التعليمية</button>
     <div id="wafdeen-admin-menu-items">
-      <button class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('teachers')">👨‍🏫 إضافة / إدارة المعلمين</button>
-      <button class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('students')">👨‍🎓 إضافة / إدارة الطلاب</button>
-      <button class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('report')">📊 التقرير الشهري</button>
+      <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('teachers')">👨‍🏫 إضافة / إدارة المعلمين</button>
+      <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('students')">👨‍🎓 إضافة / إدارة الطلاب</button>
+      <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('report')">📊 التقرير الشهري</button>
     </div>
-    <button class="action-btn" style="width:100%;margin-top:20px" onclick="closeWafdeenMenu()">إغلاق القائمة ✖</button>
+    <button type="button" class="action-btn" style="width:100%;margin-top:20px" onclick="closeWafdeenMenu()">إغلاق القائمة ✖</button>
   </aside>
 
   <div class="wafdeen-topbar">
@@ -1600,7 +1683,7 @@ function handleImgError(el, isWatermark = false) {
       <h2 class="wafdeen-title" style="text-align:right;margin:0">جلسة الوافدين</h2>
       <div class="wafdeen-subtitle" style="text-align:right;margin:0">المستخدم: <span id="wafdeen-teacher-name" class="wafdeen-selected"></span></div>
     </div>
-    <button class="action-btn" onclick="wafdeenLogout()">تسجيل خروج 🚪</button>
+    <button type="button" class="action-btn" onclick="wafdeenLogout()">تسجيل خروج 🚪</button>
   </div>
 
   <div id="wafdeen-panel-daily" class="wafdeen-panel wafdeen-daily-panel">
@@ -1611,24 +1694,56 @@ function handleImgError(el, isWatermark = false) {
       <div id="wafdeen-student-info" class="wafdeen-note" style="margin-top:8px"></div>
     </div>
 
-    <div class="wafdeen-panel">
-      <h3>نوع التسميع</h3>
-      <div class="wafdeen-type-grid">
-        <button class="wafdeen-type-btn" data-type="الجديد" onclick="selectWafdeenType('الجديد',this)">الجديد</button>
-        <button class="wafdeen-type-btn" data-type="الماضي" onclick="selectWafdeenType('الماضي',this)">الماضي</button>
-        <button class="wafdeen-type-btn" data-type="التلاوة" onclick="selectWafdeenType('التلاوة',this)">التلاوة</button>
+    <div class="wafdeen-monitor-grid">
+      <div class="wafdeen-panel wafdeen-monitor-card wafdeen-edu-card">
+        <button type="button" class="wafdeen-edu-box" onclick="toggleWafdeenQuranMonitor()" aria-expanded="false">
+          <span>📖 القرآن الكريم</span><span id="wafdeen-quran-toggle-icon">▼</span>
+        </button>
+        <div id="wafdeen-quran-monitor-content" class="hidden">
+          <div class="wafdeen-note">اختر نوع التسميع ثم استخدم مؤقت القرآن الكريم بشكل مستقل.</div>
+          <h4>نوع التسميع</h4>
+          <div class="wafdeen-type-grid">
+            <button type="button" class="wafdeen-type-btn" data-quran-type="الجديد" onclick="selectWafdeenQuranType('الجديد',this)">الجديد</button>
+            <button type="button" class="wafdeen-type-btn" data-quran-type="الماضي" onclick="selectWafdeenQuranType('الماضي',this)">الماضي</button>
+            <button type="button" class="wafdeen-type-btn" data-quran-type="التلاوة" onclick="selectWafdeenQuranType('التلاوة',this)">التلاوة</button>
+          </div>
+          <div class="wafdeen-timer-box">
+            <div id="wafdeen-quran-timer">00:00:00</div>
+            <div id="wafdeen-quran-timer-status" class="wafdeen-timer-status">اختر نوع التسميع ثم اضغط بدء</div>
+          </div>
+          <div class="wafdeen-controls">
+            <button type="button" class="action-btn btn-save" onclick="wafdeenQuranStartPause()">بدء</button>
+            <button type="button" class="action-btn btn-save" onclick="wafdeenQuranStartPause(true)">استراحة</button>
+            <button type="button" class="action-btn btn-save" onclick="wafdeenQuranStopTimer()">توقف وحفظ</button>
+          </div>
+        </div>
       </div>
-      <div class="wafdeen-timer-box">
-        <div id="wafdeen-timer">00:00:00</div>
-        <div id="wafdeen-timer-status" class="wafdeen-timer-status">اختر نوع التسميع ثم اضغط بدء</div>
+
+      <div class="wafdeen-panel wafdeen-monitor-card wafdeen-edu-card">
+        <button type="button" class="wafdeen-edu-box" onclick="toggleWafdeenEducationalMonitor()" aria-expanded="false">
+          <span>📚 المواد التعليمية</span><span id="wafdeen-edu-toggle-icon">▼</span>
+        </button>
+        <div id="wafdeen-edu-monitor-content" class="hidden">
+          <div class="wafdeen-note">المواد التعليمية: فقه، منطق، حديث. ولها مؤقت مستقل عن مؤقت القرآن الكريم.</div>
+          <h4>المادة</h4>
+          <div class="wafdeen-type-grid">
+            <button type="button" class="wafdeen-type-btn" data-edu-subject="فقه" onclick="selectWafdeenEduSubject('فقه',this)">⚖️ فقه</button>
+            <button type="button" class="wafdeen-type-btn" data-edu-subject="منطق" onclick="selectWafdeenEduSubject('منطق',this)">🧠 منطق</button>
+            <button type="button" class="wafdeen-type-btn" data-edu-subject="حديث" onclick="selectWafdeenEduSubject('حديث',this)">📜 حديث</button>
+          </div>
+          <div class="wafdeen-timer-box">
+            <div id="wafdeen-edu-timer">00:00:00</div>
+            <div id="wafdeen-edu-timer-status" class="wafdeen-timer-status">اختر المادة ثم اضغط بدء</div>
+          </div>
+          <div class="wafdeen-controls">
+            <button type="button" class="action-btn btn-save" onclick="wafdeenEduStartPause()">بدء</button>
+            <button type="button" class="action-btn btn-save" onclick="wafdeenEduStartPause(true)">استراحة</button>
+            <button type="button" class="action-btn btn-save" onclick="wafdeenEduStopTimer()">توقف وحفظ</button>
+          </div>
+        </div>
       </div>
-      <div class="wafdeen-controls">
-        <button class="action-btn btn-save" onclick="wafdeenStartPause()">بدء</button>
-        <button class="action-btn btn-save" onclick="wafdeenStartPause(true)">استراحة</button>
-        <button class="action-btn btn-save" onclick="wafdeenStopTimer()">توقف</button>
-      </div>
-      <div id="wafdeen-save-msg" class="toast-msg" style="margin-top:12px"></div>
     </div>
+    <div id="wafdeen-save-msg" class="toast-msg" style="margin-top:12px"></div>
   </div>
 
 
@@ -1637,9 +1752,9 @@ function handleImgError(el, isWatermark = false) {
     <div class="wafdeen-note">الكتب والمستويات تُدار بواسطة الإدارة. المعلم يستطيع التنقل بين جميع المستويات، أما الطالب فيبدأ من المستوى الأول ولا يُفتح له المستوى التالي إلا بعد نجاحه بدرجة <strong>70 من 100</strong>.</div>
     <div id="wafdeen-student-material-note" class="wafdeen-student-only-note hidden"></div>
     <div class="wafdeen-materials-layout">
-      <button class="wafdeen-subject-card" onclick="wafdeenOpenSubject('fiqh')"><div class="wafdeen-subject-icon">⚖️</div><div class="wafdeen-subject-name">فقه</div></button>
-      <button class="wafdeen-subject-card" onclick="wafdeenOpenSubject('hadith')"><div class="wafdeen-subject-icon">📜</div><div class="wafdeen-subject-name">حديث</div></button>
-      <button class="wafdeen-subject-card" onclick="wafdeenOpenSubject('mantiq')"><div class="wafdeen-subject-icon">🧠</div><div class="wafdeen-subject-name">منطق</div></button>
+      <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('fiqh')"><div class="wafdeen-subject-icon">⚖️</div><div class="wafdeen-subject-name">فقه</div></button>
+      <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('hadith')"><div class="wafdeen-subject-icon">📜</div><div class="wafdeen-subject-name">حديث</div></button>
+      <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('mantiq')"><div class="wafdeen-subject-icon">🧠</div><div class="wafdeen-subject-name">منطق</div></button>
     </div>
     <div id="wafdeen-materials-content"></div>
   </div>
@@ -1651,7 +1766,7 @@ function handleImgError(el, isWatermark = false) {
         <div class="form-group"><label>اسم المستخدم:</label><input id="wafdeenNewTeacherUser" type="text" placeholder="مثال: teacher1"></div>
         <div class="form-group"><label>كلمة المرور:</label><input id="wafdeenNewTeacherPass" type="password" placeholder="كلمة المرور"></div>
       </div>
-      <button class="action-btn btn-save" onclick="addWafdeenTeacher()">+ حفظ المعلم</button>
+      <button type="button" class="action-btn btn-save" onclick="addWafdeenTeacher()">+ حفظ المعلم</button>
       <div class="wafdeen-table-wrap" style="margin-top:15px"><table class="wafdeen-table" id="wafdeenTeachersTable"><thead><tr><th>المستخدم</th><th>الإجراء</th></tr></thead><tbody></tbody></table></div>
     </div>
 
@@ -1659,11 +1774,10 @@ function handleImgError(el, isWatermark = false) {
       <h3>👨‍🎓 إضافة الطلاب الذين ستظهر أسماؤهم للمعلمين</h3>
       <div class="wafdeen-grid">
         <div class="form-group"><label>اسم الطالب:</label><input id="wafdeenNewStudentName" type="text" placeholder="اسم الطالب / الطالبة"></div>
-        <div class="form-group"><label>اسم المستخدم:</label><input id="wafdeenNewStudentUser" type="text" placeholder="مثال: student1" autocomplete="username"></div>
         <div class="form-group"><label>كلمة المرور:</label><input id="wafdeenNewStudentPass" type="password" placeholder="كلمة مرور الطالب" autocomplete="new-password"></div>
       </div>
-      <button class="action-btn btn-save" onclick="addWafdeenStudent()">+ حفظ الطالب</button>
-      <div class="wafdeen-table-wrap" style="margin-top:15px"><table class="wafdeen-table" id="wafdeenStudentsTable"><thead><tr><th>الطالب</th><th>اسم المستخدم</th><th>الإجراء</th></tr></thead><tbody></tbody></table></div>
+      <button type="button" class="action-btn btn-save" onclick="addWafdeenStudent()">+ حفظ الطالب</button>
+      <div class="wafdeen-table-wrap" style="margin-top:15px"><table class="wafdeen-table" id="wafdeenStudentsTable"><thead><tr><th>الطالب / الطالبة</th><th>الإجراء</th></tr></thead><tbody></tbody></table></div>
     </div>
 
     <div id="wafdeen-panel-report" class="wafdeen-panel hidden">
@@ -1689,12 +1803,12 @@ function handleImgError(el, isWatermark = false) {
 
   <div class="result-code-form">
     <input type="text" id="resultCodeInput" placeholder="اكتب الكود هنا" maxlength="6">
-    <button class="action-btn btn-save" style="min-width: 110px;" onclick="lookupResultByCode()">عرض 🔍</button>
+    <button type="button" class="action-btn btn-save" style="min-width: 110px;" onclick="lookupResultByCode()">عرض 🔍</button>
   </div>
 
   <div id="resultDisplayArea"></div>
 
-  <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
+  <button type="button" class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
     🔙 رجوع لتسجيل الدخول
   </button>
 </div>
@@ -1711,12 +1825,12 @@ function handleImgError(el, isWatermark = false) {
 
   <div class="result-code-form">
     <input type="text" id="studentLoginCode" placeholder="اكتب كود التسجيل" maxlength="6" autocomplete="off">
-    <button class="action-btn btn-save" style="min-width: 110px;" onclick="studentLogin()">دخول 🔐</button>
+    <button type="button" class="action-btn btn-save" style="min-width: 110px;" onclick="studentLogin()">دخول 🔐</button>
   </div>
 
   <div id="studentPortalArea"></div>
 
-  <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
+  <button type="button" class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
     🔙 رجوع
   </button>
 </div>
@@ -1734,12 +1848,12 @@ function handleImgError(el, isWatermark = false) {
 
   <div class="result-code-form">
     <input type="text" id="resultCodeInput" placeholder="اكتب الكود هنا" maxlength="6">
-    <button class="action-btn btn-save" style="min-width: 110px;" onclick="lookupResultByCode()">عرض 🔍</button>
+    <button type="button" class="action-btn btn-save" style="min-width: 110px;" onclick="lookupResultByCode()">عرض 🔍</button>
   </div>
 
   <div id="resultDisplayArea"></div>
 
-  <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
+  <button type="button" class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
     🔙 رجوع لتسجيل الدخول
   </button>
 </div>
@@ -1756,12 +1870,12 @@ function handleImgError(el, isWatermark = false) {
 
   <div class="result-code-form">
     <input type="text" id="studentLoginCode" placeholder="اكتب كود التسجيل" maxlength="6" autocomplete="off">
-    <button class="action-btn btn-save" style="min-width: 110px;" onclick="studentLogin()">دخول 🔐</button>
+    <button type="button" class="action-btn btn-save" style="min-width: 110px;" onclick="studentLogin()">دخول 🔐</button>
   </div>
 
   <div id="studentPortalArea"></div>
 
-  <button class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
+  <button type="button" class="action-btn" style="width:100%; background: linear-gradient(135deg, #7f8c8d, #566573); margin-top: 8px;" onclick="showLoginScreen()">
     🔙 رجوع
   </button>
 </div>
@@ -1787,14 +1901,14 @@ function handleImgError(el, isWatermark = false) {
       أهلاً بك: <strong id="teacher-name-display" style="color: var(--on-dark-gold);"></strong> | 
       الصف: <span id="teacher-class-display"></span> | المركز: <span id="teacher-center-display"></span>
     </div>
-    <button class="action-btn btn-danger" style="min-width: auto; padding: 6px 16px; font-size: 0.82em;" onclick="handleLogout()">تسجيل خروج 🚪</button>
+    <button type="button" class="action-btn btn-danger" style="min-width: auto; padding: 6px 16px; font-size: 0.82em;" onclick="handleLogout()">تسجيل خروج 🚪</button>
   </div>
 
   <div id="app-msg" class="toast-msg"></div>
 
   <div class="menu-overlay" id="menu-overlay" onclick="closeMainMenu()"></div>
 
-  <button class="main-menu-handle" id="main-menu-handle" onclick="toggleMainMenu(event)" aria-label="فتح قائمة القوائم" aria-expanded="false" type="button">
+  <button type="button" class="main-menu-handle" id="main-menu-handle" onclick="toggleMainMenu(event)" aria-label="فتح قائمة القوائم" aria-expanded="false" type="button">
     <span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span>
     <span class="menu-handle-text">القوائم</span>
     <span class="menu-handle-dot" aria-hidden="true"></span>
@@ -1809,26 +1923,26 @@ function handleImgError(el, isWatermark = false) {
       </div>
       <div class="menu-drawer-line"></div>
       <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي</button>
-        <button class="tab-btn hidden" id="status-tab-btn" onclick="switchTab('status-tab', event)">🔍 حالة إنجاز الرصد</button>
-        <button class="tab-btn hidden" id="attendance-tab-btn" onclick="switchTab('attendance-tab', event)">📋 حضور 20 يوم</button>
+        <button type="button" class="tab-btn active" onclick="switchTab('daily-tab', event)">📝 الرصد اليومي</button>
+        <button type="button" class="tab-btn hidden" id="status-tab-btn" onclick="switchTab('status-tab', event)">🔍 حالة إنجاز الرصد</button>
+        <button type="button" class="tab-btn hidden" id="attendance-tab-btn" onclick="switchTab('attendance-tab', event)">📋 حضور 20 يوم</button>
 
         <div class="reports-menu-wrap hidden" id="reports-menu-wrap">
-          <button class="tab-btn reports-toggle" id="reports-main-btn" onclick="toggleReportsMenu(event)">
+          <button type="button" class="tab-btn reports-toggle" id="reports-main-btn" onclick="toggleReportsMenu(event)">
             📊 التقريرات <span class="reports-chevron">⌄</span>
           </button>
           <div class="reports-submenu" id="reports-submenu">
-            <button class="tab-btn" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">📊 التقرير الأسبوعي</button>
-            <button class="tab-btn" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">📅 التقرير الشهري</button>
-            <button class="tab-btn" id="manager-tab-btn" onclick="switchTab('manager-tab', event)">👁️ متابعة الصفوف</button>
+            <button type="button" class="tab-btn" id="weekly-tab-btn" onclick="switchTab('weekly-tab', event)">📊 التقرير الأسبوعي</button>
+            <button type="button" class="tab-btn" id="reports-tab-btn" onclick="switchTab('reports-tab', event)">📅 التقرير الشهري</button>
+            <button type="button" class="tab-btn" id="manager-tab-btn" onclick="switchTab('manager-tab', event)">👁️ متابعة الصفوف</button>
           </div>
         </div>
 
-        <button class="tab-btn" id="top-students-tab-btn" onclick="switchTab('top-students-tab', event)">🏆 الأوائل</button>
-        <button class="tab-btn" id="notes-tab-btn" onclick="switchTab('notes-tab', event)">🗒️ الملاحظات</button>
-        <button class="tab-btn hidden" id="admin-tab-btn" style="background-color: var(--warning-color); color: white;" onclick="switchTab('admin-tab', event)">⚙️ لوحة الإدارة</button>
-        <button class="tab-btn hidden" id="analysis-tab-btn" onclick="openStudentDataAnalysis(); closeMainMenu()">📈 تحليل البيانات</button>
-        <button class="tab-btn hidden" id="backup-tab-btn" style="background-color: var(--primary-dark); color: white;" onclick="switchTab('backup-tab', event)">💾 النسخة الاحتياطية</button>
+        <button type="button" class="tab-btn" id="top-students-tab-btn" onclick="switchTab('top-students-tab', event)">🏆 الأوائل</button>
+        <button type="button" class="tab-btn" id="notes-tab-btn" onclick="switchTab('notes-tab', event)">🗒️ الملاحظات</button>
+        <button type="button" class="tab-btn hidden" id="admin-tab-btn" style="background-color: var(--warning-color); color: white;" onclick="switchTab('admin-tab', event)">⚙️ لوحة الإدارة</button>
+        <button type="button" class="tab-btn hidden" id="analysis-tab-btn" onclick="openStudentDataAnalysis(); closeMainMenu()">📈 تحليل البيانات</button>
+        <button type="button" class="tab-btn hidden" id="backup-tab-btn" style="background-color: var(--primary-dark); color: white;" onclick="switchTab('backup-tab', event)">💾 النسخة الاحتياطية</button>
       </div>
     </aside>
 
@@ -1922,16 +2036,16 @@ function handleImgError(el, isWatermark = false) {
               <div class="form-group"><label>📖 التجويد (10) — يُضاف إلى المجموع:</label><input type="number" id="tajweed" min="0" max="10" placeholder="0-10" required></div>
             </div>
             <div class="btn-group">
-              <button class="action-btn btn-save" onclick="addGrade()">💾 حفظ الدرجات والوقت (من 70)</button>
-              <button class="action-btn btn-danger" onclick="markAbsent()">🚫 غياب (صفر في كل الخانات)</button>
-              <button class="action-btn btn-export" id="dailyExportBtn" onclick="exportToExcel('gradesTable', 'الرصد_اليومي')">📊 تصدير إكسل</button>
+              <button type="button" class="action-btn btn-save" onclick="addGrade()">💾 حفظ الدرجات والوقت (من 70)</button>
+              <button type="button" class="action-btn btn-danger" onclick="markAbsent()">🚫 غياب (صفر في كل الخانات)</button>
+              <button type="button" class="action-btn btn-export" id="dailyExportBtn" onclick="exportToExcel('gradesTable', 'الرصد_اليومي')">📊 تصدير إكسل</button>
             </div>
           </div>
 
           <div class="search-box">
             <input type="text" id="searchDaily" placeholder="🔍 بحث باسم الطالب..." oninput="renderDailyTable()">
             <input type="date" id="filterDateDaily" title="اكتب أو اختر التاريخ لعرض درجات هذا اليوم" onchange="renderDailyTable()" style="flex:1;">
-            <button class="action-btn btn-warning" id="togglePreviousBtn" style="flex:none;padding:8px 12px;" onclick="togglePreviousRecords()">عرض الأيام السابقة</button>
+            <button type="button" class="action-btn btn-warning" id="togglePreviousBtn" style="flex:none;padding:8px 12px;" onclick="togglePreviousRecords()">عرض الأيام السابقة</button>
           </div>
 
           <div class="table-responsive">
@@ -1961,7 +2075,7 @@ function handleImgError(el, isWatermark = false) {
               <input type="date" id="statusDate" onchange="renderClassStatusTable(); hideUnrecordedDetails();">
             </div>
             <div class="form-group">
-              <button class="action-btn btn-save" onclick="renderClassStatusTable()">🔄 تحديث حالة الرصد</button>
+              <button type="button" class="action-btn btn-save" onclick="renderClassStatusTable()">🔄 تحديث حالة الرصد</button>
             </div>
           </div>
 
@@ -1986,7 +2100,7 @@ function handleImgError(el, isWatermark = false) {
             <h4 style="margin:0; color:var(--danger-color); font-family:'Amiri', serif; font-size:1.2em;">
               ⚠️ قائمة الطلاب الذين لم يتم تسجيل درجاتهم في: <span id="unrecordedClassName" style="color:var(--primary-dark);"></span>
             </h4>
-            <button class="action-btn btn-danger" style="min-width:auto; padding:4px 12px; font-size:0.85em;" onclick="hideUnrecordedDetails()">إغلاق ✖</button>
+            <button type="button" class="action-btn btn-danger" style="min-width:auto; padding:4px 12px; font-size:0.85em;" onclick="hideUnrecordedDetails()">إغلاق ✖</button>
           </div>
           <hr style="border:0; border-top:1px dashed #ccc; margin:12px 0;">
           <div id="unrecordedStudentsList"></div>
@@ -2020,9 +2134,9 @@ function handleImgError(el, isWatermark = false) {
             </div>
           </div>
           <div class="btn-group">
-            <button class="action-btn btn-save" onclick="renderAttendanceTable()">🔄 تحديث كشف الحضور</button>
-            <button class="action-btn btn-export" onclick="exportToExcel('attendanceTable', 'كشف_الحضور_20_يوم')">📊 تصدير إكسل</button>
-            <button class="action-btn btn-warning" onclick="window.print()">🖨️ طباعة الكشف</button>
+            <button type="button" class="action-btn btn-save" onclick="renderAttendanceTable()">🔄 تحديث كشف الحضور</button>
+            <button type="button" class="action-btn btn-export" onclick="exportToExcel('attendanceTable', 'كشف_الحضور_20_يوم')">📊 تصدير إكسل</button>
+            <button type="button" class="action-btn btn-warning" onclick="window.print()">🖨️ طباعة الكشف</button>
           </div>
           <div class="table-responsive">
             <table id="attendanceTable">
@@ -2061,9 +2175,9 @@ function handleImgError(el, isWatermark = false) {
             </div>
           </div>
           <div class="btn-group">
-            <button class="action-btn btn-save" onclick="renderWeeklyTable()">🔄 تحديث التقرير</button>
-            <button class="action-btn btn-export" onclick="exportToExcel('weeklyTable', 'التقرير_الأسبوعي')">📊 تصدير إكسل</button>
-            <button class="action-btn btn-warning" onclick="window.print()">🖨️ طباعة</button>
+            <button type="button" class="action-btn btn-save" onclick="renderWeeklyTable()">🔄 تحديث التقرير</button>
+            <button type="button" class="action-btn btn-export" onclick="exportToExcel('weeklyTable', 'التقرير_الأسبوعي')">📊 تصدير إكسل</button>
+            <button type="button" class="action-btn btn-warning" onclick="window.print()">🖨️ طباعة</button>
           </div>
           <div class="table-responsive">
             <table id="weeklyTable">
@@ -2127,9 +2241,9 @@ function handleImgError(el, isWatermark = false) {
             </div>
           </div>
           <div class="btn-group">
-            <button class="action-btn btn-save" onclick="renderMonthlyReport()">👁️ عرض التقرير</button>
-            <button class="action-btn btn-export" onclick="exportToExcel('monthlyReportTable', 'التقرير_الشهري_التفصيلي')">📊 تصدير إكسل</button>
-            <button class="action-btn btn-warning" onclick="window.print()">🖨️ طباعة</button>
+            <button type="button" class="action-btn btn-save" onclick="renderMonthlyReport()">👁️ عرض التقرير</button>
+            <button type="button" class="action-btn btn-export" onclick="exportToExcel('monthlyReportTable', 'التقرير_الشهري_التفصيلي')">📊 تصدير إكسل</button>
+            <button type="button" class="action-btn btn-warning" onclick="window.print()">🖨️ طباعة</button>
           </div>
           <div class="table-responsive">
             <table id="monthlyReportTable">
@@ -2146,17 +2260,17 @@ function handleImgError(el, isWatermark = false) {
       <!-- 6. تبويب متابعة الصفوف -->
       <div id="manager-tab" class="tab-content">
         <div class="tabs" id="manager-classes-tabs" style="border-bottom: 2px solid var(--manager-color); padding-bottom: 10px; flex-direction: row; overflow-x: auto;">
-          <button class="tab-btn manager-active" onclick="switchManagerClass('أولى - أولاد', event)">أولى - أولاد</button>
-          <button class="tab-btn" onclick="switchManagerClass('أولى - بنات', event)">أولى - بنات</button>
-          <button class="tab-btn" onclick="switchManagerClass('ثانية - أولاد', event)">ثانية - أولاد</button>
-          <button class="tab-btn" onclick="switchManagerClass('ثانية - بنات', event)">ثانية - بنات</button>
-          <button class="tab-btn" onclick="switchManagerClass('ثالثة - أولاد', event)">ثالثة - أولاد</button>
-          <button class="tab-btn" onclick="switchManagerClass('ثالثة - بنات', event)">ثالثة - بنات</button>
-          <button class="tab-btn" onclick="switchManagerClass('رابعة - أولاد', event)">رابعة - أولاد</button>
-          <button class="tab-btn" onclick="switchManagerClass('رابعة - بنات', event)">رابعة - بنات</button>
-          <button class="tab-btn" onclick="switchManagerClass('خامسة - أولاد', event)">خامسة - أولاد</button>
-          <button class="tab-btn" onclick="switchManagerClass('خامسة - بنات', event)">خامسة - بنات</button>
-          <button class="tab-btn" onclick="switchManagerClass('أولى شرعي', event)">أولى شرعي</button>
+          <button type="button" class="tab-btn manager-active" onclick="switchManagerClass('أولى - أولاد', event)">أولى - أولاد</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('أولى - بنات', event)">أولى - بنات</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('ثانية - أولاد', event)">ثانية - أولاد</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('ثانية - بنات', event)">ثانية - بنات</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('ثالثة - أولاد', event)">ثالثة - أولاد</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('ثالثة - بنات', event)">ثالثة - بنات</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('رابعة - أولاد', event)">رابعة - أولاد</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('رابعة - بنات', event)">رابعة - بنات</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('خامسة - أولاد', event)">خامسة - أولاد</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('خامسة - بنات', event)">خامسة - بنات</button>
+          <button type="button" class="tab-btn" onclick="switchManagerClass('أولى شرعي', event)">أولى شرعي</button>
         </div>
 
         <h3 style="color: var(--manager-color); text-align: center; border-bottom: 1px dashed #ccc; padding-bottom: 10px; font-family:'Amiri', serif;">
@@ -2167,8 +2281,8 @@ function handleImgError(el, isWatermark = false) {
           <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 15px;">
             <h4 style="color: var(--primary-dark); margin:0;">درجات اليوم المباشرة (<span id="mgr-today-date"></span>)</h4>
             <div>
-              <button class="action-btn btn-export" style="min-width: auto; padding: 5px 12px;" onclick="exportToExcel('mgrDailyTable', 'متابعة_اليوم')">إكسل</button>
-              <button class="action-btn btn-warning" style="min-width: auto; padding: 5px 12px;" onclick="window.print()">طباعة</button>
+              <button type="button" class="action-btn btn-export" style="min-width: auto; padding: 5px 12px;" onclick="exportToExcel('mgrDailyTable', 'متابعة_اليوم')">إكسل</button>
+              <button type="button" class="action-btn btn-warning" style="min-width: auto; padding: 5px 12px;" onclick="window.print()">طباعة</button>
             </div>
           </div>
           <div class="table-responsive">
@@ -2184,7 +2298,7 @@ function handleImgError(el, isWatermark = false) {
         <div class="card-view">
           <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
             <h4 style="color: var(--primary-dark); margin:0;">التقرير الأسبوعي المجمع</h4>
-            <button class="action-btn btn-export" style="min-width: auto; padding: 5px 12px;" onclick="exportToExcel('mgrWeeklyTable', 'متابعة_الأسبوع')">إكسل</button>
+            <button type="button" class="action-btn btn-export" style="min-width: auto; padding: 5px 12px;" onclick="exportToExcel('mgrWeeklyTable', 'متابعة_الأسبوع')">إكسل</button>
           </div>
           <div class="form-group" style="max-width: 260px; margin-bottom: 10px;">
             <select id="mgrWeekSelect" onchange="renderManagerView()"></select>
@@ -2202,7 +2316,7 @@ function handleImgError(el, isWatermark = false) {
         <div class="card-view">
           <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
             <h4 style="color: var(--primary-dark); margin:0;">التقرير الشهري الشامل</h4>
-            <button class="action-btn btn-export" style="min-width: auto; padding: 5px 12px;" onclick="exportToExcel('mgrMonthlyTable', 'متابعة_الشهر')">إكسل</button>
+            <button type="button" class="action-btn btn-export" style="min-width: auto; padding: 5px 12px;" onclick="exportToExcel('mgrMonthlyTable', 'متابعة_الشهر')">إكسل</button>
           </div>
           <div style="display: flex; gap: 10px; max-width: 320px; margin-bottom: 10px;">
             <select id="mgrMonthSelect" onchange="renderManagerView()" class="form-group">
@@ -2229,9 +2343,9 @@ function handleImgError(el, isWatermark = false) {
           <h3 class="card-title">🏆 الأوائل</h3>
 
           <div class="top-students-switcher">
-            <button class="top-period-btn active" onclick="switchTopPeriod('day', event)">📅 أوائل اليوم</button>
-            <button class="top-period-btn" onclick="switchTopPeriod('week', event)">📆 أوائل الأسبوع</button>
-            <button class="top-period-btn" onclick="switchTopPeriod('month', event)">🗓️ أوائل الشهر</button>
+            <button type="button" class="top-period-btn active" onclick="switchTopPeriod('day', event)">📅 أوائل اليوم</button>
+            <button type="button" class="top-period-btn" onclick="switchTopPeriod('week', event)">📆 أوائل الأسبوع</button>
+            <button type="button" class="top-period-btn" onclick="switchTopPeriod('month', event)">🗓️ أوائل الشهر</button>
           </div>
 
           <div id="top-period-day" class="top-period-panel">
@@ -2271,7 +2385,7 @@ function handleImgError(el, isWatermark = false) {
           </div>
 
           <div class="btn-group">
-            <button class="action-btn btn-save" onclick="renderTopStudents()">🔄 تحديث الأوائل</button>
+            <button type="button" class="action-btn btn-save" onclick="renderTopStudents()">🔄 تحديث الأوائل</button>
           </div>
 
           <div id="topStudentsPeriodTitle" class="top-period-title"></div>
@@ -2305,8 +2419,8 @@ function handleImgError(el, isWatermark = false) {
             </div>
           </div>
           <div class="btn-group">
-            <button class="action-btn btn-save" onclick="saveNote()">💾 حفظ الملاحظة</button>
-            <button class="action-btn btn-export" id="notesExportBtn" onclick="exportToExcel('notesTable','ملاحظات_الطلاب')">📊 تصدير إكسل</button>
+            <button type="button" class="action-btn btn-save" onclick="saveNote()">💾 حفظ الملاحظة</button>
+            <button type="button" class="action-btn btn-export" id="notesExportBtn" onclick="exportToExcel('notesTable','ملاحظات_الطلاب')">📊 تصدير إكسل</button>
           </div>
         </div>
 
@@ -2402,7 +2516,7 @@ function handleImgError(el, isWatermark = false) {
         <div style="background:linear-gradient(135deg,#f4f7f8,#eef7f2); padding:18px; border-radius:12px; margin-bottom:22px; border:1px solid #cfd8dc; border-top:4px solid #566573;">
           <h3 style="margin-top:0; font-size:1.15em; color:var(--primary-dark); font-family:'Amiri', serif;">🔎 اختبار اتصال النظام</h3>
           <p style="font-size:.88em; color:#555; margin-bottom:12px;">اختبر من هنا اتصال لوحة الإدارة بكل من Firebase و Google Sheets.</p>
-          <button class="action-btn" style="height:44px; background:linear-gradient(135deg,#566573,#34495e);" onclick="runSystemConnectionTest()">
+          <button type="button" class="action-btn" style="height:44px; background:linear-gradient(135deg,#566573,#34495e);" onclick="runSystemConnectionTest()">
             🔎 اختبار اتصال Firebase و Google Sheets
           </button>
           <div id="connection-test-box" class="toast-msg" style="margin-top:10px; text-align:right; display:none;"></div>
@@ -2435,7 +2549,7 @@ function handleImgError(el, isWatermark = false) {
               </select>
             </div>
           </div>
-          <button class="action-btn btn-save" onclick="addBulkStudents()">+ رفع جميع الأسماء للسحابة</button>
+          <button type="button" class="action-btn btn-save" onclick="addBulkStudents()">+ رفع جميع الأسماء للسحابة</button>
         </div>
 
         <div style="background: #fdf9f0; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--accent-gold-light); border-top: 4px solid var(--accent-gold);">
@@ -2445,9 +2559,9 @@ function handleImgError(el, isWatermark = false) {
           </p>
           <div class="btn-group">
             <input type="file" id="resultsExcelFile" accept=".xlsx,.xls" style="display:none;" onchange="handleResultsExcelUpload(event)">
-            <button class="action-btn btn-save" onclick="document.getElementById('resultsExcelFile').click()">📤 رفع ملف درجات جديد وتوليد الأكواد</button>
-            <button class="action-btn btn-export" onclick="exportResultsCodesExcel()">⬇️ تحميل ملف الأكواد الحالي</button>
-            <button class="action-btn btn-danger" onclick="deleteAllResults()">🗑️ حذف كل النتائج المخزنة</button>
+            <button type="button" class="action-btn btn-save" onclick="document.getElementById('resultsExcelFile').click()">📤 رفع ملف درجات جديد وتوليد الأكواد</button>
+            <button type="button" class="action-btn btn-export" onclick="exportResultsCodesExcel()">⬇️ تحميل ملف الأكواد الحالي</button>
+            <button type="button" class="action-btn btn-danger" onclick="deleteAllResults()">🗑️ حذف كل النتائج المخزنة</button>
           </div>
           <div id="results-admin-msg" class="toast-msg"></div>
           <div id="results-admin-summary"></div>
@@ -2496,16 +2610,16 @@ function handleImgError(el, isWatermark = false) {
               </select>
             </div>
           </div>
-          <button class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم / المعلمة</button>
+          <button type="button" class="action-btn btn-save" onclick="addTeacher()">+ حفظ المعلم / المعلمة</button>
         </div>
 
         <div style="background: #fffdf8; padding: 18px; border-radius: 12px; margin-bottom: 22px; border: 1px solid var(--accent-gold-light); border-top: 4px solid var(--accent-gold);">
           <h3 style="margin-top: 0; color: var(--accent-gold-dark); font-size: 1.15em; font-family:'Amiri', serif;">📦 النسخ الاحتياطي الشامل (إيميل وحفظ ملف)</h3>
           <p style="font-size:0.88em; color:#666; margin-bottom:12px;">نسخة شاملة لكل بيانات الدرجات والمعلمين والطلاب مرتبة ومزامنة.</p>
           <div class="btn-group">
-            <button class="action-btn btn-export" onclick="backupDataAndEmail(false)">💾 حفظ نسخة للجهاز وإرسال للبريد</button>
+            <button type="button" class="action-btn btn-export" onclick="backupDataAndEmail(false)">💾 حفظ نسخة للجهاز وإرسال للبريد</button>
             <input type="file" id="restoreFile" accept=".json" style="display:none;" onchange="restoreData(event)">
-            <button class="action-btn btn-warning" onclick="document.getElementById('restoreFile').click()">📂 استعادة النسخة الشاملة من ملف</button>
+            <button type="button" class="action-btn btn-warning" onclick="document.getElementById('restoreFile').click()">📂 استعادة النسخة الشاملة من ملف</button>
           </div>
         </div>
 
@@ -2526,8 +2640,8 @@ function handleImgError(el, isWatermark = false) {
           </p>
           <div id="studentCodesClassFilter" class="btn-group" style="margin-top:12px; flex-wrap:wrap;"></div>
           <div class="btn-group" style="margin-top:10px;">
-            <button class="action-btn btn-save" onclick="generateMissingStudentCodes()">🔄 توليد أكواد الصف المحدد</button>
-            <button class="action-btn btn-export" onclick="exportStudentLoginCodes()">⬇️ تحميل الأكواد إكسل</button>
+            <button type="button" class="action-btn btn-save" onclick="generateMissingStudentCodes()">🔄 توليد أكواد الصف المحدد</button>
+            <button type="button" class="action-btn btn-export" onclick="exportStudentLoginCodes()">⬇️ تحميل الأكواد إكسل</button>
           </div>
           <div id="student-codes-msg" class="toast-msg"></div>
           <div class="table-responsive">
@@ -2562,7 +2676,7 @@ function handleImgError(el, isWatermark = false) {
             في حالة حدوث أي مشكلة ومسح بيانات الموقع، ارفع نفس الملف من هنا وستعود كل الدرجات كما كانت وقت التصدير.
           </p>
           <div class="btn-group">
-            <button class="action-btn btn-export" onclick="exportAllGradesToExcel()">📊 تصدير كل الدرجات (Excel)</button>
+            <button type="button" class="action-btn btn-export" onclick="exportAllGradesToExcel()">📊 تصدير كل الدرجات (Excel)</button>
             <label class="action-btn btn-save" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
               📂 استعادة الدرجات من ملف Excel
               <input type="file" accept=".xlsx,.xls" onchange="importGradesFromExcel(event)" style="display:none;">
@@ -2576,7 +2690,7 @@ function handleImgError(el, isWatermark = false) {
             نفس النظام: تصدير كل بيانات المدرسين (أسماء المستخدمين، كلمات المرور، الصفوف، المراكز) في ملف إكسل، واستعادتها لاحقاً عند الحاجة.
           </p>
           <div class="btn-group">
-            <button class="action-btn btn-export" onclick="exportTeachersToExcel()">📊 تصدير بيانات المدرسين (Excel)</button>
+            <button type="button" class="action-btn btn-export" onclick="exportTeachersToExcel()">📊 تصدير بيانات المدرسين (Excel)</button>
             <label class="action-btn btn-save" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
               📂 استعادة المدرسين من ملف Excel
               <input type="file" accept=".xlsx,.xls" onchange="importTeachersFromExcel(event)" style="display:none;">
@@ -2590,7 +2704,7 @@ function handleImgError(el, isWatermark = false) {
             نفس النظام: تصدير كل بيانات الطلاب (الاسم والصف) في ملف إكسل، واستعادتها لاحقاً عند الحاجة.
           </p>
           <div class="btn-group">
-            <button class="action-btn btn-export" onclick="exportStudentsToExcel()">📊 تصدير بيانات الطلاب (Excel)</button>
+            <button type="button" class="action-btn btn-export" onclick="exportStudentsToExcel()">📊 تصدير بيانات الطلاب (Excel)</button>
             <label class="action-btn btn-save" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center;">
               📂 استعادة الطلاب من ملف Excel
               <input type="file" accept=".xlsx,.xls" onchange="importStudentsFromExcel(event)" style="display:none;">
@@ -4347,8 +4461,8 @@ function siteConfirm(title, message, confirmText = 'تأكيد', danger = false)
     showSiteModal(
       title,
       `<div>${message}</div>`,
-      `<button class="action-btn ${danger ? 'modal-danger' : 'modal-success'}" id="siteConfirmBtn">${confirmText}</button>
-       <button class="action-btn modal-cancel" id="siteCancelBtn">إلغاء</button>`
+      `<button type="button" class="action-btn ${danger ? 'modal-danger' : 'modal-success'}" id="siteConfirmBtn">${confirmText}</button>
+       <button type="button" class="action-btn modal-cancel" id="siteCancelBtn">إلغاء</button>`
     );
     document.getElementById('siteConfirmBtn').onclick = () => {
       closeSiteModal();
@@ -4365,7 +4479,7 @@ function showSiteError(message) {
   showSiteModal(
     'تنبيه',
     `<div style="color:var(--danger-color);font-weight:700;">${message}</div>`,
-    `<button class="action-btn modal-success" onclick="closeSiteModal()">حسناً</button>`
+    `<button type="button" class="action-btn modal-success" onclick="closeSiteModal()">حسناً</button>`
   );
 }
 
@@ -4385,8 +4499,8 @@ function openStudentEditModal(student) {
           </select>
         </div>
       </div>`,
-      `<button class="action-btn modal-success" id="saveStudentEditBtn">💾 حفظ التعديل</button>
-       <button class="action-btn modal-cancel" id="cancelStudentEditBtn">إلغاء</button>`
+      `<button type="button" class="action-btn modal-success" id="saveStudentEditBtn">💾 حفظ التعديل</button>
+       <button type="button" class="action-btn modal-cancel" id="cancelStudentEditBtn">إلغاء</button>`
     );
 
     document.getElementById('saveStudentEditBtn').onclick = () => {
@@ -4432,8 +4546,8 @@ function openTeacherEditModal(teacher) {
           </select>
         </div>
       </div>`,
-      `<button class="action-btn modal-success" id="saveTeacherEditBtn">💾 حفظ التعديل</button>
-       <button class="action-btn modal-cancel" id="cancelTeacherEditBtn">إلغاء</button>`
+      `<button type="button" class="action-btn modal-success" id="saveTeacherEditBtn">💾 حفظ التعديل</button>
+       <button type="button" class="action-btn modal-cancel" id="cancelTeacherEditBtn">إلغاء</button>`
     );
 
     document.getElementById('saveTeacherEditBtn').onclick = () => {
@@ -4524,8 +4638,8 @@ function renderDailyTable() {
     const canManageRecord = currentTeacher.username === 'admin' || currentTeacher.username === r.teacherName;
     const actionBtns = canManageRecord
       ? `<div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap;">
-           <button class="action-btn btn-edit" style="padding:3px 8px;font-size:0.8em;min-width:auto;" onclick="editRecord('${r.id}')">✏️ تعديل</button>
-           <button class="action-btn btn-danger" style="padding:3px 8px;font-size:0.8em;min-width:auto;" onclick="deleteRecord('${r.id}')">🗑️ حذف</button>
+           <button type="button" class="action-btn btn-edit" style="padding:3px 8px;font-size:0.8em;min-width:auto;" onclick="editRecord('${r.id}')">✏️ تعديل</button>
+           <button type="button" class="action-btn btn-danger" style="padding:3px 8px;font-size:0.8em;min-width:auto;" onclick="deleteRecord('${r.id}')">🗑️ حذف</button>
          </div>`
       : '-';
 
@@ -4593,8 +4707,8 @@ async function editRecord(id) {
       <div class="form-group"><label>وقت الماضي:</label><input type="text" id="modalOldTime" value="${formatTimerSeconds(record.oldRevisionTimeSeconds||0)}" readonly></div>
       <div class="form-group"><label>وقت التلاوة:</label><input type="text" id="modalRecitationTime" value="${formatTimerSeconds(record.recitationTimeSeconds||0)}" readonly></div>
     </div>`,
-    `<button class="action-btn modal-success" id="saveRecordEditBtn">💾 حفظ التعديل</button>
-     <button class="action-btn modal-cancel" id="cancelRecordEditBtn">إلغاء</button>`
+    `<button type="button" class="action-btn modal-success" id="saveRecordEditBtn">💾 حفظ التعديل</button>
+     <button type="button" class="action-btn modal-cancel" id="cancelRecordEditBtn">إلغاء</button>`
   );
 
   document.getElementById('saveRecordEditBtn').onclick = async () => {
@@ -4719,7 +4833,7 @@ function renderClassStatusTable() {
     } else if (unrecorded.length === 0) {
       actionBtn = '<span style="color:var(--success-color); font-weight:bold;">✨ اكتمل الرصد بالكامل</span>';
     } else {
-      actionBtn = `<button class="action-btn btn-warning" style="padding:4px 10px; font-size:0.82em; min-width:auto;" onclick="showUnrecordedStudents('${cName}', '${dateVal}')">عرض الطالب الذي لم يتم تسجيله (${unrecorded.length}) 👁️</button>`;
+      actionBtn = `<button type="button" class="action-btn btn-warning" style="padding:4px 10px; font-size:0.82em; min-width:auto;" onclick="showUnrecordedStudents('${cName}', '${dateVal}')">عرض الطالب الذي لم يتم تسجيله (${unrecorded.length}) 👁️</button>`;
     }
 
     tbody.innerHTML += `
@@ -4905,7 +5019,7 @@ function showStudentReportChart(studentName, reportType) {
     title = `📈 الرسم البياني الشهري — ${studentName}`;
   }
 
-  showSiteModal(title, `<div style="background:#fff;border-radius:12px;padding:8px 4px;"><canvas id="studentReportChartModal" height="250"></canvas></div>`, `<button class="action-btn modal-cancel" onclick="closeSiteModal()">إغلاق</button>`);
+  showSiteModal(title, `<div style="background:#fff;border-radius:12px;padding:8px 4px;"><canvas id="studentReportChartModal" height="250"></canvas></div>`, `<button type="button" class="action-btn modal-cancel" onclick="closeSiteModal()">إغلاق</button>`);
   setTimeout(() => {
     renderBarChart('studentReportChartModal',
       (c) => window.studentReportModalChartInstance = c,
@@ -5459,7 +5573,7 @@ function renderClassCards() {
     } else {
       studentsHtml = '<div style="max-height: 180px; overflow-y: auto; padding-left:5px;">';
       classStudents.forEach(s => {
-        studentsHtml += `<div class="student-item-row"> <span>👤 ${s.name}</span> <div> <button class="action-btn btn-edit" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </div> </div>`;
+        studentsHtml += `<div class="student-item-row"> <span>👤 ${s.name}</span> <div> <button type="button" class="action-btn btn-edit" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button type="button" class="action-btn btn-danger" style="padding:2px 6px; font-size:0.75em; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </div> </div>`;
       });
       studentsHtml += '</div>';
     }
@@ -5585,7 +5699,7 @@ function renderStudentsTable() {
   if (!tbody) return; tbody.innerHTML = '';
   const sortedStudents = [...studentsData].sort((a,b) => a.name.localeCompare(b.name, 'ar'));
   sortedStudents.forEach(s => {
-    tbody.innerHTML += `<tr> <td style="font-weight:bold;">${s.name}</td> <td>${s.className}</td> <td> <button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </td> </tr>`;
+    tbody.innerHTML += `<tr> <td style="font-weight:bold;">${s.name}</td> <td>${s.className}</td> <td> <button type="button" class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editStudent('${s.id}')">تعديل</button> <button type="button" class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteStudent('${s.id}')">حذف</button> </td> </tr>`;
   });
   renderStudentCodesTable();
 }
@@ -5705,7 +5819,7 @@ function renderTeachersTable() {
   if (!tbody) return; tbody.innerHTML = '';
   teachersData.forEach((t) => {
     const actions = t.username === 'admin' ? '<span style="color:gray;">مدير النظام الرئيسي</span>' :
-      `<button class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editTeacher('${t.id}')">تعديل</button> <button class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteTeacher('${t.id}')">حذف</button>`;
+      `<button type="button" class="action-btn btn-edit" style="padding:3px 8px; min-width:auto;" onclick="editTeacher('${t.id}')">تعديل</button> <button type="button" class="action-btn btn-danger" style="padding:3px 8px; min-width:auto;" onclick="deleteTeacher('${t.id}')">حذف</button>`;
     tbody.innerHTML += `<tr><td style="font-weight:bold;">${t.username}</td><td>${t.password}</td><td>${t.assignedClass}</td><td>${t.center}</td><td>${actions}</td></tr>`;
   });
 }
@@ -5825,7 +5939,7 @@ function renderNotesTable() {
       <td style="font-weight:bold;">${n.studentName || '-'}</td>
       <td style="text-align:right;white-space:pre-wrap;">${String(n.text || '-').replace(/</g,'&lt;')}</td>
       <td>${n.teacherName || '-'}</td>
-      <td><button class="action-btn btn-danger" style="min-width:90px;padding:6px 10px;" onclick="deleteNote('${String(n.id).replace(/'/g,"\\'")}')">🗑️ حذف</button></td>
+      <td><button type="button" class="action-btn btn-danger" style="min-width:90px;padding:6px 10px;" onclick="deleteNote('${String(n.id).replace(/'/g,"\\'")}')">🗑️ حذف</button></td>
     </tr>`).join('') : '<tr><td colspan="6" style="padding:25px;color:#777;">لا توجد ملاحظات مسجلة.</td></tr>';
 }
 
@@ -6083,7 +6197,7 @@ function getStudentPortalStats(student) {
 }
 
 function showTajweedHigh(studentName, score) {
-  showSiteModal('⭐ تميّز في التجويد', `<div style="text-align:center;font-size:1.05em;line-height:2;"><strong>${studentName}</strong><br>حصل على درجة عالية في التجويد: <strong style="color:var(--accent-gold-dark);">${score} / 10</strong> ⭐</div>`, '<button class="action-btn btn-save" onclick="closeSiteModal()">حسناً</button>');
+  showSiteModal('⭐ تميّز في التجويد', `<div style="text-align:center;font-size:1.05em;line-height:2;"><strong>${studentName}</strong><br>حصل على درجة عالية في التجويد: <strong style="color:var(--accent-gold-dark);">${score} / 10</strong> ⭐</div>`, '<button type="button" class="action-btn btn-save" onclick="closeSiteModal()">حسناً</button>');
 }
 
 function studentLogin() {
@@ -6563,6 +6677,16 @@ document.addEventListener('click', function(e) {
   }
 }, true);
 </script>
+<style>
+.wafdeen-monitor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.wafdeen-monitor-card{height:100%;box-sizing:border-box}
+.wafdeen-monitor-title{font-size:1.35rem;font-weight:900;margin-bottom:10px}
+.wafdeen-edu-box{display:flex;justify-content:space-between;align-items:center;width:100%;box-sizing:border-box;background:linear-gradient(135deg,#1f2937,#111827);border:2px solid rgba(255,255,255,.14);border-radius:14px;color:#fff;cursor:pointer;text-align:right;padding:16px 18px;font-size:1.2rem;font-weight:900;transition:.2s;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.wafdeen-edu-box:hover{transform:translateY(-1px);border-color:var(--accent-gold-light);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.wafdeen-edu-box:active{transform:scale(.99)}
+.wafdeen-monitor-card h4{margin:14px 0 8px;font-size:1rem}
+@media(max-width:800px){.wafdeen-monitor-grid{grid-template-columns:1fr}}
+</style>
 <script>
 /* ================= منطق جلسة الوافدين ================= */
 let wafdeenTeachersData = [];
@@ -6572,11 +6696,22 @@ let wafdeenBooksData = [];
 let wafdeenExamsData = [];
 let currentWafdeenTeacher = null;
 let wafdeenSelectedType = '';
+let wafdeenSelectedSubject = '';
 let wafdeenElapsedSeconds = 0;
 let wafdeenTimerStartedAt = null;
 let wafdeenTimerInterval = null;
 let wafdeenTimerRunning = false;
-let wafdeenSelectedSubject = 'fiqh';
+let wafdeenQuranSelectedType = '';
+let wafdeenQuranElapsedSeconds = 0;
+let wafdeenQuranTimerStartedAt = null;
+let wafdeenQuranTimerInterval = null;
+let wafdeenQuranTimerRunning = false;
+let wafdeenEduSelectedSubject = '';
+let wafdeenEduSelectedType = 'المواد التعليمية';
+let wafdeenEduElapsedSeconds = 0;
+let wafdeenEduTimerStartedAt = null;
+let wafdeenEduTimerInterval = null;
+let wafdeenEduTimerRunning = false;
 
 const WAFDEEN_SUBJECTS = {
   fiqh:{name:'فقه',icon:'⚖️'},
@@ -6613,21 +6748,17 @@ function showWafdeenLoginScreen(){
   wafdeenLocalLoad();
 }
 function wafdeenLogin(){
-  const u=document.getElementById('wafdeenUsername').value.trim();
-  const p=document.getElementById('wafdeenPassword').value.trim();
-  if(!u||!p) return showMessage('wafdeen-login-msg','يرجى إدخال اسم المستخدم وكلمة المرور','error');
+  const u=document.getElementById('wafdeenUsername').value.trim(),p=document.getElementById('wafdeenPassword').value.trim();
+  if(!u||!p)return showMessage('wafdeen-login-msg','يرجى إدخال اسم المستخدم أو اسم الطالب وكلمة المرور','error');
   let account=null;
-  if(u==='admin' && p===getWafdeenAdminPassword()) account={username:'admin',isAdmin:true,role:'admin'};
-  else {
-    const teacher=wafdeenTeachersData.find(t=>t.username===u&&t.password===p);
-    const student=wafdeenStudentsData.find(s=>s.username===u&&s.password===p);
-    account=teacher ? {...teacher,isAdmin:false,role:'teacher'} : (student ? {...student,isAdmin:false,role:'student'} : null);
+  if(u==='admin'&&p===getWafdeenAdminPassword())account={username:'admin',isAdmin:true,role:'admin'};
+  else{
+    const teacher=wafdeenTeachersData.find(t=>String(t.username||'').trim()===u&&String(t.password||'')===p);
+    const student=wafdeenStudentsData.find(st=>(String(st.name||'').trim()===u||String(st.username||'').trim()===u)&&String(st.password||'')===p);
+    account=teacher?{...teacher,isAdmin:false,role:'teacher'}:(student?{...student,isAdmin:false,role:'student'}:null);
   }
-  if(!account) return showMessage('wafdeen-login-msg','اسم المستخدم أو كلمة المرور غير صحيحة','error');
-  currentWafdeenTeacher=account;
-  localStorage.setItem('currentWafdeenTeacher',JSON.stringify(account));
-  showWafdeenAppScreen();
-  wafdeenLoadCloud();
+  if(!account)return showMessage('wafdeen-login-msg','اسم المستخدم أو اسم الطالب أو كلمة المرور غير صحيحة','error');
+  currentWafdeenTeacher=account; localStorage.setItem('currentWafdeenTeacher',JSON.stringify(account)); showWafdeenAppScreen(); wafdeenLoadCloud();
 }
 function showWafdeenAppScreen(){
   document.body.classList.remove('login-screen-active');
@@ -6721,38 +6852,47 @@ function selectWafdeenType(type,btn){
   document.getElementById('wafdeen-timer-status').innerText='نوع التسميع: '+type+' — جاهز للبدء';
 }
 function wafdeenFormat(sec){sec=Math.max(0,Math.floor(sec));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');}
-function wafdeenUpdateTimerDisplay(){document.getElementById('wafdeen-timer').innerText=wafdeenFormat(wafdeenElapsedSeconds);}
+function wafdeenFormatTimer(elapsed){const sec=Math.max(0,Math.floor(elapsed||0));const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s2=sec%60;return [h,m,s2].map(v=>String(v).padStart(2,'0')).join(':');}
+function wafdeenUpdateTimerDisplay(){const el=document.getElementById('wafdeen-timer');if(el)el.innerText=wafdeenFormatTimer(wafdeenElapsedSeconds);}
 function wafdeenStopInterval(){if(wafdeenTimerInterval){clearInterval(wafdeenTimerInterval);wafdeenTimerInterval=null;}wafdeenTimerRunning=false;wafdeenTimerStartedAt=null;}
 function wafdeenTick(){if(!wafdeenTimerRunning||!wafdeenTimerStartedAt)return;wafdeenElapsedSeconds=Math.floor((Date.now()-wafdeenTimerStartedAt)/1000);wafdeenUpdateTimerDisplay();}
-function wafdeenStartPause(forcePause=false){
-  if(currentWafdeenTeacher?.role==='student')return;
-  if(!wafdeenSelectedType)return showMessage('wafdeen-save-msg','اختر نوع التسميع أولاً: الجديد أو الماضي أو التلاوة','error');
-  if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');
-  if(forcePause){if(!wafdeenTimerRunning)return;wafdeenTick();wafdeenStopInterval();document.getElementById('wafdeen-timer-status').innerText='استراحة — اضغط بدء لاستكمال الوقت';return;}
-  if(wafdeenTimerRunning)return;
-  wafdeenTimerStartedAt=Date.now()-wafdeenElapsedSeconds*1000; wafdeenTimerRunning=true;
-  wafdeenTimerInterval=setInterval(wafdeenTick,250); document.getElementById('wafdeen-timer-status').innerText='جارٍ احتساب الوقت — '+wafdeenSelectedType;
-}
-async function wafdeenStopTimer(){
-  if(currentWafdeenTeacher?.role==='student')return;
-  if(!wafdeenSelectedType)return showMessage('wafdeen-save-msg','اختر نوع التسميع أولاً','error');
-  if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');
-  if(wafdeenTimerRunning)wafdeenTick(); wafdeenStopInterval();
-  const seconds=Math.max(0,Math.floor(wafdeenElapsedSeconds)); if(seconds<=0)return showMessage('wafdeen-save-msg','لم يتم احتساب وقت حتى الآن','error');
-  const student=wafdeenStudentsData.find(s=>String(s.id)===String(document.getElementById('wafdeenStudentSelect').value));
-  const rec={id:Date.now().toString(),teacherUsername:currentWafdeenTeacher.username,studentId:student.id,studentName:student.name,type:wafdeenSelectedType,seconds,dateISO:new Date().toISOString(),month:wafdeenTodayMonth()};
-  try{if(useFirebase)await db.collection('wafdeenUsage').doc(rec.id).set(rec);else{wafdeenUsageData.push(rec);wafdeenPersistLocal();}
-    showMessage('wafdeen-save-msg',`تم حفظ ${wafdeenFormat(seconds)} للطالب ${student.name} في ${wafdeenSelectedType} على السحابة ✅`,'success');wafdeenResetTimer(false);
-    if(currentWafdeenTeacher?.isAdmin)renderWafdeenMonthlyReport();
-  }catch(e){console.error(e);showMessage('wafdeen-save-msg','تعذر حفظ الوقت على السحابة','error');}
-}
-function wafdeenResetTimer(clearType=true){
-  if(wafdeenTimerRunning)return;
-  wafdeenStopInterval();wafdeenElapsedSeconds=0;wafdeenUpdateTimerDisplay();
-  if(clearType){wafdeenSelectedType='';document.querySelectorAll('.wafdeen-type-btn').forEach(b=>b.classList.remove('active'));document.getElementById('wafdeen-timer-status').innerText='اختر نوع التسميع ثم اضغط بدء';}
-}
+
+function wafdeenUpdateQuranTimer(){const el=document.getElementById('wafdeen-quran-timer');if(el)el.innerText=wafdeenFormatTimer(wafdeenQuranElapsedSeconds);}
+function wafdeenUpdateEduTimer(){const el=document.getElementById('wafdeen-edu-timer');if(el)el.innerText=wafdeenFormatTimer(wafdeenEduElapsedSeconds);}
+function wafdeenQuranTick(){if(!wafdeenQuranTimerRunning||!wafdeenQuranTimerStartedAt)return;wafdeenQuranElapsedSeconds=Math.floor((Date.now()-wafdeenQuranTimerStartedAt)/1000);wafdeenUpdateQuranTimer();}
+function wafdeenEduTick(){if(!wafdeenEduTimerRunning||!wafdeenEduTimerStartedAt)return;wafdeenEduElapsedSeconds=Math.floor((Date.now()-wafdeenEduTimerStartedAt)/1000);wafdeenUpdateEduTimer();}
+function selectWafdeenQuranType(type,btn){if(wafdeenQuranTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت القرآن أولاً قبل تغيير النوع','error');wafdeenQuranSelectedType=type;document.querySelectorAll('[data-quran-type]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-quran-timer-status').innerText='القرآن الكريم — '+type+' — جاهز للبدء';}
+function selectWafdeenEduSubject(subject,btn){if(wafdeenEduTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت المواد التعليمية أولاً قبل تغيير المادة','error');wafdeenEduSelectedSubject=subject;document.querySelectorAll('[data-edu-subject]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-edu-timer-status').innerText=subject+' — جاهز للبدء';}
+function selectWafdeenEduType(type,btn){if(wafdeenEduTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت المواد التعليمية أولاً قبل تغيير النوع','error');if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً: فقه أو منطق أو حديث','error');wafdeenEduSelectedType=type;document.querySelectorAll('[data-edu-type]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-edu-timer-status').innerText=wafdeenEduSelectedSubject+' — '+type+' — جاهز للبدء';}
+function wafdeenQuranStartPause(forcePause=false){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenQuranSelectedType)return showMessage('wafdeen-save-msg','اختر نوع تسميع القرآن أولاً','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(forcePause){if(!wafdeenQuranTimerRunning)return;wafdeenQuranTick();clearInterval(wafdeenQuranTimerInterval);wafdeenQuranTimerInterval=null;wafdeenQuranTimerRunning=false;wafdeenQuranTimerStartedAt=null;document.getElementById('wafdeen-quran-timer-status').innerText='استراحة — اضغط بدء لاستكمال الوقت';return;}if(wafdeenQuranTimerRunning)return;wafdeenQuranTimerStartedAt=Date.now()-wafdeenQuranElapsedSeconds*1000;wafdeenQuranTimerRunning=true;wafdeenQuranTimerInterval=setInterval(wafdeenQuranTick,250);document.getElementById('wafdeen-quran-timer-status').innerText='جارٍ احتساب الوقت — '+wafdeenQuranSelectedType;}
+async function wafdeenQuranStopTimer(){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenQuranSelectedType)return showMessage('wafdeen-save-msg','اختر نوع تسميع القرآن أولاً','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(wafdeenQuranTimerRunning)wafdeenQuranTick();if(wafdeenQuranTimerInterval)clearInterval(wafdeenQuranTimerInterval);wafdeenQuranTimerInterval=null;wafdeenQuranTimerRunning=false;wafdeenQuranTimerStartedAt=null;const seconds=Math.floor(wafdeenQuranElapsedSeconds);if(seconds<=0)return showMessage('wafdeen-save-msg','لم يتم احتساب وقت في مؤقت القرآن حتى الآن','error');const student=wafdeenStudentsData.find(s=>String(s.id)===String(document.getElementById('wafdeenStudentSelect').value));const rec={id:Date.now().toString(),teacherUsername:currentWafdeenTeacher.username,studentId:student.id,studentName:student.name,category:'quran',subject:'القرآن الكريم',type:wafdeenQuranSelectedType,seconds,dateISO:new Date().toISOString(),month:wafdeenTodayMonth()};try{if(useFirebase)await db.collection('wafdeenUsage').doc(rec.id).set(rec);else{wafdeenUsageData.push(rec);wafdeenPersistLocal();}showMessage('wafdeen-save-msg',`تم حفظ ${wafdeenFormat(seconds)} للطالب ${student.name} في القرآن الكريم — ${wafdeenQuranSelectedType} ✅`,'success');wafdeenQuranReset();if(currentWafdeenTeacher?.isAdmin)renderWafdeenMonthlyReport();}catch(e){console.error(e);showMessage('wafdeen-save-msg','تعذر حفظ وقت القرآن على السحابة','error');}}
+function wafdeenQuranReset(){if(wafdeenQuranTimerRunning)return;wafdeenQuranElapsedSeconds=0;wafdeenUpdateQuranTimer();wafdeenQuranSelectedType='';document.querySelectorAll('[data-quran-type]').forEach(b=>b.classList.remove('active'));const st=document.getElementById('wafdeen-quran-timer-status');if(st)st.innerText='اختر نوع التسميع ثم اضغط بدء';}
+function wafdeenEduStartPause(forcePause=false){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً: فقه أو منطق أو حديث','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(forcePause){if(!wafdeenEduTimerRunning)return;wafdeenEduTick();clearInterval(wafdeenEduTimerInterval);wafdeenEduTimerInterval=null;wafdeenEduTimerRunning=false;wafdeenEduTimerStartedAt=null;document.getElementById('wafdeen-edu-timer-status').innerText='استراحة — اضغط بدء لاستكمال الوقت';return;}if(wafdeenEduTimerRunning)return;wafdeenEduTimerStartedAt=Date.now()-wafdeenEduElapsedSeconds*1000;wafdeenEduTimerRunning=true;wafdeenEduTimerInterval=setInterval(wafdeenEduTick,250);document.getElementById('wafdeen-edu-timer-status').innerText='جارٍ احتساب الوقت — '+wafdeenEduSelectedSubject+' — '+wafdeenEduSelectedType;}
+async function wafdeenEduStopTimer(){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(wafdeenEduTimerRunning)wafdeenEduTick();if(wafdeenEduTimerInterval)clearInterval(wafdeenEduTimerInterval);wafdeenEduTimerInterval=null;wafdeenEduTimerRunning=false;wafdeenEduTimerStartedAt=null;const seconds=Math.floor(wafdeenEduElapsedSeconds);if(seconds<=0)return showMessage('wafdeen-save-msg','لم يتم احتساب وقت في مؤقت المواد التعليمية حتى الآن','error');const student=wafdeenStudentsData.find(s=>String(s.id)===String(document.getElementById('wafdeenStudentSelect').value));const rec={id:(Date.now()+1).toString(),teacherUsername:currentWafdeenTeacher.username,studentId:student.id,studentName:student.name,category:'educational',subject:wafdeenEduSelectedSubject,seconds,dateISO:new Date().toISOString(),month:wafdeenTodayMonth()};try{if(useFirebase)await db.collection('wafdeenUsage').doc(rec.id).set(rec);else{wafdeenUsageData.push(rec);wafdeenPersistLocal();}showMessage('wafdeen-save-msg',`تم حفظ ${wafdeenFormat(seconds)} للطالب ${student.name} في ${wafdeenEduSelectedSubject} ✅`,'success');wafdeenEduReset();if(currentWafdeenTeacher?.isAdmin)renderWafdeenMonthlyReport();}catch(e){console.error(e);showMessage('wafdeen-save-msg','تعذر حفظ وقت المواد التعليمية على السحابة','error');}}
+function wafdeenEduReset(){if(wafdeenEduTimerRunning)return;wafdeenEduElapsedSeconds=0;wafdeenUpdateEduTimer();wafdeenEduSelectedSubject='';wafdeenEduSelectedType='';document.querySelectorAll('[data-edu-subject],[data-edu-type]').forEach(b=>b.classList.remove('active'));const st=document.getElementById('wafdeen-edu-timer-status');if(st)st.innerText='اختر المادة ثم اضغط بدء';}
+// توافق مع أي استدعاءات قديمة
+function wafdeenResetTimer(){wafdeenQuranReset();wafdeenEduReset();}
 function toggleWafdeenMenu(){document.getElementById('wafdeen-drawer').classList.toggle('open');document.getElementById('wafdeen-menu-overlay').classList.toggle('open');}
 function closeWafdeenMenu(){document.getElementById('wafdeen-drawer').classList.remove('open');document.getElementById('wafdeen-menu-overlay').classList.remove('open');}
+function toggleWafdeenQuranMonitor(){
+  const content=document.getElementById('wafdeen-quran-monitor-content');
+  const icon=document.getElementById('wafdeen-quran-toggle-icon');
+  if(!content)return;
+  const open=content.classList.toggle('hidden')===false;
+  const btn=content.previousElementSibling;
+  if(btn)btn.setAttribute('aria-expanded',String(open));
+  if(icon)icon.textContent=open?'▲':'▼';
+}
+function toggleWafdeenEducationalMonitor(){
+  const content=document.getElementById('wafdeen-edu-monitor-content');
+  const btn=document.querySelector('.wafdeen-edu-toggle');
+  const icon=document.getElementById('wafdeen-edu-toggle-icon');
+  if(!content)return;
+  const open=content.classList.toggle('hidden')===false;
+  if(btn)btn.setAttribute('aria-expanded',String(open));
+  if(icon)icon.textContent=open?'▲':'▼';
+}
+
 function wafdeenShowPanel(name){
   const allowed=['daily','materials'];
   if(!allowed.includes(name) && !currentWafdeenTeacher?.isAdmin)return;
@@ -6777,77 +6917,51 @@ async function addWafdeenTeacher(){
   }catch(e){showMessage('wafdeen-save-msg','تعذر حفظ المعلم على السحابة','error');}
 }
 async function deleteWafdeenTeacher(id){if(!currentWafdeenTeacher?.isAdmin)return;try{if(useFirebase)await db.collection('wafdeenTeachers').doc(String(id)).delete();else{wafdeenTeachersData=wafdeenTeachersData.filter(t=>String(t.id)!==String(id));wafdeenPersistLocal();}wafdeenRenderTeachersTable();}catch(e){showMessage('wafdeen-save-msg','تعذر حذف المعلم','error');}}
-function wafdeenRenderTeachersTable(){const tb=document.querySelector('#wafdeenTeachersTable tbody');if(!tb)return;tb.innerHTML=wafdeenTeachersData.map(t=>`<tr><td>${t.username}</td><td><button class="action-btn" onclick="deleteWafdeenTeacher('${t.id}')">حذف</button></td></tr>`).join('')||'<tr><td colspan="2">لا يوجد معلمون إضافيون</td></tr>';}
+function wafdeenRenderTeachersTable(){const tb=document.querySelector('#wafdeenTeachersTable tbody');if(!tb)return;tb.innerHTML=wafdeenTeachersData.map(t=>`<tr><td>${t.username}</td><td><button type="button" class="action-btn" onclick="deleteWafdeenTeacher('${t.id}')">حذف</button></td></tr>`).join('')||'<tr><td colspan="2">لا يوجد معلمون إضافيون</td></tr>';}
 
 async function addWafdeenStudent(){
-  if(!currentWafdeenTeacher?.isAdmin){
-    return showMessage('wafdeen-save-msg','هذه العملية متاحة للمدير فقط','error');
-  }
-
+  if(!currentWafdeenTeacher?.isAdmin)return showMessage('wafdeen-save-msg','هذه العملية متاحة للمدير فقط','error');
   const nameEl=document.getElementById('wafdeenNewStudentName');
-  const userEl=document.getElementById('wafdeenNewStudentUser');
   const passEl=document.getElementById('wafdeenNewStudentPass');
-  const n=(nameEl?.value||'').trim();
-  const u=(userEl?.value||'').trim();
-  const p=(passEl?.value||'').trim();
-
-  if(!n||!u||!p){
-    return showMessage('wafdeen-save-msg','اكتب اسم الطالب واسم المستخدم وكلمة المرور','error');
-  }
-
-  const norm=x=>String(x||'').trim().toLowerCase();
-  const nu=norm(u);
-
-  if(nu==='admin' ||
-     wafdeenTeachersData.some(t=>norm(t.username)===nu) ||
-     wafdeenStudentsData.some(s=>norm(s.username)===nu)){
-    return showMessage('wafdeen-save-msg','اسم المستخدم موجود بالفعل أو محجوز','error');
-  }
-
-  const s={
-    id:'wf_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),
-    name:n,
-    username:u,
-    password:p,
-    createdAt:new Date().toISOString()
-  };
-
-  // نعرض الطالب فورًا حتى لا تختفي البيانات بسبب تأخر Firestore.
-  wafdeenStudentsData=[...wafdeenStudentsData,s];
-  wafdeenPersistLocal();
-  wafdeenRenderStudentSelect();
-  wafdeenRenderStudentsTable();
-
+  const n=(nameEl?.value||'').trim(), p=(passEl?.value||'').trim();
+  if(!n||!p)return showMessage('wafdeen-save-msg','اكتب اسم الطالب وكلمة المرور','error');
+  const norm=x=>String(x||'').trim().toLowerCase(), nn=norm(n);
+  if(wafdeenStudentsData.some(s=>norm(s.name)===nn))return showMessage('wafdeen-save-msg','اسم الطالب موجود بالفعل','error');
+  const s={id:'wf_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),name:n,password:p,createdAt:new Date().toISOString()};
+  wafdeenStudentsData=[...wafdeenStudentsData,s]; wafdeenPersistLocal(); wafdeenRenderStudentSelect(); wafdeenRenderStudentsTable();
   try{
-    if(useFirebase && db){
+    if(useFirebase&&db){
       await db.collection('wafdeenStudents').doc(String(s.id)).set(s,{merge:true});
       showMessage('wafdeen-save-msg','تم إضافة الطالب وحفظه في السحابة بنجاح ✅','success');
-    }else{
-      showMessage('wafdeen-save-msg','تم إضافة الطالب وحفظه على هذا الجهاز ✅','success');
-    }
-
-    if(nameEl) nameEl.value='';
-    if(userEl) userEl.value='';
-    if(passEl) passEl.value='';
+    }else showMessage('wafdeen-save-msg','تم إضافة الطالب وحفظه على هذا الجهاز ✅','success');
+    if(nameEl)nameEl.value=''; if(passEl)passEl.value='';
   }catch(e){
     console.error('Wafdeen student save error:',e);
-    // لا نحذف الطالب من الشاشة إذا تعذر Firestore؛ يبقى محفوظًا محليًا.
     const msg=String(e?.message||e||'');
-    const shortMsg=/permission|denied|insufficient/i.test(msg)
-      ? 'تمت إضافة الطالب على هذا الجهاز، لكن Firebase رفض الحفظ. راجع صلاحيات Firestore.'
-      : 'تمت إضافة الطالب محليًا، لكن تعذر الحفظ السحابي. جرّب مرة أخرى.';
-    showMessage('wafdeen-save-msg',shortMsg,'error');
+    showMessage('wafdeen-save-msg',/permission|denied|insufficient/i.test(msg)?'تمت إضافة الطالب على هذا الجهاز، لكن Firebase رفض الحفظ. راجع صلاحيات Firestore.':'تمت إضافة الطالب محليًا، لكن تعذر الحفظ السحابي. جرّب مرة أخرى.','error');
   }
 }
 async function deleteWafdeenStudent(id){
   if(!currentWafdeenTeacher?.isAdmin)return;
-  try{if(useFirebase)await db.collection('wafdeenStudents').doc(String(id)).delete();else{wafdeenStudentsData=wafdeenStudentsData.filter(s=>String(s.id)!==String(id));wafdeenPersistLocal();}
-    wafdeenRenderStudentSelect();wafdeenRenderStudentsTable();
-  }catch(e){showMessage('wafdeen-save-msg','تعذر حذف الطالب','error');}
+  const student=wafdeenStudentsData.find(s=>String(s.id)===String(id));
+  if(!student)return;
+  const ok=confirm(`هل تريد حذف الطالب/الطالبة "${student.name}"؟`);
+  if(!ok)return;
+  try{
+    if(useFirebase && db) await db.collection('wafdeenStudents').doc(String(id)).delete();
+    wafdeenStudentsData=wafdeenStudentsData.filter(s=>String(s.id)!==String(id));
+    wafdeenPersistLocal();
+    wafdeenRenderStudentSelect();
+    wafdeenRenderStudentsTable();
+    showMessage('wafdeen-save-msg','تم حذف الطالب بنجاح ✅','success');
+  }catch(e){
+    console.error('Wafdeen student delete error:',e);
+    showMessage('wafdeen-save-msg','تعذر حذف الطالب من السحابة','error');
+  }
 }
 function wafdeenRenderStudentsTable(){
   const tb=document.querySelector('#wafdeenStudentsTable tbody');if(!tb)return;
-  tb.innerHTML=wafdeenStudentsData.map(s=>`<tr><td>${s.name}</td><td>${s.username||'—'}</td><td><button class="action-btn" onclick="deleteWafdeenStudent('${s.id}')">حذف</button></td></tr>`).join('')||'<tr><td colspan="3">لا يوجد طلاب مسجلون</td></tr>';
+  tb.innerHTML=wafdeenStudentsData.map(s=>`<tr><td>${s.name}</td><td><button type="button" class="action-btn btn-danger" onclick="deleteWafdeenStudent('${s.id}')">حذف</button></td></tr>`).join('')||'<tr><td colspan="2">لا يوجد طلاب مسجلون</td></tr>';
 }
 
 /* -------- المواد والمستويات والكتب -------- */
@@ -6909,17 +7023,17 @@ function wafdeenRenderMaterials(subject=wafdeenSelectedSubject){
     if(!books.length)html+='<div class="wafdeen-note">لا توجد كتب.</div>';
     books.forEach(b=>{
       const disabled=isStudent&&!unlocked;
-      html+=`<div class="wafdeen-book-item"><span>📖 ${escapeHtml(b.title)}</span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="action-btn btn-save" ${disabled?'disabled':''} onclick="wafdeenOpenBook('${String(b.id)}')">فتح الكتاب</button>${currentWafdeenTeacher?.isAdmin?`<button class="action-btn btn-danger" onclick="wafdeenDeleteBook('${String(b.id)}')">حذف</button>`:''}</span></div>`;
+      html+=`<div class="wafdeen-book-item"><span>📖 ${escapeHtml(b.title)}</span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button type="button" class="action-btn btn-save" ${disabled?'disabled':''} onclick="wafdeenOpenBook('${String(b.id)}')">فتح الكتاب</button>${currentWafdeenTeacher?.isAdmin?`<button type="button" class="action-btn btn-danger" onclick="wafdeenDeleteBook('${String(b.id)}')">حذف</button>`:''}</span></div>`;
     });
     if(!isStudent && (currentWafdeenTeacher?.role==='teacher'||currentWafdeenTeacher?.isAdmin)){
       html+=`<div class="wafdeen-exam-box"><strong>امتحان المستوى</strong>
         <div class="form-group" style="margin-top:8px"><label>الطالب:</label><select id="wafdeenExamStudent_${subject}_${level}">${wafdeenStudentsData.map(st=>`<option value="${st.id}">${escapeHtml(st.name)}</option>`).join('')}</select></div>
         <div class="form-group" style="margin-top:8px"><label>الدرجة من 100:</label><input id="wafdeenExamScore_${subject}_${level}" type="number" min="0" max="100" placeholder="مثال: 85"></div>
-        <button class="action-btn btn-save" style="margin-top:8px" onclick="wafdeenSaveExam('${subject}',${level})">حفظ الدرجة</button>
+        <button type="button" class="action-btn btn-save" style="margin-top:8px" onclick="wafdeenSaveExam('${subject}',${level})">حفظ الدرجة</button>
         <div class="wafdeen-note" style="margin-top:7px">70/100 أو أكثر يفتح المستوى التالي للطالب.</div>
       </div>`;
     }
-    if(currentWafdeenTeacher?.isAdmin) html+=`<button class="action-btn btn-danger" style="margin-top:9px;width:100%" onclick="wafdeenDeleteLevel('${subject}',${level})">حذف كتب المستوى</button>`;
+    if(currentWafdeenTeacher?.isAdmin) html+=`<button type="button" class="action-btn btn-danger" style="margin-top:9px;width:100%" onclick="wafdeenDeleteLevel('${subject}',${level})">حذف كتب المستوى</button>`;
     html+='</div>';
   });
   html+='</div></div>';
@@ -6935,7 +7049,7 @@ function wafdeenAdminBookForm(subject){
       <div class="form-group"><label>المستوى:</label><input id="wafdeenBookLevel" type="number" min="1" step="1" placeholder="مثال: 1"></div>
       <div class="form-group"><label>ملف الكتاب (PDF):</label><input id="wafdeenBookFile" type="file" accept="application/pdf,.pdf"></div>
     </div>
-    <button class="action-btn btn-save" style="margin-top:10px;width:100%" onclick="wafdeenAddBook('${subject}')">+ إضافة الكتاب وتحميله</button>
+    <button type="button" class="action-btn btn-save" style="margin-top:10px;width:100%" onclick="wafdeenAddBook('${subject}')">+ إضافة الكتاب وتحميله</button>
     <div id="wafdeen-book-upload-msg" class="toast-msg" style="margin-top:10px"></div><div id="wafdeen-book-upload-progress" class="wafdeen-progress-wrap hidden"><div class="wafdeen-progress-label"><span>جاري رفع الكتاب على السحابة</span><span id="wafdeen-book-upload-percent" class="wafdeen-upload-percent">0%</span></div><div class="wafdeen-progress-track"><div id="wafdeen-book-upload-bar" class="wafdeen-progress-bar"></div></div></div>
   </div>`;
 }
@@ -7072,7 +7186,7 @@ function wafdeenOpenBook(id){
       <strong>📖 ${escapeHtml(b.title)}</strong>
       <span style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
         ${fileId ? `<a class="action-btn btn-save" href="https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview" target="_blank" rel="noopener">فتح في نافذة جديدة</a>` : ''}
-        <button class="action-btn" onclick="this.closest('.wafdeen-book-reader').remove()">إغلاق</button>
+        <button type="button" class="action-btn" onclick="this.closest('.wafdeen-book-reader').remove()">إغلاق</button>
       </span>
     </div>
     <div style="background:#fff;min-height:650px">
