@@ -1389,7 +1389,7 @@ body.fifth-selected .fifth-hide-on-class { display: none !important; }
 .wafdeen-book-item button{flex:0 0 auto}.wafdeen-status-pill{display:inline-block;padding:4px 9px;border-radius:999px;font-size:.72em;font-weight:800}.wafdeen-status-open{background:rgba(34,160,107,.16);color:#0f7a4a}.wafdeen-status-lock{background:rgba(217,86,74,.14);color:#a83226}.wafdeen-status-pass{background:rgba(212,175,55,.16);color:var(--accent-gold-dark)}
 .wafdeen-admin-materials{margin-top:18px;border-top:1px dashed var(--accent-gold);padding-top:18px}.wafdeen-book-reader{margin-top:16px;border:1px solid var(--border-soft-strong);border-radius:16px;overflow:hidden;background:var(--surface)}.wafdeen-book-reader iframe{width:100%;height:78vh;min-height:650px;border:0;background:#fff}.wafdeen-book-reader .reader-head a{text-decoration:none}.wafdeen-book-reader .reader-head{padding:11px 14px;background:var(--surface-alt);display:flex;justify-content:space-between;gap:10px;align-items:center}
 .wafdeen-exam-box{margin-top:12px;padding:10px;border:1px dashed var(--border-soft);border-radius:11px;background:rgba(212,175,55,.05)}
-.wafdeen-score{font-weight:900;color:var(--accent-gold-light)}.wafdeen-progress-wrap{margin:12px 0;padding:10px 12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-alt)}.wafdeen-progress-label{display:flex;justify-content:space-between;align-items:center;font-weight:800;margin-bottom:7px}.wafdeen-progress-track{height:12px;background:rgba(18,58,36,.1);border-radius:999px;overflow:hidden}.wafdeen-progress-bar{height:100%;width:0;background:#20b66b;border-radius:999px;transition:width .25s ease}.wafdeen-upload-percent{font-weight:900;color:#20b66b}.wafdeen-student-only-note{margin:12px 0;padding:11px 13px;border-right:4px solid var(--accent-gold);border-radius:10px;background:rgba(212,175,55,.07);color:var(--text-muted);line-height:1.8}
+.wafdeen-score{font-weight:900;color:var(--accent-gold-light)}.wafdeen-progress-wrap{margin:12px 0;padding:10px 12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-alt)}.wafdeen-progress-label{display:flex;justify-content:space-between;align-items:center;font-weight:800;margin-bottom:7px}.wafdeen-progress-track{height:12px;background:rgba(18,58,36,.1);border-radius:999px;overflow:hidden}.wafdeen-progress-bar{height:100%;width:0;background:#20b66b;border-radius:999px;transition:width .25s ease}.wafdeen-upload-percent{font-weight:900;color:#20b66b}.wafdeen-student-only-note{margin:12px 0;padding:11px 13px;border-right:4px solid var(--accent-gold);border-radius:10px;background:rgba(212,175,55,.07);color:var(--text-muted);line-height:1.8}.wafdeen-daily-scores{margin-top:16px;border-top:4px solid var(--primary-color)}.wafdeen-daily-scores .form-grid{margin-bottom:14px}.wafdeen-daily-scores input,.wafdeen-daily-scores select{background:#fff}.wafdeen-daily-save{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media(max-width:650px){.wafdeen-daily-save{grid-template-columns:1fr}}
 @media(max-width:750px){.wafdeen-materials-layout{grid-template-columns:1fr}.wafdeen-book-reader iframe{height:500px}}
 </style>
 <style>
@@ -1669,6 +1669,8 @@ function handleImgError(el, isWatermark = false) {
   <aside id="wafdeen-drawer" class="wafdeen-drawer" aria-hidden="true">
     <h3>📚 قائمة جلسة الوافدين</h3>
     <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('daily')">📝 الرصد اليومي</button>
+    <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('grades')">🏆 الدرجات</button>
+    <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('educationTime')">⏱️ وقت التعليم</button>
     <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('materials')">📚 المواد التعليمية</button>
     <div id="wafdeen-admin-menu-items">
       <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:8px" onclick="wafdeenShowPanel('teachers')">👨‍🏫 إضافة / إدارة المعلمين</button>
@@ -1686,11 +1688,49 @@ function handleImgError(el, isWatermark = false) {
     <button type="button" class="action-btn" onclick="wafdeenLogout()">تسجيل خروج 🚪</button>
   </div>
 
+  <div id="wafdeen-panel-grades" class="wafdeen-panel hidden wafdeen-daily-panel">
+    <h3>🏆 الدرجات</h3>
+    <div class="wafdeen-panel">
+      <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:10px" onclick="wafdeenToggleGradesStudents()">👨‍🎓 أسماء الطلاب المسجلين <span id="wafdeen-grades-students-icon">▼</span></button>
+      <div id="wafdeen-grades-students-list" class="wafdeen-grades-list hidden"></div>
+    </div>
+    <div id="wafdeen-grades-details" class="wafdeen-panel hidden">
+      <h3>درجات الطالب: <span id="wafdeen-grades-student-name"></span></h3>
+      <div class="wafdeen-grade-period-tabs">
+        <button type="button" class="wafdeen-grade-period-btn active" onclick="wafdeenShowGradePeriod('today',this)">اليوم</button>
+        <button type="button" class="wafdeen-grade-period-btn" onclick="wafdeenShowGradePeriod('week',this)">الأسبوع</button>
+        <button type="button" class="wafdeen-grade-period-btn" onclick="wafdeenShowGradePeriod('month',this)">الشهر</button>
+      </div>
+      <div id="wafdeen-grade-today" class="wafdeen-grade-period-panel"></div>
+      <div id="wafdeen-grade-week" class="wafdeen-grade-period-panel hidden"></div>
+      <div id="wafdeen-grade-month" class="wafdeen-grade-period-panel hidden"></div>
+    </div>
+  </div>
+
+  <div id="wafdeen-panel-educationTime" class="wafdeen-panel hidden wafdeen-daily-panel">
+    <h3>⏱️ وقت التعليم</h3>
+    <div class="wafdeen-panel">
+      <button type="button" class="action-btn btn-save" style="width:100%;margin-bottom:10px" onclick="wafdeenToggleEducationTimeStudents()">👨‍🎓 أسماء الطلاب المسجلين <span id="wafdeen-education-time-students-icon">▼</span></button>
+      <div id="wafdeen-education-time-students-list" class="wafdeen-grades-list hidden"></div>
+    </div>
+    <div id="wafdeen-education-time-details" class="wafdeen-panel hidden">
+      <h3>وقت تعليم الطالب: <span id="wafdeen-education-time-student-name"></span></h3>
+      <div class="wafdeen-grade-period-tabs">
+        <button type="button" class="wafdeen-grade-period-btn active" onclick="wafdeenShowEducationTimePeriod('today',this)">اليوم</button>
+        <button type="button" class="wafdeen-grade-period-btn" onclick="wafdeenShowEducationTimePeriod('week',this)">الأسبوع</button>
+        <button type="button" class="wafdeen-grade-period-btn" onclick="wafdeenShowEducationTimePeriod('month',this)">الشهر</button>
+      </div>
+      <div id="wafdeen-education-time-today" class="wafdeen-grade-period-panel"></div>
+      <div id="wafdeen-education-time-week" class="wafdeen-grade-period-panel hidden"></div>
+      <div id="wafdeen-education-time-month" class="wafdeen-grade-period-panel hidden"></div>
+    </div>
+  </div>
+
   <div id="wafdeen-panel-daily" class="wafdeen-panel wafdeen-daily-panel">
     <h3>📝 الرصد اليومي</h3>
     <div class="wafdeen-panel">
       <h3>اختيار الطالب</h3>
-      <select id="wafdeenStudentSelect" style="width:100%;font-weight:800" onchange="wafdeenResetTimer()"></select>
+      <select id="wafdeenStudentSelect" style="width:100%;font-weight:800" onchange="wafdeenResetTimer();wafdeenUpdateDailyScoresVisibility()"></select>
       <div id="wafdeen-student-info" class="wafdeen-note" style="margin-top:8px"></div>
     </div>
 
@@ -1716,6 +1756,27 @@ function handleImgError(el, isWatermark = false) {
             <button type="button" class="action-btn btn-save" onclick="wafdeenQuranStartPause(true)">استراحة</button>
             <button type="button" class="action-btn btn-save" onclick="wafdeenQuranStopTimer()">توقف وحفظ</button>
           </div>
+        
+          <div id="wafdeen-daily-scores-panel" class="wafdeen-panel wafdeen-daily-scores">
+      <h3>📝 الدرجات العادية</h3>
+      <div class="wafdeen-note">رصد الدرجات: الجديد، الماضي، والتلاوة، مع المقررات التي تم تسميعها.</div>
+      <div class="form-grid">
+        <div class="form-group"><label>الجديد (10):</label><input type="number" id="wafdeenNewLesson" min="0" max="10" placeholder="0-10"></div>
+        <div class="form-group"><label>عدد الصفحات (الجديد):</label><input type="text" id="wafdeenNewPagesCount" placeholder="عدد الصفحات"></div>
+        <div class="form-group"><label>مقرر الجديد الذي تم تسميعه:</label><input type="text" id="wafdeenNewTopicRecited" placeholder="المقرر الذي تم تسميعه"></div>
+        <div class="form-group"><label>الماضي (10):</label><input type="number" id="wafdeenOldRevision" min="0" max="10" placeholder="0-10"></div>
+        <div class="form-group"><label>عدد الصفحات (الماضي):</label><input type="text" id="wafdeenOldPagesCount" placeholder="عدد الصفحات"></div>
+        <div class="form-group"><label>مقرر الماضي الذي تم تسميعه:</label><input type="text" id="wafdeenOldTopicRecited" placeholder="المقرر الذي تم تسميعه"></div>
+        <div class="form-group"><label>التلاوة (10):</label><input type="number" id="wafdeenRecitation" min="0" max="10" placeholder="0-10"></div>
+        <div class="form-group"><label>عدد الصفحات/الأجزاء (التلاوة):</label><input type="text" id="wafdeenRecitationPagesCount" placeholder="عدد الصفحات أو الأجزاء"></div>
+        <div class="form-group"><label>مقرر التلاوة الذي تم تسميعه:</label><input type="text" id="wafdeenRecitationTopicRecited" placeholder="المقرر الذي تم تسميعه"></div>
+      </div>
+      <div class="wafdeen-daily-save">
+        <button type="button" class="action-btn btn-save" onclick="saveWafdeenDailyRecord()">💾 حفظ الرصد اليومي</button>
+        <button type="button" class="action-btn btn-danger" onclick="markWafdeenAbsent()">🚫 غياب (صفر في كل الخانات)</button>
+      </div>
+    </div>
+
         </div>
       </div>
 
@@ -1724,12 +1785,13 @@ function handleImgError(el, isWatermark = false) {
           <span>📚 المواد التعليمية</span><span id="wafdeen-edu-toggle-icon">▼</span>
         </button>
         <div id="wafdeen-edu-monitor-content" class="hidden">
-          <div class="wafdeen-note">المواد التعليمية: فقه، منطق، حديث. ولها مؤقت مستقل عن مؤقت القرآن الكريم.</div>
+          <div class="wafdeen-note">المواد التعليمية: فقه، منطق، حديث، واللغة العربية. ولها مؤقت مستقل عن مؤقت القرآن الكريم.</div>
           <h4>المادة</h4>
           <div class="wafdeen-type-grid">
             <button type="button" class="wafdeen-type-btn" data-edu-subject="فقه" onclick="selectWafdeenEduSubject('فقه',this)">⚖️ فقه</button>
             <button type="button" class="wafdeen-type-btn" data-edu-subject="منطق" onclick="selectWafdeenEduSubject('منطق',this)">🧠 منطق</button>
             <button type="button" class="wafdeen-type-btn" data-edu-subject="حديث" onclick="selectWafdeenEduSubject('حديث',this)">📜 حديث</button>
+            <button type="button" class="wafdeen-type-btn" data-edu-subject="اللغة العربية" onclick="selectWafdeenEduSubject('اللغة العربية',this)">🔤 اللغة العربية</button>
           </div>
           <div class="wafdeen-timer-box">
             <div id="wafdeen-edu-timer">00:00:00</div>
@@ -1743,6 +1805,7 @@ function handleImgError(el, isWatermark = false) {
         </div>
       </div>
     </div>
+    
     <div id="wafdeen-save-msg" class="toast-msg" style="margin-top:12px"></div>
   </div>
 
@@ -1755,6 +1818,7 @@ function handleImgError(el, isWatermark = false) {
       <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('fiqh')"><div class="wafdeen-subject-icon">⚖️</div><div class="wafdeen-subject-name">فقه</div></button>
       <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('hadith')"><div class="wafdeen-subject-icon">📜</div><div class="wafdeen-subject-name">حديث</div></button>
       <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('mantiq')"><div class="wafdeen-subject-icon">🧠</div><div class="wafdeen-subject-name">منطق</div></button>
+      <button type="button" class="wafdeen-subject-card" onclick="wafdeenOpenSubject('arabic')"><div class="wafdeen-subject-icon">🔤</div><div class="wafdeen-subject-name">اللغة العربية</div></button>
     </div>
     <div id="wafdeen-materials-content"></div>
   </div>
@@ -1786,7 +1850,7 @@ function handleImgError(el, isWatermark = false) {
         <div class="form-group"><label>الشهر:</label><input type="month" id="wafdeenReportMonth" onchange="renderWafdeenMonthlyReport()"></div>
       </div>
       <div class="wafdeen-note">يتم حساب الساعة الخاصة بجلسة الوافدين = <strong>50 دقيقة</strong>، ويظهر أيضًا إجمالي الدقائق والوقت بالنظام المعتاد 60 دقيقة.</div>
-      <div class="wafdeen-table-wrap" style="margin-top:15px"><table class="wafdeen-table" id="wafdeenReportTable"><thead><tr><th>المعلم</th><th>وقت الجديد</th><th>وقت الماضي</th><th>وقت التلاوة</th><th>إجمالي الوقت</th><th>إجمالي الساعات (50 دقيقة)</th><th>إجمالي الساعات (60 دقيقة)</th></tr></thead><tbody></tbody></table></div>
+      <div class="wafdeen-table-wrap" style="margin-top:15px"><table class="wafdeen-table" id="wafdeenReportTable"><thead><tr><th>المعلم</th><th>وقت الجديد</th><th>وقت الماضي</th><th>وقت التلاوة</th><th>وقت المواد التعليمية</th><th>إجمالي الوقت</th><th>إجمالي الساعات (50 دقيقة)</th><th>إجمالي الساعات (60 دقيقة)</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 </div>
@@ -6686,12 +6750,19 @@ document.addEventListener('click', function(e) {
 .wafdeen-edu-box:active{transform:scale(.99)}
 .wafdeen-monitor-card h4{margin:14px 0 8px;font-size:1rem}
 @media(max-width:800px){.wafdeen-monitor-grid{grid-template-columns:1fr}}
+.wafdeen-grades-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.wafdeen-grade-student-btn{width:100%;text-align:right;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:rgba(255,255,255,.05);color:inherit;cursor:pointer;font-weight:800}
+.wafdeen-grade-student-btn:hover,.wafdeen-grade-student-btn.active{border-color:var(--accent-gold-light);background:rgba(255,255,255,.09)}
+.wafdeen-grade-summary{padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:10px;font-weight:900;min-height:20px}
+ .wafdeen-grade-period-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 16px}.wafdeen-grade-period-btn{flex:1;min-width:100px;padding:10px 14px;border:1px solid var(--border-soft);border-radius:10px;background:var(--surface);color:var(--ink);font-family:inherit;font-weight:800;cursor:pointer}.wafdeen-grade-period-btn.active{background:linear-gradient(120deg,var(--primary-color),var(--primary-dark));color:#fff;border-color:var(--accent-gold)}.wafdeen-grade-period-panel{overflow:auto}.wafdeen-grade-period-panel table{width:100%;min-width:900px;border-collapse:collapse}.wafdeen-grade-period-panel th,.wafdeen-grade-period-panel td{padding:9px 7px;border:1px solid var(--border-soft);text-align:center;font-size:.84em}.wafdeen-grade-period-panel th{background:linear-gradient(180deg,var(--brand-dark-2),var(--primary-dark));color:var(--on-dark-gold)}.wafdeen-grade-period-panel tbody tr:nth-child(even){background:var(--surface-alt)}.wafdeen-grade-period-panel .grade-total{font-weight:900;color:var(--primary-color)}
+
 </style>
 <script>
 /* ================= منطق جلسة الوافدين ================= */
 let wafdeenTeachersData = [];
 let wafdeenStudentsData = [];
 let wafdeenUsageData = [];
+let wafdeenDailyRecords = [];
 let wafdeenBooksData = [];
 let wafdeenExamsData = [];
 let currentWafdeenTeacher = null;
@@ -6716,7 +6787,8 @@ let wafdeenEduTimerRunning = false;
 const WAFDEEN_SUBJECTS = {
   fiqh:{name:'فقه',icon:'⚖️'},
   hadith:{name:'حديث',icon:'📜'},
-  mantiq:{name:'منطق',icon:'🧠'}
+  mantiq:{name:'منطق',icon:'🧠'},
+  arabic:{name:'اللغة العربية',icon:'🔤'}
 };
 
 function getWafdeenAdminPassword(){
@@ -6727,6 +6799,7 @@ function wafdeenLocalLoad(){
   wafdeenTeachersData = JSON.parse(localStorage.getItem('wafdeenTeachersData') || '[]');
   wafdeenStudentsData = JSON.parse(localStorage.getItem('wafdeenStudentsData') || '[]');
   wafdeenUsageData = JSON.parse(localStorage.getItem('wafdeenUsageData') || '[]');
+  wafdeenDailyRecords = JSON.parse(localStorage.getItem('wafdeenDailyRecords') || '[]');
   wafdeenBooksData = JSON.parse(localStorage.getItem('wafdeenBooksData') || '[]');
   wafdeenExamsData = JSON.parse(localStorage.getItem('wafdeenExamsData') || '[]');
 }
@@ -6734,6 +6807,7 @@ function wafdeenPersistLocal(){
   localStorage.setItem('wafdeenTeachersData', JSON.stringify(wafdeenTeachersData));
   localStorage.setItem('wafdeenStudentsData', JSON.stringify(wafdeenStudentsData));
   localStorage.setItem('wafdeenUsageData', JSON.stringify(wafdeenUsageData));
+  localStorage.setItem('wafdeenDailyRecords', JSON.stringify(wafdeenDailyRecords));
   localStorage.setItem('wafdeenBooksData', JSON.stringify(wafdeenBooksData));
   localStorage.setItem('wafdeenExamsData', JSON.stringify(wafdeenExamsData));
 }
@@ -6829,7 +6903,13 @@ function wafdeenLoadCloud(){
     wafdeenUsageData=s.docs.map(d=>({id:d.id,...d.data()}));
     wafdeenPersistLocal();
     if(currentWafdeenTeacher?.isAdmin)renderWafdeenMonthlyReport();
+    if(document.getElementById('wafdeen-panel-educationTime') && !document.getElementById('wafdeen-panel-educationTime').classList.contains('hidden'))wafdeenRenderEducationTime();
   });
+  db.collection('wafdeenDailyRecords').onSnapshot(s=>{
+    wafdeenDailyRecords=s.docs.map(d=>({id:d.id,...d.data()}));
+    wafdeenPersistLocal();
+    if(document.getElementById('wafdeen-panel-grades') && !document.getElementById('wafdeen-panel-grades').classList.contains('hidden')) wafdeenRenderGrades();
+  },err=>console.error('wafdeenDailyRecords listener error:',err));
   db.collection('wafdeenExams').onSnapshot(s=>{
     wafdeenExamsData=s.docs.map(d=>({id:d.id,...d.data()}));
     wafdeenPersistLocal();
@@ -6863,13 +6943,185 @@ function wafdeenQuranTick(){if(!wafdeenQuranTimerRunning||!wafdeenQuranTimerStar
 function wafdeenEduTick(){if(!wafdeenEduTimerRunning||!wafdeenEduTimerStartedAt)return;wafdeenEduElapsedSeconds=Math.floor((Date.now()-wafdeenEduTimerStartedAt)/1000);wafdeenUpdateEduTimer();}
 function selectWafdeenQuranType(type,btn){if(wafdeenQuranTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت القرآن أولاً قبل تغيير النوع','error');wafdeenQuranSelectedType=type;document.querySelectorAll('[data-quran-type]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-quran-timer-status').innerText='القرآن الكريم — '+type+' — جاهز للبدء';}
 function selectWafdeenEduSubject(subject,btn){if(wafdeenEduTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت المواد التعليمية أولاً قبل تغيير المادة','error');wafdeenEduSelectedSubject=subject;document.querySelectorAll('[data-edu-subject]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-edu-timer-status').innerText=subject+' — جاهز للبدء';}
-function selectWafdeenEduType(type,btn){if(wafdeenEduTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت المواد التعليمية أولاً قبل تغيير النوع','error');if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً: فقه أو منطق أو حديث','error');wafdeenEduSelectedType=type;document.querySelectorAll('[data-edu-type]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-edu-timer-status').innerText=wafdeenEduSelectedSubject+' — '+type+' — جاهز للبدء';}
+function selectWafdeenEduType(type,btn){if(wafdeenEduTimerRunning)return showMessage('wafdeen-save-msg','أوقف مؤقت المواد التعليمية أولاً قبل تغيير النوع','error');if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً: فقه أو منطق أو حديث أو اللغة العربية','error');wafdeenEduSelectedType=type;document.querySelectorAll('[data-edu-type]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('wafdeen-edu-timer-status').innerText=wafdeenEduSelectedSubject+' — '+type+' — جاهز للبدء';}
 function wafdeenQuranStartPause(forcePause=false){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenQuranSelectedType)return showMessage('wafdeen-save-msg','اختر نوع تسميع القرآن أولاً','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(forcePause){if(!wafdeenQuranTimerRunning)return;wafdeenQuranTick();clearInterval(wafdeenQuranTimerInterval);wafdeenQuranTimerInterval=null;wafdeenQuranTimerRunning=false;wafdeenQuranTimerStartedAt=null;document.getElementById('wafdeen-quran-timer-status').innerText='استراحة — اضغط بدء لاستكمال الوقت';return;}if(wafdeenQuranTimerRunning)return;wafdeenQuranTimerStartedAt=Date.now()-wafdeenQuranElapsedSeconds*1000;wafdeenQuranTimerRunning=true;wafdeenQuranTimerInterval=setInterval(wafdeenQuranTick,250);document.getElementById('wafdeen-quran-timer-status').innerText='جارٍ احتساب الوقت — '+wafdeenQuranSelectedType;}
 async function wafdeenQuranStopTimer(){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenQuranSelectedType)return showMessage('wafdeen-save-msg','اختر نوع تسميع القرآن أولاً','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(wafdeenQuranTimerRunning)wafdeenQuranTick();if(wafdeenQuranTimerInterval)clearInterval(wafdeenQuranTimerInterval);wafdeenQuranTimerInterval=null;wafdeenQuranTimerRunning=false;wafdeenQuranTimerStartedAt=null;const seconds=Math.floor(wafdeenQuranElapsedSeconds);if(seconds<=0)return showMessage('wafdeen-save-msg','لم يتم احتساب وقت في مؤقت القرآن حتى الآن','error');const student=wafdeenStudentsData.find(s=>String(s.id)===String(document.getElementById('wafdeenStudentSelect').value));const rec={id:Date.now().toString(),teacherUsername:currentWafdeenTeacher.username,studentId:student.id,studentName:student.name,category:'quran',subject:'القرآن الكريم',type:wafdeenQuranSelectedType,seconds,dateISO:new Date().toISOString(),month:wafdeenTodayMonth()};try{if(useFirebase)await db.collection('wafdeenUsage').doc(rec.id).set(rec);else{wafdeenUsageData.push(rec);wafdeenPersistLocal();}showMessage('wafdeen-save-msg',`تم حفظ ${wafdeenFormat(seconds)} للطالب ${student.name} في القرآن الكريم — ${wafdeenQuranSelectedType} ✅`,'success');wafdeenQuranReset();if(currentWafdeenTeacher?.isAdmin)renderWafdeenMonthlyReport();}catch(e){console.error(e);showMessage('wafdeen-save-msg','تعذر حفظ وقت القرآن على السحابة','error');}}
 function wafdeenQuranReset(){if(wafdeenQuranTimerRunning)return;wafdeenQuranElapsedSeconds=0;wafdeenUpdateQuranTimer();wafdeenQuranSelectedType='';document.querySelectorAll('[data-quran-type]').forEach(b=>b.classList.remove('active'));const st=document.getElementById('wafdeen-quran-timer-status');if(st)st.innerText='اختر نوع التسميع ثم اضغط بدء';}
-function wafdeenEduStartPause(forcePause=false){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً: فقه أو منطق أو حديث','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(forcePause){if(!wafdeenEduTimerRunning)return;wafdeenEduTick();clearInterval(wafdeenEduTimerInterval);wafdeenEduTimerInterval=null;wafdeenEduTimerRunning=false;wafdeenEduTimerStartedAt=null;document.getElementById('wafdeen-edu-timer-status').innerText='استراحة — اضغط بدء لاستكمال الوقت';return;}if(wafdeenEduTimerRunning)return;wafdeenEduTimerStartedAt=Date.now()-wafdeenEduElapsedSeconds*1000;wafdeenEduTimerRunning=true;wafdeenEduTimerInterval=setInterval(wafdeenEduTick,250);document.getElementById('wafdeen-edu-timer-status').innerText='جارٍ احتساب الوقت — '+wafdeenEduSelectedSubject+' — '+wafdeenEduSelectedType;}
+function wafdeenEduStartPause(forcePause=false){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً: فقه أو منطق أو حديث أو اللغة العربية','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(forcePause){if(!wafdeenEduTimerRunning)return;wafdeenEduTick();clearInterval(wafdeenEduTimerInterval);wafdeenEduTimerInterval=null;wafdeenEduTimerRunning=false;wafdeenEduTimerStartedAt=null;document.getElementById('wafdeen-edu-timer-status').innerText='استراحة — اضغط بدء لاستكمال الوقت';return;}if(wafdeenEduTimerRunning)return;wafdeenEduTimerStartedAt=Date.now()-wafdeenEduElapsedSeconds*1000;wafdeenEduTimerRunning=true;wafdeenEduTimerInterval=setInterval(wafdeenEduTick,250);document.getElementById('wafdeen-edu-timer-status').innerText='جارٍ احتساب الوقت — '+wafdeenEduSelectedSubject+' — '+wafdeenEduSelectedType;}
 async function wafdeenEduStopTimer(){if(currentWafdeenTeacher?.role==='student')return;if(!wafdeenEduSelectedSubject)return showMessage('wafdeen-save-msg','اختر المادة أولاً','error');if(!document.getElementById('wafdeenStudentSelect').value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');if(wafdeenEduTimerRunning)wafdeenEduTick();if(wafdeenEduTimerInterval)clearInterval(wafdeenEduTimerInterval);wafdeenEduTimerInterval=null;wafdeenEduTimerRunning=false;wafdeenEduTimerStartedAt=null;const seconds=Math.floor(wafdeenEduElapsedSeconds);if(seconds<=0)return showMessage('wafdeen-save-msg','لم يتم احتساب وقت في مؤقت المواد التعليمية حتى الآن','error');const student=wafdeenStudentsData.find(s=>String(s.id)===String(document.getElementById('wafdeenStudentSelect').value));const rec={id:(Date.now()+1).toString(),teacherUsername:currentWafdeenTeacher.username,studentId:student.id,studentName:student.name,category:'educational',subject:wafdeenEduSelectedSubject,seconds,dateISO:new Date().toISOString(),month:wafdeenTodayMonth()};try{if(useFirebase)await db.collection('wafdeenUsage').doc(rec.id).set(rec);else{wafdeenUsageData.push(rec);wafdeenPersistLocal();}showMessage('wafdeen-save-msg',`تم حفظ ${wafdeenFormat(seconds)} للطالب ${student.name} في ${wafdeenEduSelectedSubject} ✅`,'success');wafdeenEduReset();if(currentWafdeenTeacher?.isAdmin)renderWafdeenMonthlyReport();}catch(e){console.error(e);showMessage('wafdeen-save-msg','تعذر حفظ وقت المواد التعليمية على السحابة','error');}}
 function wafdeenEduReset(){if(wafdeenEduTimerRunning)return;wafdeenEduElapsedSeconds=0;wafdeenUpdateEduTimer();wafdeenEduSelectedSubject='';wafdeenEduSelectedType='';document.querySelectorAll('[data-edu-subject],[data-edu-type]').forEach(b=>b.classList.remove('active'));const st=document.getElementById('wafdeen-edu-timer-status');if(st)st.innerText='اختر المادة ثم اضغط بدء';}
+async function saveWafdeenDailyRecord(isAbsent=false){
+  if(currentWafdeenTeacher?.role==='student')return;
+  const sel=document.getElementById('wafdeenStudentSelect');
+  if(!sel?.value)return showMessage('wafdeen-save-msg','اختر الطالب أولاً','error');
+  const student=wafdeenStudentsData.find(x=>String(x.id)===String(sel.value));
+  if(!student)return showMessage('wafdeen-save-msg','الطالب غير موجود','error');
+  const val=id=>document.getElementById(id)?.value ?? '';
+  const num=id=>{const n=Number(val(id));return Number.isFinite(n)?Math.max(0,Math.min(10,n)):0;};
+  const dateISO=new Date().toISOString().slice(0,10), d=new Date(dateISO);
+  const id=`wafdeen_${student.id}_${dateISO}`;
+  const record={id,teacherUsername:currentWafdeenTeacher.username,studentId:student.id,studentName:student.name,dateISO,
+    dayName:['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'][d.getDay()],
+    newLesson:isAbsent?0:num('wafdeenNewLesson'),newPagesCount:isAbsent?'':val('wafdeenNewPagesCount'),newTopicRecited:isAbsent?'':val('wafdeenNewTopicRecited'),
+    oldRevision:isAbsent?0:num('wafdeenOldRevision'),oldPagesCount:isAbsent?'':val('wafdeenOldPagesCount'),oldTopicRecited:isAbsent?'':val('wafdeenOldTopicRecited'),
+    recitation:isAbsent?0:num('wafdeenRecitation'),recitationPagesCount:isAbsent?'':val('wafdeenRecitationPagesCount'),recitationTopicRecited:isAbsent?'':val('wafdeenRecitationTopicRecited'),
+    newLessonTimeSeconds:0,oldRevisionTimeSeconds:0,recitationTimeSeconds:0,
+    quranNewTimeSeconds:0,quranOldTimeSeconds:0,quranRecitationTimeSeconds:0,savedAt:new Date().toISOString()};
+  record.total=record.newLesson+record.oldRevision+record.recitation;
+  try{
+    if(useFirebase) await db.collection('wafdeenDailyRecords').doc(record.id).set(record,{merge:true});
+    else {const i=wafdeenDailyRecords.findIndex(r=>r.id===record.id);if(i>-1)wafdeenDailyRecords[i]=record;else wafdeenDailyRecords.push(record);wafdeenPersistLocal();}
+    showMessage('wafdeen-save-msg',isAbsent?`تم تسجيل غياب ${student.name} بصفر في كل الخانات 🚫`:`تم حفظ الرصد اليومي للطالب ${student.name} ✅`,'success');
+    wafdeenUpdateDailyScoresVisibility();
+  }catch(e){console.error(e);showMessage('wafdeen-save-msg','تعذر حفظ الرصد اليومي للوافدين','error');}
+}
+function wafdeenUpdateDailyScoresVisibility(){
+  const panel=document.getElementById('wafdeen-daily-scores-panel');
+  const sel=document.getElementById('wafdeenStudentSelect');
+  if(!panel||!sel)return;
+  const studentId=String(sel.value||'');
+  const today=wafdeenDateKeyLocal(new Date());
+  const hasTodayRecord=studentId && wafdeenDailyRecords.some(r=>String(r.studentId)===studentId && String(r.dateISO||'').slice(0,10)===today);
+  panel.classList.toggle('hidden',!!hasTodayRecord);
+}
+
+function wafdeenDateKeyLocal(date=new Date()){const d=new Date(date);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function wafdeenStartOfWeek(date=new Date()){const d=new Date(date);d.setHours(0,0,0,0);const day=d.getDay();const diff=day===0?-6:1-day;d.setDate(d.getDate()+diff);return d;}
+function wafdeenSumRecords(records){return records.reduce((a,r)=>a+Number(r.total||0),0);}
+function wafdeenToggleGradesStudents(){
+  const list=document.getElementById('wafdeen-grades-students-list');
+  const icon=document.getElementById('wafdeen-grades-students-icon');
+  if(!list)return;
+  const willOpen=list.classList.toggle('hidden')===false;
+  if(icon)icon.textContent=willOpen?'▲':'▼';
+  if(willOpen)wafdeenRenderGrades();
+}
+function wafdeenRenderGrades(){
+  const list=document.getElementById('wafdeen-grades-students-list'); if(!list)return;
+  const students=[...wafdeenStudentsData].sort((a,b)=>String(a.name).localeCompare(String(b.name),'ar'));
+  list.innerHTML='';
+  students.forEach(st=>{const b=document.createElement('button');b.type='button';b.className='wafdeen-grade-student-btn';b.textContent=st.name;b.onclick=()=>wafdeenShowStudentGrades(st.id);list.appendChild(b);});
+  if(!students.length)list.innerHTML='<div class="wafdeen-note">لا يوجد طلاب مسجلون.</div>';
+}
+function wafdeenCanManageGrades(){
+  return !!currentWafdeenTeacher && currentWafdeenTeacher.role!=='student';
+}
+function wafdeenGradeTable(records, title){
+  const sorted=[...records].sort((a,b)=>String(b.dateISO||'').localeCompare(String(a.dateISO||'')));
+  if(!sorted.length) return `<div class="wafdeen-note">لا توجد درجات مسجلة في ${title}.</div>`;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const canManage=wafdeenCanManageGrades();
+  return `<div class="card-view" style="margin-bottom:0"><h4 class="card-title">📊 رصد ${title}</h4><div class="table-responsive"><table><thead><tr>
+    <th>التاريخ</th><th>الجديد</th><th>وقت الجديد</th><th>مقرر الجديد الذي تم تسميعه</th><th>الماضي</th><th>وقت الماضي</th><th>مقرر الماضي الذي تم تسميعه</th><th>التلاوة</th><th>وقت التلاوة</th><th>مقرر التلاوة الذي تم تسميعه</th><th>المجموع من 30</th>${canManage?'<th>الإجراءات</th>':''}
+  </tr></thead><tbody>${sorted.map(r=>`<tr><td>${esc(String(r.dateISO||'').slice(0,10))}</td><td>${r.newLesson??0}</td><td>${esc(r.newTime||'')}</td><td>${esc(r.newTopicRecited)}</td><td>${r.oldRevision??0}</td><td>${esc(r.oldTime||'')}</td><td>${esc(r.oldTopicRecited)}</td><td>${r.recitation??0}</td><td>${esc(r.recitationTime||'')}</td><td>${esc(r.recitationTopicRecited)}</td><td class="grade-total">${r.total??0}</td>${canManage?`<td style="min-width:90px"><div style="display:flex;flex-direction:column;gap:6px"><button type="button" class="action-btn btn-save" style="width:100%" onclick='window.wafdeenEditGrade(${JSON.stringify(String(r.id))})'>تعديل</button><button type="button" class="action-btn btn-danger" style="width:100%" onclick='window.wafdeenDeleteGrade(${JSON.stringify(String(r.id))})'>مسح</button></div></td>`:''}</tr>`).join('')}</tbody></table></div></div>`;
+}
+function wafdeenShowGradePeriod(period, btn){
+  document.querySelectorAll('.wafdeen-grade-period-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  ['today','week','month'].forEach(p=>document.getElementById('wafdeen-grade-'+p)?.classList.toggle('hidden',p!==period));
+}
+let wafdeenCurrentGradeStudentId=null;
+function wafdeenShowStudentGrades(studentId){
+  const st=wafdeenStudentsData.find(x=>String(x.id)===String(studentId)); if(!st)return;
+  wafdeenCurrentGradeStudentId=studentId;
+  document.getElementById('wafdeen-grades-details').classList.remove('hidden');
+  document.getElementById('wafdeen-grades-student-name').textContent=st.name;
+  const now=new Date(), today=wafdeenDateKeyLocal(now), weekStart=wafdeenStartOfWeek(now), weekStartKey=wafdeenDateKeyLocal(weekStart), monthPrefix=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const recs=wafdeenDailyRecords.filter(r=>String(r.studentId)===String(studentId));
+  const todayRecs=recs.filter(r=>String(r.dateISO||'').slice(0,10)===today);
+  const weekRecs=recs.filter(r=>{const k=String(r.dateISO||'').slice(0,10);return k>=weekStartKey&&k<=today;});
+  const monthRecs=recs.filter(r=>String(r.dateISO||'').slice(0,7)===monthPrefix);
+  document.getElementById('wafdeen-grade-today').innerHTML=wafdeenGradeTable(todayRecs,'اليوم');
+  document.getElementById('wafdeen-grade-week').innerHTML=wafdeenGradeTable(weekRecs,'الأسبوع');
+  document.getElementById('wafdeen-grade-month').innerHTML=wafdeenGradeTable(monthRecs,'الشهر');
+  wafdeenShowGradePeriod('today',document.querySelector('.wafdeen-grade-period-btn'));
+}
+async function wafdeenEditGrade(recordId){
+  try{
+    if(!wafdeenCanManageGrades()){ showMessage('wafdeen-save-msg','التعديل غير متاح لهذا الحساب','error'); return; }
+    const id=String(recordId||'');
+    const r=wafdeenDailyRecords.find(x=>String(x.id)===id);
+    if(!r){ showMessage('wafdeen-save-msg','الرصد غير موجود','error'); return; }
+    const n=prompt('درجة الجديد من 10:',String(r.newLesson??0)); if(n===null)return;
+    const o=prompt('درجة الماضي من 10:',String(r.oldRevision??0)); if(o===null)return;
+    const q=prompt('درجة التلاوة من 10:',String(r.recitation??0)); if(q===null)return;
+    const grade=v=>Math.max(0,Math.min(10,Number(v)||0));
+    const updated={newLesson:grade(n),oldRevision:grade(o),recitation:grade(q)};
+    updated.total=updated.newLesson+updated.oldRevision+updated.recitation;
+    updated.editedAt=new Date().toISOString();
+    updated.editedBy=currentWafdeenTeacher.username||'';
+    Object.assign(r,updated);
+    if(useFirebase){
+      await db.collection('wafdeenDailyRecords').doc(id).set(updated,{merge:true});
+    }else{
+      const i=wafdeenDailyRecords.findIndex(x=>String(x.id)===id);
+      if(i>-1)wafdeenDailyRecords[i]=r;
+      wafdeenPersistLocal();
+    }
+    if(wafdeenCurrentGradeStudentId)wafdeenShowStudentGrades(wafdeenCurrentGradeStudentId);
+    showMessage('wafdeen-save-msg','تم تعديل الدرجات بنجاح ✅','success');
+  }catch(e){
+    console.error('wafdeenEditGrade error:',e);
+    showMessage('wafdeen-save-msg','تعذر تعديل الدرجة','error');
+  }
+}
+window.wafdeenEditGrade=wafdeenEditGrade;
+
+async function wafdeenDeleteGrade(recordId){
+  try{
+    if(!wafdeenCanManageGrades()){ showMessage('wafdeen-save-msg','المسح غير متاح لهذا الحساب','error'); return; }
+    const id=String(recordId||'');
+    if(!id){ showMessage('wafdeen-save-msg','رقم الرصد غير صحيح','error'); return; }
+    if(!wafdeenDailyRecords.some(x=>String(x.id)===id)){
+      showMessage('wafdeen-save-msg','الرصد غير موجود','error');
+      return;
+    }
+    if(!confirm('هل تريد مسح هذا الرصد نهائياً؟'))return;
+    if(useFirebase){
+      await db.collection('wafdeenDailyRecords').doc(id).delete();
+    }
+    wafdeenDailyRecords=wafdeenDailyRecords.filter(x=>String(x.id)!==id);
+    if(!useFirebase)wafdeenPersistLocal();
+    if(wafdeenCurrentGradeStudentId)wafdeenShowStudentGrades(wafdeenCurrentGradeStudentId);
+    wafdeenUpdateDailyScoresVisibility();
+    showMessage('wafdeen-save-msg','تم مسح الرصد بنجاح ✅','success');
+  }catch(e){
+    console.error('wafdeenDeleteGrade error:',e);
+    showMessage('wafdeen-save-msg','تعذر مسح الرصد. تأكد من صلاحيات الإدارة واتصال قاعدة البيانات.','error');
+  }
+}
+window.wafdeenDeleteGrade=wafdeenDeleteGrade;
+
+function wafdeenToggleEducationTimeStudents(){
+  const list=document.getElementById('wafdeen-education-time-students-list'), icon=document.getElementById('wafdeen-education-time-students-icon'); if(!list)return;
+  const open=list.classList.toggle('hidden')===false; if(icon)icon.textContent=open?'▲':'▼'; if(open)wafdeenRenderEducationTime();
+}
+function wafdeenEducationTimeTable(records,title){
+  const sorted=[...records].sort((a,b)=>String(b.dateISO||'').localeCompare(String(a.dateISO||'')));
+  if(!sorted.length)return `<div class="wafdeen-note">لا يوجد وقت تعليم مسجل في ${title}.</div>`;
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const total=sorted.reduce((a,r)=>a+Number(r.seconds||0),0);
+  return `<div class="card-view" style="margin-bottom:0"><h4 class="card-title">⏱️ وقت التعليم ${title} — الإجمالي ${wafdeenFormat(total)}</h4><div class="table-responsive"><table><thead><tr><th>التاريخ</th><th>المادة</th><th>وقت التعليم</th></tr></thead><tbody>${sorted.map(r=>`<tr><td>${esc(String(r.dateISO||'').slice(0,10))}</td><td>${esc(r.subject)}</td><td>${wafdeenFormat(Number(r.seconds||0))}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+function wafdeenShowEducationTimePeriod(period,btn){
+  const root=document.getElementById('wafdeen-panel-educationTime'); root?.querySelectorAll('.wafdeen-grade-period-btn').forEach(b=>b.classList.remove('active')); if(btn)btn.classList.add('active');
+  ['today','week','month'].forEach(p=>document.getElementById('wafdeen-education-time-'+p)?.classList.toggle('hidden',p!==period));
+}
+function wafdeenRenderEducationTime(){
+  const list=document.getElementById('wafdeen-education-time-students-list'); if(!list)return;
+  const students=[...wafdeenStudentsData].sort((a,b)=>String(a.name).localeCompare(String(b.name),'ar'));
+  list.innerHTML=''; students.forEach(st=>{const b=document.createElement('button');b.type='button';b.className='wafdeen-grade-student-btn';b.textContent=st.name;b.onclick=()=>wafdeenShowStudentEducationTime(st.id);list.appendChild(b);}); if(!students.length)list.innerHTML='<div class="wafdeen-note">لا يوجد طلاب مسجلون.</div>';
+}
+function wafdeenShowStudentEducationTime(studentId){
+  const st=wafdeenStudentsData.find(x=>String(x.id)===String(studentId)); if(!st)return;
+  document.getElementById('wafdeen-education-time-details').classList.remove('hidden'); document.getElementById('wafdeen-education-time-student-name').textContent=st.name;
+  const now=new Date(), today=wafdeenDateKeyLocal(now), weekStartKey=wafdeenDateKeyLocal(wafdeenStartOfWeek(now)), monthPrefix=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const recs=wafdeenUsageData.filter(r=>r.category==='educational'&&String(r.studentId)===String(studentId));
+  const todayRecs=recs.filter(r=>String(r.dateISO||'').slice(0,10)===today), weekRecs=recs.filter(r=>{const k=String(r.dateISO||'').slice(0,10);return k>=weekStartKey&&k<=today;}), monthRecs=recs.filter(r=>String(r.dateISO||'').slice(0,7)===monthPrefix);
+  document.getElementById('wafdeen-education-time-today').innerHTML=wafdeenEducationTimeTable(todayRecs,'اليوم'); document.getElementById('wafdeen-education-time-week').innerHTML=wafdeenEducationTimeTable(weekRecs,'الأسبوع'); document.getElementById('wafdeen-education-time-month').innerHTML=wafdeenEducationTimeTable(monthRecs,'الشهر');
+  wafdeenShowEducationTimePeriod('today',document.querySelector('#wafdeen-panel-educationTime .wafdeen-grade-period-btn'));
+}
+function markWafdeenAbsent(){saveWafdeenDailyRecord(true);}
 // توافق مع أي استدعاءات قديمة
 function wafdeenResetTimer(){wafdeenQuranReset();wafdeenEduReset();}
 function toggleWafdeenMenu(){document.getElementById('wafdeen-drawer').classList.toggle('open');document.getElementById('wafdeen-menu-overlay').classList.toggle('open');}
@@ -6894,10 +7146,12 @@ function toggleWafdeenEducationalMonitor(){
 }
 
 function wafdeenShowPanel(name){
-  const allowed=['daily','materials'];
+  const allowed=['daily','materials','grades','educationTime'];
   if(!allowed.includes(name) && !currentWafdeenTeacher?.isAdmin)return;
-  ['daily','materials','teachers','students','report'].forEach(n=>{const el=document.getElementById('wafdeen-panel-'+n);if(el)el.classList.toggle('hidden',n!==name);});
+  ['daily','materials','grades','educationTime','teachers','students','report'].forEach(n=>{const el=document.getElementById('wafdeen-panel-'+n);if(el)el.classList.toggle('hidden',n!==name);});
   closeWafdeenMenu();
+  if(name==='grades'){wafdeenRenderGrades();}
+  if(name==='educationTime'){wafdeenRenderEducationTime();}
   if(name==='report')renderWafdeenMonthlyReport();
   if(name==='teachers')wafdeenRenderTeachersTable();
   if(name==='students')wafdeenRenderStudentsTable();
@@ -7247,10 +7501,10 @@ function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;',
 function renderWafdeenMonthlyReport(){
   const tb=document.querySelector('#wafdeenReportTable tbody');if(!tb)return;
   const month=document.getElementById('wafdeenReportMonth')?.value||wafdeenTodayMonth();const map={};
-  wafdeenUsageData.filter(r=>String(r.month||'')===month).forEach(r=>{const u=r.teacherUsername||'غير معروف';if(!map[u])map[u]={new:0,old:0,rec:0,total:0};const secs=Math.max(0,Number(r.seconds||0));map[u].total+=secs;if(r.type==='الجديد')map[u].new+=secs;else if(r.type==='الماضي')map[u].old+=secs;else if(r.type==='التلاوة')map[u].rec+=secs;});
+  wafdeenUsageData.filter(r=>String(r.month||'')===month).forEach(r=>{const u=r.teacherUsername||'غير معروف';if(!map[u])map[u]={new:0,old:0,rec:0,educational:0,total:0};const secs=Math.max(0,Number(r.seconds||0));map[u].total+=secs;if(r.type==='الجديد')map[u].new+=secs;else if(r.type==='الماضي')map[u].old+=secs;else if(r.type==='التلاوة')map[u].rec+=secs;else if(r.category==='educational')map[u].educational+=secs;});
   const formatMonthlyTime=(secs)=>{secs=Math.max(0,Math.floor(Number(secs)||0));const hours50=Math.floor(secs/3000),remAfterHours=secs%3000,minutes=Math.floor(remAfterHours/60),seconds=remAfterHours%60;return `${hours50} س ${minutes} د ${seconds} ث`;};
   const formatHours=(secs,base)=>(Math.max(0,secs)/60/base).toFixed(2);
-  tb.innerHTML=Object.entries(map).sort((a,b)=>b[1].total-a[1].total).map(([u,x])=>`<tr><td>${escapeHtml(u)}</td><td>${formatMonthlyTime(x.new)}</td><td>${formatMonthlyTime(x.old)}</td><td>${formatMonthlyTime(x.rec)}</td><td><strong>${formatMonthlyTime(x.total)}</strong></td><td>${formatHours(x.total,50)}</td><td>${formatHours(x.total,60)}</td></tr>`).join('')||'<tr><td colspan="7">لا توجد جلسات محفوظة لهذا الشهر</td></tr>';
+  tb.innerHTML=Object.entries(map).sort((a,b)=>b[1].total-a[1].total).map(([u,x])=>`<tr><td>${escapeHtml(u)}</td><td>${formatMonthlyTime(x.new)}</td><td>${formatMonthlyTime(x.old)}</td><td>${formatMonthlyTime(x.rec)}</td><td>${formatMonthlyTime(x.educational)}</td><td><strong>${formatMonthlyTime(x.total)}</strong></td><td>${formatHours(x.total,50)}</td><td>${formatHours(x.total,60)}</td></tr>`).join('')||'<tr><td colspan="8">لا توجد جلسات محفوظة لهذا الشهر</td></tr>';
 }
 </script>
 </body>
